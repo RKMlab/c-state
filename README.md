@@ -1,2 +1,2 @@
-# c-state
+# C-State
 'C' the chromatin state
