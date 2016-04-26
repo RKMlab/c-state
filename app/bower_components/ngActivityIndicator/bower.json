@@ -1,0 +1,40 @@
+{
+  "name": "ngActivityIndicator",
+  "main": [
+    "ngActivityIndicator.js",
+    "css/ngActivityIndicator.css"
+  ],
+  "version": "0.1.10",
+  "homepage": "https://github.com/voronianski/ngActivityIndicator",
+  "description": "Simple Angular.js preloaders provider",
+  "keywords": [
+    "ngActivity",
+    "ngActivityIndicator",
+    "preloader",
+    "loader",
+    "animating",
+    "angular.js"
+  ],
+  "authors": [
+    "Dmitri Voronianski <dmitri.voronianski@gmail.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "karma.conf.js",
+    "Gruntfile.js",
+    "myth",
+    "example"
+  ],
+  "dependencies": {
+    "angular": "~1.2.16"
+  },
+  "devDependencies": {
+    "angular-mocks": "~1.2.16",
+    "angular-route": "~1.2.16"
+  }
+}

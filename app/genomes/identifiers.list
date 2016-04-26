@@ -1,0 +1,7 @@
+genome,name,value
+hg19,Official Gene Symbol,Name
+hg19,RefSeq ID,RefSeq
+mm9,Official Gene Symbol,Name
+mm9,RefSeq ID,RefSeq
+dm3,Official Gene Symbol,Name
+dm3,Flybase ID,FbID

@@ -1,0 +1,250 @@
+<div ng-view>
+    <div ng-controller="AccordionCtrl">
+        <div class="alert alert-info" ng-show="loading">Loading</div> <span us-spinner="{radius:20, width:8, length: 16}" spinner-key="spinner-1"></span>
+        <div class="row">
+            <div class="col-xs-10">
+                <a href="http://www.ccmb.res.in/"> <img src="images/ccmb_logo_9.png" alt=""> </a>
+            </div>
+            <div class="col-xs-2" align="right">
+                <a href="http://192.168.14.15/projects/cstate"> <img src="images/c-state.png" alt=""> </a>
+            </div>
+        </div>
+        <div ng-show="AILoading" class="your-preloader"></div>
+        <div ng-hide="AILoading" ng-view></div>
+        <accordion close-others="oneAtATime">
+            <accordion-group is-open="status.filesOpen">
+                <accordion-heading> Files <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.filesOpen, 'glyphicon-chevron-right': !status.filesOpen}"></i>                    </accordion-heading>
+                <div ng-controller="FilesCtrl">
+                    <div class="row">
+                        <div class="col-xs-3" style="border-right: 1px solid gray">
+                            <div class="row">
+                                <div class="col-xs-4">
+                                    <label>
+                                        Genome
+                                    </label>
+                                    <br/>
+                                    <select style="margin-right:10px;height:22px;" ng-model="filter.selectedGenome" ng-options="genome.name for genome in genomes" ng-change="getIdentifiers(filter.selectedGenome, allIdentifiers)"></select>
+                                </div>
+                                <!-- <div class="col-xs-1"> </div> -->
+                                <div class="col-xs-8">
+                                    <label> Load Genes List</label>
+                                    <span class="file-input">
+                                        <input type="file" size = "15" class="btn-file" ng-file-select="onGenesListFileSelect($files)">
+                                    </span>
+                                </div>
+
+                             <br /> 
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-xs-6">
+                                <label>
+                                    Identifier
+                                </label>
+                                <br/>
+                                <select style="margin-right:10px;height:22px;" ng-model="filter.selectedIdentifier" ng-options="identifier.name for identifier in identifiers"></select>
+                            </div>
+                            <br/>
+                            <div class="col-xs-6">
+                             <button type="button" class="btn btn-success raised btn-md center-block"
+                                                                 style="float:none" ; ng-click="createGenesBedFile()">
+                                Create BED File
+                            </button>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row">
+                        </div>
+                        </div>
+                        <div class="col-xs-2">
+                            <label>
+                                Load Genes (BED Format)
+                            </label>
+                            <span class="file-input">
+                                <input type="file"  size = "15"  class="btn-file" ng-file-select="onGenesFileSelect($files)">
+                            </span> <br /> 
+                            
+                        </div>
+                        <div class="col-xs-2" style="border-right: 1px dashed gray">
+                        <input type="radio" ng-model="filter.regionType" value="RegionFlank">
+                        <label>
+                                Input Flank Size (KB) 
+                            </label>
+                            <br/>
+                                <input type="number" size="4" style="width:60px;text-align: right;"
+                                                                        ng-model="filter.FlankingSize" 
+                                                                        ng-disabled="filter.regionType!='RegionFlank'" value="20">
+                            <br/><br/>
+                            <input type="radio" ng-model="filter.regionType" value="RegionFile">
+
+                            <label>
+                                Load Regions (BED Format)
+                            </label>
+                            <span class="file-input">
+                                <input type="file"  size = "15"  ng-disabled="filter.regionType!='RegionFile'" ng-file-select="onRegionsFileSelect($files)">
+                            </span> <br />
+                            
+                        </div>
+                        <div class="col-xs-2" style="border-right: 1px solid gray">
+                            <label>
+                                Load Features
+                            </label>
+                                <span class="file-input">
+                                <input type="file"  size = "15"  ng-file-select="onFeaturesFileSelect($files)" multiple>
+                            </span> <br />  <br /> <button type="button" class="btn btn-success raised btn-md" ng-csv="createCstateIntermediateFormatCover()" field-separator="\t" csv-header="getHeader()" filename="cstate.tsv">
+                                Create C-State File
+                            </button> <br /><br />
+                        </div>
+                        <div class="col-xs-3">
+                            <label>
+                                Load C-State Files 
+                            </label>
+                            <span class="file-input">
+                                <input type="file"  size = "15"  ng-file-select="onCstateFilesSelectCover($files)" multiple>
+                            </span>
+                            <div class="row" ng-show="counts.genesFileName">
+                                <div class="col-xs-4">
+                                    <label> Datasets </label><br/>
+                                    <span ng-repeat="(key,file) in myFiles.files">
+                                            {{key}} <br/>
+                                    </span>
+                                </div>
+                                <div class="col-xs-8">
+                                    <label> Genes File </label> <br/> {{counts.genesFileName}} <br/> <br/>
+                                    <label> Exons File </label> {{counts.exonsFileName}} <br/>  
+                                </div>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+            </accordion-group>
+            <accordion-group is-open="status.filtersOpen">
+                <accordion-heading> Filters <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.filtersOpen, 'glyphicon-chevron-right': !status.filtersOpen}"></i>            </accordion-heading>
+                <div class="row">
+                    <div class="col-xs-2" style="border-right: 1px solid gray">
+                        <b>
+                            <input type="radio" ng-model="filter.filterType" value="GeneName">  Filter By Gene Name
+                        </b>
+                        <br /> 
+                        <small>Gene Name </small>
+                        <input type="text" ng-list=" " ng-trim="false" ng-model="filter.Gene" ng-model-options="{debounce: 1000}"
+                                                                                          ng-disabled="filter.filterType!='GeneName'" /> <br /> <br /> <input type="checkbox" ng-model="filter.allowPartial"> <small> Allow Partial Matches </small>
+                    <br/><br/>                                                                      
+                    </div>
+                    <div class="col-xs-3" style="border-right: 1px solid gray">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <b>
+                                    <input type="radio" ng-model="filter.filterType" value="Marks">  Filter By Marks
+                                    <br />
+                                </b>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-4 text-center">
+                                <small>Cell Type</small> <br/><select style="width:120px;margin-right:10px;height:22px;" ng-model="filter.myCellType" ng-options="cellType.name for cellType in cellTypes| orderBy:'name'"
+                                                  ng-disabled="filter.filterType!='Marks'"></select>
+                            </div>
+                        
+                            <div class="col-xs-8 text-center">
+                                <small>Marks Count</small> <br /> <select style="margin-right:10px;height:22px;" ng-model="filter.selectedOperator"
+                                                           ng-model-options="{debounce: 2000}" ng-options="operator.name for operator in operators" ng-disabled="filter.myCellType.value===undefined"></select>                        
+                                <input type="number" size=4 style="width:60px;text-align: right;" ng-model="filter.FeaturesCount" ng-model-options="{debounce: 2000}" ng-disabled="filter.myCellType.value===undefined">
+                                <br/>
+                                <br/>
+                                <small> Distance from TSS(in KB)</small> <br /> <input type="number" size=4 style="width:120px;text-align: right;" ng-model="filter.tssFeaturesDist" ng-disabled="filter.myCellType.value===undefined" />
+                            </div>
+
+                        </div> 
+                    </div>
+                    <div class="col-xs-5" style="border-right: 1px solid gray">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <b>
+                                    <input type="radio" ng-model="filter.filterType" value="Pattern">  Filter By Patterns
+                                    <br />
+                                </b>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-3 text-center">
+                               <small> Cell Type </small><select style="width:120px;margin-right:10px;height:22px;" ng-model="filter.myCellTypeForPattern" ng-options="cellType.name for cellType in cellTypes| orderBy:'name'"
+                                                  ng-disabled="filter.filterType!='Pattern'"></select>
+                            </div>
+                            <div class="col-xs-3 text-center">
+                               <small> First Feature </small><br /> <select style="width:120px;margin-right:10px;height:22px;" ng-model="filter.firstFeature" ng-options="feature for feature in myFiles.features"
+                                                             ng-disabled="filter.myCellTypeForPattern.value===undefined"></select>
+                                <br />
+                                <br />
+                                <small> Min Dist (KB) </small> <br /> <input type="number" min=0 size=4 style="width:120px;text-align: right;" ng-model="filter.minDist" ng-model-options="{debounce: 2000}" ng-disabled="filter.myCellTypeForPattern.value===undefined || filter.selectedSearchType.value=='Overlap' ">
+                            </div>
+                            <div class="col-xs-3 text-center">
+                               <small> Relation </small><br /> <select style="width:120px;margin-right:10px;height:22px;" ng-model="filter.selectedSearchType" ng-options="searchType.name for searchType in searchTypes"
+                                                        ng-disabled="filter.myCellTypeForPattern.value===undefined"></select>
+                                <br />
+                                <br />
+                                <small> Max Dist (KB) </small><br /> <input type="number" min=0 size=4 style="width:120px;text-align: right;" ng-model="filter.maxDist" ng-model-options="{debounce: 2000}" ng-disabled="filter.myCellTypeForPattern.value===undefined || filter.selectedSearchType.value=='Overlap' ">
+                            </div>
+                            <div class="col-xs-3 text-center">
+                                <small>Second Feature </small><br /> <select style="width:120px;margin-right:10px;height:22px;" ng-model="filter.secondFeature" ng-options="feature for feature in myFiles.features" ng-disabled="filter.myCellTypeForPattern.value===undefined"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-1">
+                        <button type="button" class="btn btn-success raised btn-md" ng-click="clearAllFilters()">
+                            <span class="glyphicon glyphicon-remove"></span> Clear Filters
+
+                        </button> <br /> <br /> <button type="button" class="btn btn-success raised btn-md" ng-click="getFilteredGenes()">
+                            <span class="glyphicon glyphicon-export"></span> Export Genes
+
+                        </button> <br /> <br /> <button type="button" class="btn btn-success raised btn-md" ng-click="exportSelectedPanels()"
+                                                        filename="panels.svg">
+                            <span class="glyphicon glyphicon-download"></span> Save as SVG
+
+                        </button>
+                    </div>
+                </div>
+            </accordion-group>
+            <accordion-group is-open="status.visualizationOpen">
+                <accordion-heading> Visualization - showing {{counts.numFilteredGenes}}/{{counts.numTotalGenes}} genes <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.visualizationOpen, 'glyphicon-chevron-right': !status.visualizationOpen}"></i>        </accordion-heading>
+                <div class="row">
+                    <div id="header">
+                        <div class="col-xs-12" align="left">
+                            <legend features="myFiles.features" status="status"></legend>
+                        </div>
+                    </div>
+                    <div>
+                        <div>
+                            <table style="width:1450px;table-layout:fixed">
+                                <tr>
+                                    <td align="center" style="width:50/{{myFiles.files.length}}" ng-repeat="(key,file) in myFiles.files">
+                                        <b>{{key}}</b>
+                                    </td>
+                                </tr>
+                            </table>
+                            <!--                 <div style="width:20px"></div> -->
+                        </div>
+                        <div style="height:500px; overflow: auto" drag-scroll>
+                            <table style="width:100%">
+                                <tbody>
+                                    <tr>
+                                        <td align="center" ng-class="{'checkedClass': isCellTypeSelected(key) || isCellTypeForPatternSelected(key)}"
+                                            ng-repeat="(key,file) in myFiles.files" style="width:200px;">
+                                            <div style="border:1px double #4C7ED1;">
+                                                <div class="graph-panel" ng-repeat="gene in file" style="border-bottom:1px double #dcdcdc">
+                                                    <a class="panel-header" style="font-weight: bold" ng-click="openModal(gene)">{{gene[0].Gene}}</a>                                        <br />
+                                                    <panel class="panelClass" ng-click="openModal(gene)" gene-data="gene" features="myFiles.features"
+                                                           cell=1 width="myFiles.width" ticks=5 zoomed=0></panel>
+                                                </div> <br /> <br />
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </accordion-group>
+        </accordion>
+    </div>
+</div>

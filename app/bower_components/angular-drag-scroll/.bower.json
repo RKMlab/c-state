@@ -1,0 +1,33 @@
+{
+  "name": "angular-drag-scroll",
+  "version": "0.1.1",
+  "homepage": "https://github.com/jellekralt/angular-drag-scroll",
+  "authors": [
+    "Jelle Kralt <jelle@jellekralt.nl>"
+  ],
+  "description": "Lightweight drag to scroll directive for AngularJS",
+  "main": "src/ng-drag-scroll.js",
+  "keywords": [
+    "drag",
+    "scroll",
+    "angular"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "_release": "0.1.1",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.1.1",
+    "commit": "d2f9ef7ce127a946932acc4d7d920e160c92a82b"
+  },
+  "_source": "git://github.com/jellekralt/angular-drag-scroll.git",
+  "_target": "^0.1.1",
+  "_originalSource": "angular-drag-scroll",
+  "_direct": true
+}

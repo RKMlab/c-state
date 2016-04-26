@@ -1,0 +1,37 @@
+{
+  "name": "angular-nicescroll",
+  "description": "Angular Nicescroll Directive",
+  "version": "0.0.9",
+  "authors": [
+    "Tushar Borole <tushariscoolster@gmail.com>"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tushariscoolster/angular-nicescroll"
+  },
+  "homepage": "http://tushariscoolster.github.io/angular-nicescroll/",
+  "license": "LGPL-2.1",
+  "main": "angular-nicescroll.js",
+  "keywords": [
+    "nicescroll",
+    "angular"
+  ],
+  "ignore": [
+    "gh-pages",
+    "node_modules",
+    "bower_components"
+  ],
+  "dependencies": {
+    "jquery.nicescroll": "*"
+  },
+  "_release": "0.0.9",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.0.9",
+    "commit": "1e10719b1a5ed377cde913f7503da1e3c8a2f6a2"
+  },
+  "_source": "git://github.com/tushariscoolster/angular-nicescroll.git",
+  "_target": "^0.0.9",
+  "_originalSource": "angular-nicescroll",
+  "_direct": true
+}

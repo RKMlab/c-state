@@ -1,0 +1,132 @@
+﻿<!doctype html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js">
+ <!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+    <!-- build:css styles/vendor.css -->
+    <!-- bower:css -->
+    <link rel="stylesheet" href="bower_components/ngActivityIndicator/css/ngActivityIndicator.css" />
+    <!-- endbower -->
+    <!-- endbuild -->
+    <!-- build:css({.tmp,app}) styles/main.css -->
+    <link rel="stylesheet" href="styles/main.css">
+    <!-- endbuild -->
+</head>
+<body ng-app="cstateApp" ng-activity-indicator>
+    <!--[if lt IE 7]>
+      <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+    <!-- Add your site or application content here -->
+    <div class="container" ng-include="'views/main.html'" ng-controller="MainCtrl">
+
+    </div>
+
+    <!--[if lt IE 9]>
+    <script src="bower_components/es5-shim/es5-shim.js"></script>
+    <script src="bower_components/json3/lib/json3.min.js"></script>
+    <![endif]-->
+    <!-- build:js scripts/vendor.js -->
+    <!-- bower:js -->
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/bootstrap-sass-official/vendor/assets/javascripts/bootstrap/affix.js"></script>
+    <script src="bower_components/bootstrap-sass-official/vendor/assets/javascripts/bootstrap/alert.js"></script>
+    <script src="bower_components/bootstrap-sass-official/vendor/assets/javascripts/bootstrap/button.js"></script>
+    <script src="bower_components/bootstrap-sass-official/vendor/assets/javascripts/bootstrap/carousel.js"></script>
+    <script src="bower_components/bootstrap-sass-official/vendor/assets/javascripts/bootstrap/collapse.js"></script>
+    <script src="bower_components/bootstrap-sass-official/vendor/assets/javascripts/bootstrap/dropdown.js"></script>
+    <script src="bower_components/bootstrap-sass-official/vendor/assets/javascripts/bootstrap/tab.js"></script>
+    <script src="bower_components/bootstrap-sass-official/vendor/assets/javascripts/bootstrap/transition.js"></script>
+    <script src="bower_components/bootstrap-sass-official/vendor/assets/javascripts/bootstrap/scrollspy.js"></script>
+    <script src="bower_components/bootstrap-sass-official/vendor/assets/javascripts/bootstrap/modal.js"></script>
+    <script src="bower_components/bootstrap-sass-official/vendor/assets/javascripts/bootstrap/tooltip.js"></script>
+    <script src="bower_components/bootstrap-sass-official/vendor/assets/javascripts/bootstrap/popover.js"></script>
+    <script src="bower_components/ng-file-upload/angular-file-upload.js"></script>
+    <script src="bower_components/ng-file-upload-shim/angular-file-upload-shim.js"></script>
+    <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+    <script src="bower_components/d3/d3.js"></script>
+    <script src="bower_components/underscore/underscore.js"></script>
+    <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
+    <script src="bower_components/ng-csv/build/ng-csv.min.js"></script>
+    <script src="bower_components/ngActivityIndicator/ngActivityIndicator.js"></script>
+    <script src="bower_components/jquery.nicescroll/jquery.nicescroll.js"></script>
+    <script src="bower_components/angular-nicescroll/angular-nicescroll.js"></script>
+    <script src="bower_components/angular-drag-scroll/src/ng-drag-scroll.js"></script>
+    <script src="bower_components/blob-polyfill/Blob.js"></script>
+    <script src="bower_components/file-saver.js/FileSaver.js"></script>
+    <script src="bower_components/angular-file-saver/dist/angular-file-saver.bundle.js"></script>
+    <script src="bower_components/spin.js/spin.js"></script>
+    <script src="bower_components/angular-spinner/angular-spinner.js"></script>
+    <!-- endbower -->
+    <!-- endbuild -->
+    <!-- build:js({.tmp,app}) scripts/scripts.js -->
+    <script src="scripts/app.js"></script>
+    <script src="scripts/controllers/main.js"></script>
+    <script src="scripts/controllers/accordion.js"></script>
+    <script src="scripts/controllers/files.js"></script>
+    <script src="scripts/directives/panel.js"></script>
+    <script src="scripts/directives/legend.js"></script>
+    <script src="scripts/controllers/modal.js"></script>
+    <script src="scripts/filters/genename.js"></script>
+    <script src="scripts/filters/markscount.js"></script>
+    <script src="scripts/filters/markscountwrttss.js"></script>
+    <script src="scripts/filters/pattern.js"></script>
+
+    <!-- endbuild -->
+
+    <script>
+        var dispatch = d3.dispatch("reset_zoom_all", "zoom_all");
+    </script>
+    <div ng-controller="ModalCtrl">
+        <script type="text/ng-template" id="ModalContent.html">
+            <div class="modal-header">
+                <h3 class="modal-title">{{selectedGeneName}}</h3>
+                <div class="row">
+                    <div class="col-xs-10">
+                        <h4 class=regionName> {{rawGeneData.Chromosome}}:{{rawGeneData.Start}}-{{rawGeneData.Stop}} ({{rawGeneData.Orientation}}) </h4>
+                    </div>
+                    <div class="col-xs-2" style="text-align:right">
+                        <a id="zoom_reset" class="btn" onclick='dispatch.reset_zoom_all();'>
+                            <i class="icon-zoom-in"></i>Reset Zoom
+                        </a>
+                    </div>
+                </div>
+                <div id="header">
+                    <legend features="features"></legend>
+                </div>
+            </div>
+            <br />
+            <br />
+
+            <div class="graph-container-modal modalsvgClass" style="overflow-y:scroll;width:inherit;">
+                <table style="margin-left:20px">
+                    <tr ng-repeat="(geneName, geneData) in genes">
+                        <td>
+                            {{geneName}}
+                        </td>
+                        <td>
+                            <panel gene-data="geneData" features="features" cell="$index" width="myFiles.width" ticks=30 zoomed=1 selectedpattern="selectedPatternsForGene" class="modalPanel"></panel>
+                        </td>
+                    </tr>
+                    <tr class="separator" />
+                </table>
+            </div>
+
+            <div class="modal-footer">
+                <!-- <button class="btn btn-primary" ng-click="ok()">OK</button> -->
+                <button class="btn btn-primary" ng-click="saveModalasSVG()">Save as SVG</button>
+                <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+            </div>
+        </script>
+    </div>
+
+</body>
+</html>
