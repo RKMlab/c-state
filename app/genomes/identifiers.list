@@ -4,4 +4,5 @@ hg19,RefSeq ID,RefSeq
 mm9,Official Gene Symbol,Name
 mm9,RefSeq ID,RefSeq
 dm3,Official Gene Symbol,Name
-dm3,Flybase ID,FbID
+dm3,RefSeq ID,RefSeq
+dm3,Flybase ID,FlyBase
