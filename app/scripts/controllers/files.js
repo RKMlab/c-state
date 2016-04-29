@@ -66,12 +66,19 @@ angular.module('cstateApp').controller('FilesCtrl', function ($scope, $q, $timeo
                 if (exonsFile) {
                     var exonsText = $scope.myFiles.rawText[exonsFile.name];
                     parsedExonData = d3.tsv.parse(exonsText);
-                }
+					$scope.counts.exonsFileName = exonsFile.name;
+                } else {
+					$scope.counts.exonsFileName = "Not Available";
+				}
                 if (genesFile) {
                     var genesText = $scope.myFiles.rawText[genesFile.name];
+					$scope.counts.genesFileName = genesFile.name;
                     var headers = ["Chromosome", "Start", "Stop", "Gene", "Length", "Orientation"].join("\t");
                     $scope.rawGenes.push(d3.tsv.parse(headers + "\n" + genesText));
-                }
+                } else {
+					alert("Genes BED File not uploaded\nContextual information in modal view will not be available");
+					$scope.counts.genesFileName = "Not Uploaded";
+				}
                 for (var i = 0; i < cellTypeFiles.length; i++) {
                     var text = $scope.myFiles.rawText[cellTypeFiles[i].name];
                     if (text) {
@@ -93,8 +100,7 @@ angular.module('cstateApp').controller('FilesCtrl', function ($scope, $q, $timeo
                         });
                         $scope.counts.numTotalGenes = _.keys($scope.myFiles.originalFiles[cellTypeName]).length;
                         $scope.counts.numFilteredGenes = _.keys($scope.myFiles.originalFiles[cellTypeName]).length;
-                        $scope.counts.genesFileName =  genesFile.name;
-                        $scope.counts.exonsFileName =  exonsFile.name;
+
                     }
                 }
                 $scope.myFiles.width.push({
