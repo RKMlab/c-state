@@ -76,7 +76,7 @@ angular.module('cstateApp').controller('FilesCtrl', function ($scope, $q, $timeo
                     var headers = ["Chromosome", "Start", "Stop", "Gene", "Length", "Orientation"].join("\t");
                     $scope.rawGenes.push(d3.tsv.parse(headers + "\n" + genesText));
                 } else {
-					alert("Genes BED File not uploaded\nContextual information in modal view will not be available");
+					alert("'genes.bed' file not uploaded\nContextual information in modal view will not be available");
 					$scope.counts.genesFileName = "Not Uploaded";
 				}
                 for (var i = 0; i < cellTypeFiles.length; i++) {

@@ -10,11 +10,11 @@ angular.module('cstateApp')
             restrict: 'EA',
             transclude: false,
             link: function postLink(scope, element, attrs) {
-             
-            
+
+
             scope.$watch('features', function(){
             	var width = 1250,
-            	height = 25;
+            	height = 40;
             	if (scope.features  && _.size(scope.features)>0) {
 	            	var colorScale;
 	            	 _.size(scope.features)>10?colorScale = d3.scale.category20() : colorScale = d3.scale.category10() ;
@@ -28,43 +28,80 @@ angular.module('cstateApp')
 	            	  .attr("width", width)
 	            	  .attr("class","svgLegendClass")
 	            	  .append("g")
-	            	  .attr('transform', 'translate(0,10)');    
-	            	 
+	            	  .attr('transform', 'translate(0,10)');
+
 	            	legend.selectAll('rect')
 	            	  .data(colorScale.domain())
 	            	  .enter()
 	            	  .append("rect")
-	            	  .attr("x", function(d, i){ return i * 100 + 80;})
-	            	  .attr("y",0)
+	            	  .attr("x", function(d, i){ return i * 100 + 100;})
+	            	  .attr("y",20)
 	            	  .attr("width", 10)
 	            	  .attr("height", 10)
-	            	  .style("fill", function(d) { 
+	            	  .style("fill", function(d) {
 	            	      var color = colorScale(d);
 	            	      return color;
 	            	    });
-	            	    
+
 	            	legend.selectAll('text')
 	            	  .data(colorScale.domain())
 	            	  .enter()
 	            	  .append("text")
-	            	  .attr("x", function(d, i){return i * 100 + 92;})
-	            	  .attr("y",10)
+	            	  .attr("x", function(d, i){return i * 100 + 112;})
+	            	  .attr("y",30)
 	            	  .attr("fill",function(d,i) {return colorScale(d);})
 	            	  .text(function(d) {
 	            	    var text = d;
 	            	    return text;
 	            	  }).style("font-size","small");
 
+					legend.append("rect")
+	            	  .attr("x", 100)
+	            	  .attr("y", 0)
+	            	  .attr("width", 10)
+	            	  .attr("height", 10)
+	            	  .style("fill", "black");
+
+					legend.append("text")
+  	            	  .text("Gene Body")
+  	            	  .attr("x",112)
+  	            	  .attr("y",10)
+  	            	  .style("font-size","small");
+
+  					legend.append("rect")
+  	            	  .attr("x", 200)
+  	            	  .attr("y", 0)
+  	            	  .attr("width", 10)
+  	            	  .attr("height", 10)
+  	            	  .style("fill", "#666666");
+
+				    legend.append("text")
+	            	  .text("Gene Flanks")
+	            	  .attr("x",212)
+	            	  .attr("y",10)
+					  .attr("fill", "#666666")
+	            	  .style("font-size","small");
+
+				    legend.append("text")
+	            	  .text("Scale in KB")
+	            	  .attr("x",10)
+	            	  .attr("y",30)
+					  .attr("font-weight", "bold")
+	            	  .style("font-size","small");
+
+
+
 	            	legend.append("text")
 	            	  .text("Legend")
 	            	  .attr("x",10)
 	            	  .attr("y",10)
+					  .style("font-weight", "bold")
 	            	  .style("font-size","small");
 
 	            	console.log('multi',scope.features);}
             	});
 
 
-            }    
+            }
         };
   });

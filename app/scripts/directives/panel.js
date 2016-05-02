@@ -161,7 +161,7 @@ angular.module('cstateApp')
                 }
 
                 var regionBar = chart.append("g")
-                    .attr("transform", "translate("+x(scope.data[0].RegionStart)+","+0.75*availableHeight+")");
+                    .attr("transform", "translate("+x(scope.data[0].RegionStart)+","+0.775*availableHeight+")");
                     // .attr("transform", "translate(" + x(scope.region[0].RegionStartWrtTSS) + "," + 0.75 * availableHeight + ")");
 
 
@@ -169,7 +169,7 @@ angular.module('cstateApp')
                 .attr("width",x(scope.data[0].RegionStop) - x(scope.data[0].RegionStart))
                 // .attr("width", x(scope.region[0].RegionStopWrtTSS) - x(scope.region[0].RegionStartWrtTSS))
                 .attr("height", barHeight / 2)
-                .style("fill", "red");
+                .style("fill", "#666666");
 
                 var geneBar = chart.append("g")
                     .attr("transform", "translate(" + x(scope.data[0].GeneStart) + "," + 0.75 * availableHeight + ")");
@@ -178,7 +178,7 @@ angular.module('cstateApp')
                 geneBar.append("rect")
                     .attr("width", x(scope.data[0].GeneStop) - x(scope.data[0].GeneStart))
                     .attr("height", barHeight)
-                    .style("fill", "black");
+                    .style("fill", "#000000");
                 //};
 
 
