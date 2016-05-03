@@ -13,7 +13,7 @@ angular.module('cstateApp')
 
 
             scope.$watch('features', function(){
-            	var width = 1250,
+            	var width = 1450,
             	height = 40;
             	if (scope.features  && _.size(scope.features)>0) {
 	            	var colorScale;
@@ -34,7 +34,7 @@ angular.module('cstateApp')
 	            	  .data(colorScale.domain())
 	            	  .enter()
 	            	  .append("rect")
-	            	  .attr("x", function(d, i){ return i * 100 + 100;})
+	            	  .attr("x", function(d, i){ return i * 100 + 80;})
 	            	  .attr("y",20)
 	            	  .attr("width", 10)
 	            	  .attr("height", 10)
@@ -47,7 +47,7 @@ angular.module('cstateApp')
 	            	  .data(colorScale.domain())
 	            	  .enter()
 	            	  .append("text")
-	            	  .attr("x", function(d, i){return i * 100 + 112;})
+	            	  .attr("x", function(d, i){return i * 100 + 92;})
 	            	  .attr("y",30)
 	            	  .attr("fill",function(d,i) {return colorScale(d);})
 	            	  .text(function(d) {
@@ -56,7 +56,7 @@ angular.module('cstateApp')
 	            	  }).style("font-size","small");
 
 					legend.append("rect")
-	            	  .attr("x", 100)
+	            	  .attr("x", 80)
 	            	  .attr("y", 0)
 	            	  .attr("width", 10)
 	            	  .attr("height", 10)
@@ -64,12 +64,12 @@ angular.module('cstateApp')
 
 					legend.append("text")
   	            	  .text("Gene Body")
-  	            	  .attr("x",112)
+  	            	  .attr("x",92)
   	            	  .attr("y",10)
   	            	  .style("font-size","small");
 
   					legend.append("rect")
-  	            	  .attr("x", 200)
+  	            	  .attr("x", 180)
   	            	  .attr("y", 0)
   	            	  .attr("width", 10)
   	            	  .attr("height", 10)
@@ -77,16 +77,16 @@ angular.module('cstateApp')
 
 				    legend.append("text")
 	            	  .text("Gene Flanks")
-	            	  .attr("x",212)
+	            	  .attr("x", 192)
 	            	  .attr("y",10)
 					  .attr("fill", "#666666")
 	            	  .style("font-size","small");
 
 				    legend.append("text")
 	            	  .text("Scale in KB")
-	            	  .attr("x",10)
-	            	  .attr("y",30)
-					  .attr("font-weight", "bold")
+	            	  .attr("x",1350)
+	            	  .attr("y",20)
+					  .attr("font-weight", "")
 	            	  .style("font-size","small");
 
 
@@ -94,7 +94,7 @@ angular.module('cstateApp')
 	            	legend.append("text")
 	            	  .text("Legend")
 	            	  .attr("x",10)
-	            	  .attr("y",10)
+	            	  .attr("y",20)
 					  .style("font-weight", "bold")
 	            	  .style("font-size","small");
 

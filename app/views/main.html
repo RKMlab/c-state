@@ -2,11 +2,11 @@
     <div ng-controller="AccordionCtrl">
         <div class="alert alert-info" ng-show="loading">Loading</div> <span us-spinner="{radius:20, width:8, length: 16}" spinner-key="spinner-1"></span>
         <div class="row">
-            <div class="col-xs-10">
+            <div class="col-xs-9">
                 <a href="http://www.ccmb.res.in/"> <img src="images/ccmb_logo_9.png" alt=""> </a>
             </div>
-            <div class="col-xs-2" align="right">
-                <a href="http://192.168.14.15/projects/cstate"> <img src="images/c-state.png" alt=""> </a>
+            <div class="col-xs-3" align="right">
+                <a href="http://192.168.14.15/projects/cstate"> <img src="images/c-state_logo.png" alt=""> </a>
             </div>
         </div>
         <div ng-show="AILoading" class="your-preloader"></div>
@@ -155,7 +155,7 @@
                         </div>
                         <div class="row">
                             <div class="col-xs-4 text-center">
-                                <small>Cell Type</small> <br/><select style="width:120px;margin-right:10px;height:22px;" ng-model="filter.myCellType" ng-options="cellType.name for cellType in cellTypes| orderBy:'name'"
+                                <small>Cell Type</small> <br/><select style="width:100px;margin-right:10px;height:22px;" ng-model="filter.myCellType" ng-options="cellType.name for cellType in cellTypes| orderBy:'name'"
                                                   ng-disabled="filter.filterType!='Marks'"></select>
                             </div>
 
