@@ -195,14 +195,8 @@ angular.module('cstateApp').controller('AccordionCtrl', function ($scope, geneNa
         filterDetails += "Filter Settings\r\n\r\n";
         if ($scope.filter.filterType == "Pattern") {
             filterDetails += "Filtering Based on Pattern\r\n\r\n";
-            filterDetails += "Cell Type = " + $scope.filter.myCellType.name + "\r\n\r\n";
-            if ($scope.filter.FeaturesCount && $scope.filter.selectedOperator) {
-                filterDetails += "Marks Count " + $scope.filter.selectedOperator.name + " " + $scope.filter
-                    .FeaturesCount + "\r\n\r\n";
-            }
-            if ($scope.filter.tssFeaturesDist) {
-                filterDetails += "Distance from TSS = " + $scope.filter.tssFeaturesDist + "KB\r\n\r\n";
-            }
+            filterDetails += "Cell Type = " + $scope.filter.myCellTypeForPattern.name + "\r\n\r\n";
+            
             if ($scope.filter.firstFeature) {
                 filterDetails += "First Feature = " + $scope.filter.firstFeature + "\r\n\r\n";
             }
@@ -220,6 +214,16 @@ angular.module('cstateApp').controller('AccordionCtrl', function ($scope, geneNa
             }
             filterDetails += "Filtered " + $scope.counts.numFilteredGenes + "/" + $scope.counts.numTotalGenes +
                 " Genes\r\n\r\n";
+        } else if ($scope.filter.filterType == "Marks") {
+            filterDetails += "Filtering Based on Features\r\n\r\n";
+            filterDetails += "Cell Type = " + $scope.filter.myCellType.name + "\r\n\r\n";
+            if ($scope.filter.FeaturesCount && $scope.filter.selectedOperator) {
+                filterDetails += "Features Count " + $scope.filter.selectedOperator.name + " " + $scope.filter
+                    .FeaturesCount + "\r\n\r\n";
+            }
+            if ($scope.filter.tssFeaturesDist) {
+                filterDetails += "Distance from TSS = " + $scope.filter.tssFeaturesDist + "KB\r\n\r\n";
+            }
         }
         _.each($scope.filteredGenesKeys, function (element, index, list) {
             filterDetails += element + "\r\n";
