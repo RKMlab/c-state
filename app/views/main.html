@@ -104,9 +104,11 @@
 							<img src="images/help_icon.png" alt="" class="help-box" title="Rename your genome-wide peak information BED files as {CellType}_{Mark}. Upload all peak files of a cell type together. Repeat this step for every cell type or condition.">
                                 <span class="file-input">
                                 <input type="file"  size = "15"  ng-file-select="onFeaturesFileSelect($files)" multiple>
-                            </span> <br />  <br /> <button type="button" class="btn btn-success raised btn-md" ng-csv="createCstateIntermediateFormatCover()" field-separator="\t" csv-header="getHeader()" filename="cstate.tsv">
+                            </span> <br />  <br /> 
+                            <div ng-controller="ExportFilesCtrl">
+                            <button type="button" class="btn btn-success raised btn-md" ng-csv="createCstateIntermediateFormatCover()" field-separator="\t" csv-header="getHeader()" filename="cstate.tsv">
                                 Create C-State File
-                            </button> <br /><br />
+                            </button></div><br />
                         </div>
                         <div class="col-xs-3">
                             <label>Load C-State Files</label>
@@ -207,12 +209,18 @@
                         <button type="button" class="btn btn-success raised btn-md" ng-click="clearAllFilters()">
                             <span class="glyphicon glyphicon-remove"></span> Clear Filters
 
-                        </button> <br /> <br /> <button type="button" class="btn btn-success raised btn-md" ng-click="getFilteredGenes()">
+                        </button> <br /> <br /> 
+                        <div ng-controller="ExportFilesCtrl">
+                        <button type="button" class="btn btn-success raised btn-md" ng-click="getFilteredGenes()">
                             <span class="glyphicon glyphicon-export"></span> Export Genes
 
-                        </button> <br /> <br /> <button type="button" class="btn btn-success raised btn-md" ng-click="exportSelectedPanels()"
+                        </button> 
+                        </div>
+                        <br /> 
+                        <div ng-controller="ExportSVGCtrl">
+                        <button type="button" class="btn btn-success raised btn-md" ng-click="exportSelectedPanels()"
                                                         filename="panels.svg">
-                            <span class="glyphicon glyphicon-download"></span> Save as SVG
+                              <span class="glyphicon glyphicon-download"></span>  Save as SVG </div>
 
                         </button>
                     </div>

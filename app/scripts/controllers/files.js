@@ -1,8 +1,6 @@
 angular.module('cstateApp').controller('FilesCtrl', function ($scope, $q, $timeout, usSpinnerService, $rootScope) {
     'use strict';
-    // $scope.awesomeThings = ['HTML5 Boilerplate', 'AngularJS', 'Karma'];
     $scope.onCstateFilesSelect = function ($files) {
-        //$files: an array of files selected, each file has name, size, and type.
         if ($files.length > 0) {
             $scope.myFiles.rawText = [];
             $scope.myFiles.files = {};
