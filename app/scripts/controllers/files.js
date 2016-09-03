@@ -5,6 +5,7 @@ angular.module('cstateApp').controller('FilesCtrl', function ($scope, $q, $timeo
             $scope.myFiles.rawText = [];
             $scope.myFiles.files = {};
             $scope.myFiles.features = {};
+            $scope.myFiles.featuresWithoutAnnotations ={};
             $scope.myFiles.originalFiles = {};
             $scope.myFiles.width = [];
             $scope.myFiles.widthZoom = [];
@@ -89,6 +90,7 @@ angular.module('cstateApp').controller('FilesCtrl', function ($scope, $q, $timeo
                         $scope.myFiles.features = _.sortBy($scope.myFiles.features, function (item) {
                             return item;
                         });
+                        $scope.myFiles.featuresWithoutAnnotations = _.without($scope.myFiles.features,'exon')
                         var cellTypeName = cellTypeFiles[i].name.split("_")[0];
                         $scope.myFiles.files[cellTypeName] = nestedData;
                         $scope.myFiles.originalFiles[cellTypeName] = nestedData;
