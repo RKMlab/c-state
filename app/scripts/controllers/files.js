@@ -1,12 +1,11 @@
 angular.module('cstateApp').controller('FilesCtrl', function ($scope, $q, $timeout, usSpinnerService, $rootScope) {
     'use strict';
-    // $scope.awesomeThings = ['HTML5 Boilerplate', 'AngularJS', 'Karma'];
     $scope.onCstateFilesSelect = function ($files) {
-        //$files: an array of files selected, each file has name, size, and type.
         if ($files.length > 0) {
             $scope.myFiles.rawText = [];
             $scope.myFiles.files = {};
             $scope.myFiles.features = {};
+            $scope.myFiles.featuresWithoutAnnotations ={};
             $scope.myFiles.originalFiles = {};
             $scope.myFiles.width = [];
             $scope.myFiles.widthZoom = [];
@@ -91,6 +90,7 @@ angular.module('cstateApp').controller('FilesCtrl', function ($scope, $q, $timeo
                         $scope.myFiles.features = _.sortBy($scope.myFiles.features, function (item) {
                             return item;
                         });
+                        $scope.myFiles.featuresWithoutAnnotations = _.without($scope.myFiles.features,'exon')
                         var cellTypeName = cellTypeFiles[i].name.split("_")[0];
                         $scope.myFiles.files[cellTypeName] = nestedData;
                         $scope.myFiles.originalFiles[cellTypeName] = nestedData;
