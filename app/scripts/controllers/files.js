@@ -147,22 +147,18 @@ angular.module('cstateApp').controller('FilesCtrl', function ($scope, $q, $timeo
     };
     $scope.onGenesFileSelect = function ($files) {
         console.log("GenesFileSelect Called!");
-        var geneFile = $files[0];
         $scope.onFileSelect($files[0], 'genesFile');
     };
     $scope.onGenesListFileSelect = function ($files) {
         console.log("GenesListSelect Called!");
-        var genesListFile = $files[0];
         $scope.onFileSelect($files[0], 'genesListFile');
     };
     $scope.onRegionsFileSelect = function ($files) {
         console.log("RegionsFileSelect Called!");
-        var regionsFile = $files[0];
         $scope.onFileSelect($files[0], 'regionsFile');
     };
     $scope.onAnnotationsFileSelect = function ($files) {
         console.log("AnnotationsFileSelect Called!")
-        var annotationsFile = $files[0];
         $scope.onFileSelect($files[0], 'annotationsFile');
     };
     $scope.onFeaturesFileSelect = function ($files) {
