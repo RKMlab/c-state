@@ -122,6 +122,20 @@ angular.module('cstateApp').controller('FilesCtrl', function ($scope, $q, $timeo
     $rootScope.$on('us-spinner:stop', function (event, key) {
         $scope.spinneractive = false;
     });
+    $scope.onFileSelect = function (file, target) {
+        var parseFile = function (argument) {
+            $scope.myFiles[target] = d3.tsv.parseRows(argument);
+        };
+        var r = new FileReader();
+        r.onload = (function (file) {
+            console.log(file)
+            return function (e) {
+                parseFile(e.target.result)
+            }
+        })(file);
+        r.readAsText(file)
+    }
+
     $scope.onCstateFilesSelectCover = function ($files) {
         // $scope.$emit('LOAD');
         console.log("Start loading");
@@ -133,67 +147,23 @@ angular.module('cstateApp').controller('FilesCtrl', function ($scope, $q, $timeo
     };
     $scope.onGenesFileSelect = function ($files) {
         console.log("GenesFileSelect Called!");
-        if ($files.length > 0) {
-            var geneFile = $files[0];
-            var parseGenesFiles = function (argument) {
-                $scope.myFiles.genesFile = d3.tsv.parseRows(argument);
-            };
-            var r = new FileReader();
-            r.onload = (function (geneFile) {
-                return function (e) {
-                    parseGenesFiles(e.target.result);
-                };
-            })(geneFile);
-            r.readAsText(geneFile);
-        }
+        var geneFile = $files[0];
+        $scope.onFileSelect($files[0], 'genesFile');
     };
     $scope.onGenesListFileSelect = function ($files) {
         console.log("GenesListSelect Called!");
-        if ($files.length > 0) {
-            var genesListFile = $files[0];
-            var parseGenesListFiles = function (argument) {
-                $scope.myFiles.genesListFile = d3.tsv.parseRows(argument);
-            };
-            var r = new FileReader();
-            r.onload = (function (genesListFile) {
-                return function (e) {
-                    parseGenesListFiles(e.target.result);
-                };
-            })(genesListFile);
-            r.readAsText(genesListFile);
-        }
+        var genesListFile = $files[0];
+        $scope.onFileSelect($files[0], 'genesListFile');
     };
     $scope.onRegionsFileSelect = function ($files) {
         console.log("RegionsFileSelect Called!");
-        if ($files.length > 0) {
-            var regionsFile = $files[0];
-            var parseRegionsFiles = function (argument) {
-                $scope.myFiles.regionsFile = d3.tsv.parseRows(argument);
-            };
-            var r = new FileReader();
-            r.onload = (function (regionsFile) {
-                return function (e) {
-                    parseRegionsFiles(e.target.result);
-                };
-            })(regionsFile);
-            r.readAsText(regionsFile);
-        }
+        var regionsFile = $files[0];
+        $scope.onFileSelect($files[0], 'regionsFile');
     };
     $scope.onAnnotationsFileSelect = function ($files) {
-        console.log("AnnotationsFileSelect Called!");
-        if ($files.length > 0) {
-            var annotationsFile = $files[0];
-            var parseAnnotationsFile = function (argument) {
-                $scope.myFiles.annotationsFile = d3.tsv.parseRows(argument);
-            };
-            var r = new FileReader();
-            r.onload = (function (annotationsFile) {
-                return function (e) {
-                    parseAnnotationsFile(e.target.result);
-                };
-            })(annotationsFile);
-            r.readAsText(annotationsFile);
-        }
+        console.log("AnnotationsFileSelect Called!")
+        var annotationsFile = $files[0];
+        $scope.onFileSelect($files[0], 'annotationsFile');
     };
     $scope.onFeaturesFileSelect = function ($files) {
         function createListItem(evt, file) {
