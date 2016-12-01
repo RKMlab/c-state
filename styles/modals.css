@@ -1,0 +1,92 @@
+.modal-mask {
+  position: fixed;
+  z-index: 2000;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, .5);
+  display: table;
+  /*transition: all 1s ease;*/
+}
+
+#gene-modal .modal-wrapper {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+#gene-modal .modal-container {
+  width: 80vw;
+  height: 90vh;
+  margin: 0px auto;
+  padding: 20px 30px;
+  background-color: #fff;
+  border-radius: 2px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
+  /*transition: all 1s ease;*/
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+/*.modal-header h3 {
+  margin-top: 0;
+  color: #42b983;
+}*/
+
+.modal-header {
+  height: 10vh;
+}
+
+#gene-modal .modal-body {
+  height: 60vh;
+  margin: 20px 0;
+}
+
+.modal-footer {
+  height: 5vh;
+}
+
+#filter-modal .modal-wrapper {
+  position: fixed;
+  left: 0;
+  top: 0;
+}
+
+#filter-modal .modal-container {
+  width: 40vw;
+  height: 100vh;
+  margin: 0px auto;
+  padding: 20px 30px;
+  background-color: #fff;
+  border-radius: 2px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
+  /*transition: all 1s ease;*/
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+.modalaxis path {
+  display: none;
+}
+
+.modalaxis line {
+  display: none;
+}
+
+.modalaxis text {
+  font-size: 14px;
+}
+
+#filter-button {
+  position: fixed;
+  left: 0px;
+  top: 300px;
+  color: black;
+  font-size: 20px;
+}
+
+#settings-button {
+  position: fixed;
+  left: 0px;
+  top: 350px;
+  color: black;
+  font-size: 20px;
+}

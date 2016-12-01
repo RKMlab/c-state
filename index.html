@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>C-State v0.2</title>
+  <!-- CSS links -->
+  <link href="scripts/require/bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="scripts/require/animate.min.css" rel="stylesheet">
+  <link href="styles/main.css" rel="stylesheet">
+  <link href="styles/modals.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <div class="container-fluid">
+
+    <div style="position: absolute; top: 0; left: 0;">
+      <a href="http://ccmb.res.in/rakeshmishra/c-state/"> <img style="margin-left: 5px; margin-top: 5px;" width="80%" src="images/c-state_logo.png" alt="C-State Logo">
+    </div>
+
+    <div style="position: absolute; top: 0; right: 0; ">
+      <a href="http://ccmb.res.in/"> <img style="float: right; margin-right: 20px; margin-top: 5px;" src="images/ccmb_logo_new.png" alt="CSIR Logo">
+    </div>
+
+    <div class="panel-group" id="main">
+
+      <div id="files" class="panel panel-default active" href="#files">
+        <div class="panel-heading">
+          <h4 class="panel-title">
+            <a href="#files">Files</a>
+          </h4>
+        </div>
+        <div id="files-body" class="panel-collapse collapse in">
+
+          <div class="panel-body" id="main-file">
+            <div class="row">
+              <div class="container-fluid col-md-2"></div>
+              <div class="container-fluid col-md-4">
+                <div style="text-align:center; font-size: 18px; font-weight:bold">Choose a file to begin</div>
+                <p style="text-align:justify; margin: 5 20 5 20">This can be a list of gene identifiers that you are interested in, or it could be a previously downloaded
+                  plot data of C-State</p>
+              </div>
+              <div class="container-fluid col-md-4">
+                <label class="text-center btn btn-lg btn-primary btn-file">Choose File
+                  <input type="file" style="display: none" @change="onFileUpload" name="file">
+                </label><br>
+              </div>
+            </div><br><br>
+
+            <div class="row">
+              <div class="container-fluid col-md-11">
+                <table v-if="inputFile" style="margin: 20 10 20 20; width: 100%">
+                  <col style="width: 15%">
+                  <col style="width: 15%">
+                  <col style="width: 15%">
+                  <col style="width: 15%">
+                  <col style="width: 15%">
+                  <col style="width: 5%">
+                  <col style="width: 10%">
+                  <col style="width: 10%">
+                  <tr>
+                    <th>File Selected</th>
+                    <th>Select File Type</th>
+                    <th v-if="typeSelected">Select Genome</th>
+                    <th v-if="typeSelected">Select Build</th>
+                    <th v-if="typeSelected">Select Identifier</th>
+                    <th v-if="typeSelected"></th>
+                    <th v-if="typeSelected">Upstream Flank <br>(in KB)</th>
+                    <th v-if="typeSelected">Downstream Flank <br>(in KB)</th>
+                  </tr>
+                  <tr>
+                    <td style="text-align:center"> {{ inputFile.name }} </td>
+                    <td>
+                      <select @change="onTypeSelect" class="form-control" v-model="typeSelected">
+                      <option v-for="option in typeOptions" :value="option.value">
+                        {{ option.name }}
+                      </option>
+                    </select>
+                    </td>
+                    <td v-if="typeSelected">
+                      <select @change="onGenomeSelect" :disabled="typeSelected === 'plotdata'" class="form-control" v-model="genomeSelected">
+                      <option v-for="option in genomes.species">
+                        {{ option.name }}
+                      </option>
+                    </select>
+                    </td>
+                    <td v-if="typeSelected">
+                      <select @change="onVersionSelect" :disabled="typeSelected === 'plotdata'" class="form-control" v-model="versionSelected">
+                      <option v-for="option in versionOptions">
+                        {{ option }}
+                      </option>
+                    </select>
+                    </td>
+                    <td v-if="typeSelected">
+                      <select @change="onIDSelect" :disabled="typeSelected === 'plotdata'" class="form-control" v-model="idSelected">
+                      <option v-for="option in idOptions" :value="option.value">
+                        {{ option.name }}
+                      </option>
+                    </select>
+                    <td></td>
+                    </td>
+                    <td v-if="typeSelected">
+                      <input type="number" min="0" style="text-align:right" :disabled="typeSelected === 'plotdata'" class="form-control" v-model="flankUp">
+                    </td>
+                    <td v-if="typeSelected">
+                      <input type="number" min="0" style="text-align:right" :disabled="typeSelected === 'plotdata'" class="form-control" v-model="flankDown">
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+
+            <!--Main File Div Ends Here-->
+          </div>
+
+          <div class="panel-body" id="feature-files" v-if="showDiv">
+            <div class="row">
+              <div class="container-fluid col-md-2 col-md-offset-1">
+                <label class="text-center btn btn-default btn-file">Add Feature Files
+                  <input @change="onFileUpload" type="file" style="display: none" name="files[]" multiple>
+                </label><br>
+              </div>
+              <div class="container-fluid col-md-1">
+                <button :disabled="inputFiles.length === 0" @click="inputFiles.splice(0)" type="button" class="btn btn-danger">Clear All Files</button>
+                <br>
+              </div>
+              <div class="container-fluid col-md-1">
+                <button :disabled="inputFiles.length === 0" @click="getFileData" type="button" class="btn btn-success">Process All Files</button>
+                <br>
+              </div>
+              <div class="container-fluid col-md-2">
+                <button type="button" class="btn btn-primary" :disabled="!showPlotButton" onclick="formatPlotScope()">
+                  View Data
+                </button>
+              </div>
+              <div class="container-fluid col-md-1">
+                <button type="button" class="btn btn-primary" :disabled="!showDownloadButton" onclick="exportJSONtoFile()">
+                  Download Plot Data
+                </button>
+              </div>
+            </div>
+
+            <div class="row"><br>
+              <div v-if="inputFiles.length > 0" style="text-align: justify; margin-left: 2.5vw; font-weight: bold; font-size:14px">Feature Files Selected: {{ inputFiles.length }} </div>
+              <table style="margin-top:20px; width:95%; margin-left: auto; margin-right: auto" class="table table-hover">
+                <tr v-if="inputFiles.length > 0">
+                  <th>File Name</th>
+                  <th>Celltype Name</th>
+                  <th>Feature Name</th>
+                  <th>File Format</th>
+                  <!--<th>Color</th>-->
+                  <th></th>
+                </tr>
+                <tr is="filerow" :file="file" @add="addData" @remove="inputFiles.splice(index, 1)" :key="file.name" v-for="(file, index) in inputFiles">
+                </tr>
+              </table>
+            </div>
+
+            <!--Feature Files Div Ends Here-->
+          </div>
+
+          <!--Files Div Ends Here-->
+        </div>
+        <!--File Accordion Ends Here-->
+      </div>
+
+
+      <div id="view" class="panel panel-default viewClass" href="#view-body">
+        <div class="panel-heading">
+          <h4 class="panel-title">
+            <a href="#view-body">View - Showing {{numFilteredGenes}} of {{genes.length}} genes</a>
+            <!--<p style="text-align:center"> </p>-->
+          </h4>
+        </div>
+        <div id="view-body" class="panel-collapse collapse">
+          <div class="row">
+            <div class="container-fluid" style="margin-left:10px; margin-right:10px;">
+              <table style="width:100%; table-layout: fixed; margin-bottom: 0px;" class="table table-condensed">
+                <!--<thead><tr style="display: block; position: relative">-->
+                  <th style="text-align: center" v-for="type in info.celltypes"> {{ type.name }}</th>
+                <!--</tr></thead>-->
+              </table>
+            </div>
+            <div class="container-fluid dragscroll" style="margin-left:10px; margin-right:10px; height: 85vh; overflow:auto" id='plotarea'>
+              <table id="gene-table" style="width:100%;" class="table table-bordered table-condensed">
+                  <tr is="generow" :gene="gene" v-if="gene.show" v-for="gene in genes"></tr>
+                <!--</tbody>-->
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!--Main Div Ends Here-->
+    </div>
+
+    <!--Gene modal div-->
+    <div id='gene-modal'>
+      <transition name="gene-transition" enter-active-class="animated zoomIn" leave-active-class="animated zoomOut">
+        <div class="modal-mask" v-if="this.showModal">
+          <div class="modal-wrapper">
+            <div class="modal-container">
+
+              <div class="modal-header">
+                <h3>
+                  {{ gene.name }}
+                </h3>
+                <h4>{{ gene.geneinfo.chrom }}:{{ gene.geneinfo.txStart }}-{{gene.geneinfo.txEnd}}({{gene.geneinfo.strand}})</h4>
+              </div>
+
+              <div class="modal-body dragscroll" style="overflow: auto; width:inherit;">
+                <table class="modaltable" style="margin: 0px; table-layout: fixed">
+                  <tr is="modalpanel" :index="index-1" :gene="gene" v-for="index in numCellTypes">
+                  </tr>
+                </table>
+              </div>
+
+              <div class="modal-footer">
+                  <button class="btn btn-primary" onclick="events.$emit('reset_zoom')">Reset Zoom</button>
+                  <button class="btn btn-default" @click="closeModal()">Close</button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </transition>
+    </div>
+
+    <!--Filter Modal Div-->
+    <div id='filter-button'>
+      <button type="button" title="Open Filters Panel" class="btn btn-block btn-lg btn-default glyphicon glyphicon-filter" onclick="showFilters()"></button>
+    </div>
+    <div id='filter-modal'>
+      <div id='filter-mask' class="modal-mask animated slideInLeft" v-if="showFilterDiv">
+        <div class="modal-wrapper">
+            <div class="modal-container">
+
+              <div class="modal-header">
+                <h3 style="text-align: center">Filters Panel</h3>
+              </div>
+
+              <div class="modal-body" style="width:inherit;">
+                <div class="row" style="text-align: center">
+                  <div style="border-right: 1px solid black; height: 70vh;" class="container-fluid col-md-3">
+                    <h4>Available Filters</h4>
+                    <h6>Click on a filter to add it</h6><br>
+                    <ol style="padding: 0">
+                      <button :disabled="!genesLoaded" style="width: 100%; margin-bottom: 5px" class="btn btn-default" v-for="(filter, index) in availableFilters" @click="addFilter(index)">{{ filter.name }}</button>
+                    </ol>
+                  </div>
+
+                  <div class="container-fluid col-md-8 dragscroll" style="height: 70vh; overflow-y: auto">
+                    <h4>Active Filters</h4>
+                    <ul style="padding: 0">
+                      <component :is="filter.type" :key="filter.type" v-for="(filter, index) in activeFilters">
+                      </component>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div class="modal-footer">
+                <button class="btn btn-success" @click="applyFilters">Apply Filters</button>
+                <button class="btn btn-primary" @click="clearFilters">Clear All Filters</button>
+                <button class="btn btn-danger" onclick="hideFilterDiv()">Close</button>
+              </div>
+
+            </div>
+        </div>
+      </div>
+    </div>
+
+    <!--Settings Modal Div-->
+    <div id='settings-button'>
+      <button type="button" title="Open Settings Panel" class="btn btn-block btn-lg btn-default glyphicon glyphicon-cog"></button>
+    </div>
+    <div id='settings-modal'></div>      
+
+    <div id='spinner' v-if="loading">
+      <div class="loading-overlay"></div>
+      <clip-loader :loading="loading" :color="color" :size="size"></clip-loader>
+    </div>
+
+    <!--Body Container Close-->
+  </div>
+
+  <!--Vue Templates-->
+
+  <!--template for input file row-->
+  <template id='filerow-template'>
+    <tr>
+      <td style="text-align: justify"> {{ file.name }} </td>
+      <td>
+        <input class="form-control" :class="{ empty: !cellType.name }" v-model="cellType.name">
+      </td>
+      <td>
+        <input class="form-control" :class="{ empty: !feature.name }" v-model="feature.name">
+      </td>
+      <td>
+        <select class="form-control" :class="{ empty: !formatSelected }" v-model="formatSelected">
+          <option v-for="option in formatOptions" :value="option.value">
+            {{ option.name }}
+          </option>
+        </select>
+      </td>
+      <td>
+        <button class="btn btn-default glyphicon glyphicon-remove" @click="$emit('remove')"></button>
+      </td>
+    </tr>
+  </template>
+
+  <!-- template for the gene row -->
+  <template id='generow-template'>
+    <tr>
+      <td align="center" is="mainpanel" :index="index" :gene="gene" v-for="(item, index) in info.celltypes"></td>
+    </tr>
+  </template>
+
+  <!--template for gene panel in main view-->
+  <template id='mainpanel-template'>
+    <td>
+      <div>
+        <a class="panel-header" :gene="gene" @click="openModal(gene)" style="font-weight: bold">{{ gene.name }}</a>
+        <br>
+      </div>
+    </td>
+  </template>
+
+  <!--template for gene panel in modal view-->
+  <template id='modalpanel-template'>
+    <tr>
+      <td style="font-weight: bold; width: 30px; text-align: right; word-wrap: break-word; padding-right: 20px"> {{ cellTypeName }}</td>
+      <td>
+        <div class="modal-panel-row">
+        </div>
+      </td>
+    </tr>
+  </template>
+
+  <!--Filter templates-->
+
+  <!--Name Filter template-->
+  <template id='name-filter-template'>
+    <div class="filter-component row">
+      <h5><strong>Name Filter</strong></h5>
+      <div>
+        <select class="filter-input" v-model="hideGene">
+          <option :value="{ boolean: false}">Show</option>
+          <option :value="{ boolean: true}">Hide</option>
+        </select> following gene(s):
+        <input style="margin-top: 5px;" class="form-control" v-model="userInput">
+      </div>
+      <div class="row">
+        <input type="checkbox" :disabled="matchBeginning" v-model="allowPartialMatch">
+        Allow partial match
+      </div>
+      <div class="row">
+        <input type="checkbox" :disabled="allowPartialMatch" v-model="matchBeginning">
+        Match beginning only
+      </div>
+    </div>
+  </template>
+
+
+
+  <template id='counts-filter-template'>
+    <div class="filter-component">
+      <h5><strong>Marks Count Filter</strong></h5>
+
+      <div class="container-fluid row">
+        <div class="container-fluid col-md-6">Choose Celltype:<br>
+          <select class="form-control" v-model="cellTypeSelected">
+            <option v-for="option in celltypes" :value="option.value">
+              {{ option.name }}
+            </option>
+          </select>
+        </div>
+        <div class="container-fluid col-md-6">Choose Feature:<br>
+          <select class="form-control" v-model="featureSelected">
+            <option v-for="option in features" :value="option.value">
+              {{ option.name }}
+            </option>
+          </select>
+        </div>
+      </div><br>
+
+      <div class="container-fluid row">
+        <!--<div class="container-fluid col-md-8">-->
+          <span>Features Count</span>
+          <select class="filter-input" v-model="operatorSelected">
+            <option v-for="option in operators" :value="option.value">
+              {{ option.name }}
+            </option>
+          </select>
+          <input class="filter-input" style="text-align:right; width: 20%" v-model.number="featureCount">
+        <!--</div>-->
+      </div><br>
+
+      <div class="container-fluid row">
+        <!--<div class="container-fluid col-md-3">-->
+          <span>Distance from TSS (in KB)</span>
+        <!--</div>-->
+      </div>
+      <div class="container-fluid row">
+        <table style="width: 80%; margin: auto">
+          <tr>
+            <td>Upstream</td>
+            <td>Downstream</td>
+          </tr>
+          <tr>
+            <td>
+              <input class="filter-input" style="text-align:right; width: 80%" v-model.number="upstreamLimit">
+            </td>
+            <td>
+              <input class="filter-input" style="text-align:right; width: 80%" v-model.number="downstreamLimit">
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </template>
+
+  <!--Overlaps filter-->
+  <template id='overlap-filter-template'>
+    <div class="filter-component row">
+      TO BE DONE
+    </div>
+  </template>
+
+  <!--Peak Score Filter Template-->
+  <template id='peakscore-filter-template'>
+    <div class="filter-component row">
+      TO BE DONE TOO
+    </div>
+  </template>
+
+  <!-- JS Dependencies -->
+  <script src="scripts/require/jquery-1.12.4.js"></script>
+  <script src="scripts/require/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+  <script src="scripts/require/d3v4/d3.js"></script>
+  <script src="scripts/require/vue_v2.js"></script>
+  <script src="scripts/require/vue-spinner.min.js"></script>
+  <script src="scripts/require/lodash.js"></script>
+  <script src="scripts/require/dragscroll.js"></script>
+  <script src="scripts/require/FileSaver.min.js"></script>
+  <!-- My JS Files -->
+  <script src="scripts/main.js"></script>
+  <!--Vue components-->
+  <script src="scripts/components/filerow.js"></script>
+  <script src="scripts/components/generow.js"></script>
+  <script src="scripts/components/mainpanel.js"></script>
+  <script src="scripts/components/modalpanel.js"></script>
+  <!--Vue based views-->
+  <script src="scripts/views/files.js"></script>
+  <script src="scripts/views/genemodal.js"></script>
+  <script src="scripts/views/filtermodal.js"></script>
+  <script src="scripts/parsers/bed.js"></script>
+  <script>
+    // Make the entire accordion header clickable
+    $(".panel.panel-default").click(function (e) {
+      let panel = $(this).find("div.panel-collapse");
+      $(this).toggleClass("active");
+      $(panel).toggleClass("in");
+    });
+
+    // Stop click event on accordion body
+    $(".panel-collapse").click(function (e) {
+    e.stopPropagation();
+    });
+  </script>
+</body>
+
+</html>

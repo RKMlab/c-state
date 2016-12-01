@@ -1,0 +1,25 @@
+{
+  "species" : [
+    {
+      "name": "Human",
+      "versions": [
+        "hg38",
+        "hg19"
+      ]
+    },
+    {
+      "name": "Mouse",
+      "versions": [
+        "mm10",
+        "mm9"
+      ]
+    },
+    {
+      "name": "Drosophila",
+      "versions": [
+        "dm6",
+        "dm3"
+      ]
+    }
+  ]
+}
