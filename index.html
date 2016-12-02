@@ -353,11 +353,11 @@
         <input style="margin-top: 5px;" class="form-control" v-model="userInput">
       </div>
       <div class="row">
-        <input type="checkbox" :disabled="matchBeginning" v-model="allowPartialMatch">
+        <input type="checkbox" :disabled="matchBeginning" v-model="matchPartial">
         Allow partial match
       </div>
       <div class="row">
-        <input type="checkbox" :disabled="allowPartialMatch" v-model="matchBeginning">
+        <input type="checkbox" :disabled="matchPartial" v-model="matchBeginning">
         Match beginning only
       </div>
     </div>
@@ -367,7 +367,7 @@
 
   <template id='counts-filter-template'>
     <div class="filter-component">
-      <h5><strong>Marks Count Filter</strong></h5>
+      <h5><strong>Features Count Filter</strong></h5>
 
       <div class="container-fluid row">
         <div class="container-fluid col-md-6">Choose Celltype:<br>

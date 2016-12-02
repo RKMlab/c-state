@@ -50,10 +50,15 @@ const filterModal = new Vue({
         const data = this.$children[i];
         switch (filter.type) {
           case "nameFilter":
-            this.applyNameFilter(data.names, data.hideGene.boolean, data.allowPartialMatch);
+            this.applyNameFilter(data.names, data.hideGene.boolean, data.matchPartial, data.matchBeginning);
             break;
           
           case "countsFilter":
+            if (data.featureCount === null) {
+              alert('Feature Count cannot be left empty');
+              spinner.loading = false;
+              return;
+            } 
             this.applyCountFilter(data.cellTypeSelected, data.featureSelected, data.operatorSelected, data.featureCount, data.upstreamLimit, data.downstreamLimit);
             break;
         
@@ -67,16 +72,23 @@ const filterModal = new Vue({
       }
     },
 
-    applyNameFilter: function (names, hide, partial) {
+    applyNameFilter: function (names, hide, matchPartial, matchBeginning) {
       console.log("Applying name filter");
       for (let i = 0; i < this.genes.length; i++) {
         const gene = this.genes[i];
         const toMatch = gene.name.toUpperCase();
 
         if (hide) {
-          if (partial) {
+          if (matchPartial) {
             _.forEach(names, function (name) {
               if (_.includes(toMatch, name)) {
+                gene.show = false;
+                return;
+              }
+            });
+          } else if (matchBeginning) {
+            _.forEach(names, name => {
+              if (_.startsWith(toMatch, name)) {
                 gene.show = false;
                 return;
               }
@@ -87,14 +99,30 @@ const filterModal = new Vue({
             }    
           }
         } else {
-          if (partial) {
+          if (matchPartial) {
+            let anyMatch = false;
             _.forEach(names, function (name) {
-              if (!(_.includes(toMatch, name))) {
-                gene.show = false;
+              if (_.includes(toMatch, name)) {
+                anyMatch = true;
                 return;
               }
             });
-          } else {
+            if (!anyMatch) {
+              gene.show = false;
+            }
+          } else if (matchBeginning) {
+            let anyMatch = false;
+            _.forEach(names, name => {
+              if (_.startsWith(toMatch, name)) {
+                anyMatch = true;
+                return;
+              }
+            });
+            if (!anyMatch) {
+              gene.show = false;
+            }
+          }
+          else {
             if(!(_.includes(names, toMatch))) {
               gene.show = false;
             }    
@@ -105,13 +133,55 @@ const filterModal = new Vue({
 
     applyCountFilter: function (celltype, feature, operator, count, uplimit, downlimit) {
       console.log("Applying marks filter");
+      console.log(celltype, feature, operator, count, uplimit, downlimit);
       for (let i = 0; i < this.genes.length; i++) {
         const gene = this.genes[i];
-        console.log(gene);
-        const match = [];
-        if (celltype.value === 'any') {
-          return;
+        if (!gene.show) { // If this was filtered by a previous filter
+          continue;
         }
+        const match = [];
+        // Filter features belonging to celltype
+        if (celltype === 'any') {
+          _.forEach(gene.mappedFeatures, list => {
+            match.push(JSON.parse(JSON.stringify(list.features)));
+          });
+        } else {
+          match.push(JSON.parse(JSON.stringify(_.find(gene.mappedFeatures, ['value', celltype]).features)));
+        }
+        // Filter features by feature name
+        if (feature !== 'all') {
+          _.forEach(match, list => {
+            _.remove(list, obj => {
+              return obj.FName.toUpperCase() !== feature;
+            });
+          });
+        }
+        // Restrict wrt TSS
+        if (uplimit !== null) {
+          _.forEach(match, list => {
+            _.remove(list, obj => {
+              return obj.FEnd < (uplimit * -1000);
+            })
+          })
+        }
+        if (downlimit !== null) {
+          _.forEach(match, list => {
+            _.remove(list, obj => {
+              return obj.FStart > (downlimit * 1000);
+            })
+          })
+        }
+        switch (operator) {
+          case "=": gene.show = _.includes(_.map(match, o => { return  o.length; }), count); break;
+          case "<": gene.show = _.min(_.map(match, o => { return o.length; })) < count; break;
+          case "<=": gene.show = _.min(_.map(match, o => { return o.length; })) <= count; break;
+          case ">": gene.show = _.max(_.map(match, o => { return o.length; })) > count; break;
+          case ">=": gene.show = _.max(_.map(match, o => { return o.length; })) >= count; break;
+          default:
+            alert('Unknown operator in feature count filter'); // This should never happen
+            break;
+        }
+        console.log(match);
       }
     },
 
@@ -139,7 +209,7 @@ const nameFilter = Vue.component('nameFilter', {
       hideGene: {
         boolean: false
       },
-      allowPartialMatch: false,
+      matchPartial: false,
       matchBeginning: false,
       userInput: '',
     }
@@ -161,7 +231,7 @@ const countsFilter = Vue.component('countsFilter', {
       features: [],
       operators: operators,
       cellTypeSelected: 'any',
-      featureSelected: 'any',
+      featureSelected: 'all',
       operatorSelected: '=',
       featureCount: null,
       upstreamLimit: null,
@@ -172,11 +242,15 @@ const countsFilter = Vue.component('countsFilter', {
     this.celltypes = JSON.parse(JSON.stringify(plotScope.info.celltypes));
     this.features = JSON.parse(JSON.stringify(plotScope.info.features));
     const any = {
-        name: 'Any',
-        value: 'any'
-      };
+      name: 'Any',
+      value: 'any'
+    };
+    const all = {
+      name: 'All',
+      value: 'all'
+    };
     this.celltypes.unshift(any);
-    this.features.unshift(any);
+    this.features.unshift(all);
   }
 });
 
