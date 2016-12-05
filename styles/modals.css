@@ -10,6 +10,12 @@
   /*transition: all 1s ease;*/
 }
 
+#common-mask {
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0.3s, opacity 0.3s linear;
+}
+
 #gene-modal .modal-wrapper {
   display: table-cell;
   vertical-align: middle;
@@ -23,14 +29,8 @@
   background-color: #fff;
   border-radius: 2px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
-  /*transition: all 1s ease;*/
   font-family: Helvetica, Arial, sans-serif;
 }
-
-/*.modal-header h3 {
-  margin-top: 0;
-  color: #42b983;
-}*/
 
 .modal-header {
   height: 10vh;
@@ -47,6 +47,7 @@
 
 #filter-modal .modal-wrapper {
   position: fixed;
+  z-index: 2500;
   left: 0;
   top: 0;
 }
@@ -83,10 +84,18 @@
   font-size: 20px;
 }
 
+#filter-button .btn {
+  font-size: 20px;
+}
+
 #settings-button {
   position: fixed;
   left: 0px;
   top: 350px;
   color: black;
+  font-size: 25px !important;
+}
+
+#settings-button .btn {
   font-size: 20px;
 }

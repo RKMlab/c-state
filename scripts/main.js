@@ -106,7 +106,12 @@ const resetModalZoom = function (gene) {
 }
 const formatPlotScope = function (scope = plotScope) {
   const mainFileData = main_file.$data;
+  if (!mainFileData.inputFile) {
+    alert('No input file selected');
+    return;
+  }
   if (mainFileData.typeSelected === 'plotdata') {
+    spinner.loading = true;
     readFile(mainFileData.inputFile, e => {
       const obj = JSON.parse(e.target.result);
       triggerView(obj);
@@ -125,6 +130,7 @@ const formatPlotScope = function (scope = plotScope) {
         $("#files-body.panel-collapse").removeClass("in");
         $("#view.panel.panel-default").addClass("active");
         $("#view-body.panel-collapse").addClass("in");
+        spinner.loading = false;
       }, 250, 'Switching accordions');
     }
   }

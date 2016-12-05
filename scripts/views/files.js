@@ -28,6 +28,7 @@ const main_file = new Vue({
   },
   mounted: function () {
     events.$on('process-genes', this.getGeneInfo);
+    d3.json("data/genomes.json", data => this.$data.genomes = data)
   },
   destroyed: function () {
     events.$off('process-genes', this.getGeneInfo);
@@ -40,10 +41,11 @@ const main_file = new Vue({
 
     onTypeSelect: function () {
       if (this.$data.typeSelected === 'genes') {
-        d3.json("data/genomes.json", data => this.$data.genomes = data)
+        feature_files.$data.showFeatureButton = true;
       }
       if (this.$data.typeSelected === 'plotdata') {
         feature_files.$data.showDiv = true;
+        feature_files.$data.showFeatureButton = false;
         feature_files.$data.showPlotButton = true;
       }
     },
@@ -149,6 +151,7 @@ const feature_files = new Vue({
   el: '#feature-files',
   data: {
     showDiv: false,
+    showFeatureButton: false,
     showPlotButton: false,
     showDownloadButton: false,
     inputFiles: [],

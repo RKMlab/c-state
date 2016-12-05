@@ -2,11 +2,13 @@
 
 const showFilters = function () {
   filterModal.showFilterDiv = true;
+  $("#common-mask").css({"visibility":"visible", "opacity":"1"});
   $("#filter-mask").removeClass("slideOutLeft");
   $("#filter-mask").addClass("slideInLeft");
 }
 
 const hideFilterDiv = function () {
+  $("#common-mask").css({"visibility":"hidden", "opacity":"0"});
   $("#filter-mask").removeClass("slideInLeft");
   $("#filter-mask").addClass("slideOutLeft");
 }
@@ -15,21 +17,22 @@ const filterModal = new Vue({
   el: '#filter-modal',
   data: {
     showFilterDiv: false,
+    colors: ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf"],
     availableFilters: [{
-      name: 'Gene Name Filter',
-      type: 'nameFilter'
+      name: 'Name',
+      type: 'nameFilter',
     }, {
-      name: 'Features Count Filter',
-      type: 'countsFilter'
+      name: 'Features Count',
+      type: 'countsFilter',
     }, {
-      name: 'Overlaps Filter',
-      type: 'overlapFilter'
+      name: 'Feature Overlaps',
+      type: 'overlapFilter',
     }, {
-      name: 'Peak Score Filter',
-      type: 'peakScoreFilter'
+      name: 'Peak Score',
+      type: 'peakScoreFilter',
     }],
     activeFilters: [],
-    genes: ''
+    genes: '',
   },
   computed: {
     genesLoaded: function () {
@@ -41,10 +44,14 @@ const filterModal = new Vue({
       this.activeFilters.push(this.availableFilters[index]);
     },
 
+    getColor: function (type) {
+      return this.colors[_.findIndex(this.availableFilters, ['type', type])];
+    },
+
     applyFilters: function () {
       this.genes = plotScope.genes;
       spinner.loading = true;
-      _.forEach(this.genes, gene => gene.show = true);
+      _.forEach(this.genes, gene => gene.show = true); // Reset all genes when applying filters again
       for(let i = 0; i < this.activeFilters.length; i++) {
         const filter = this.activeFilters[i];
         const data = this.$children[i];
@@ -59,6 +66,11 @@ const filterModal = new Vue({
               spinner.loading = false;
               return;
             } 
+            if (data.featureCount < 0 || _.isNaN(data.featureCount)) {
+              alert('Invalid feature count. Input a number greater than or equal to 0');
+              spinner.loading = false;
+              return;
+            }
             this.applyCountFilter(data.cellTypeSelected, data.featureSelected, data.operatorSelected, data.featureCount, data.upstreamLimit, data.downstreamLimit);
             break;
         
@@ -76,6 +88,9 @@ const filterModal = new Vue({
       console.log("Applying name filter");
       for (let i = 0; i < this.genes.length; i++) {
         const gene = this.genes[i];
+        if (!gene.show) { // Not required for this filter because of matching logic, still put as a precaution and to marginally improve speed
+          continue;
+        }
         const toMatch = gene.name.toUpperCase();
 
         if (hide) {
@@ -157,14 +172,14 @@ const filterModal = new Vue({
           });
         }
         // Restrict wrt TSS
-        if (uplimit !== null) {
+        if (uplimit !== null && uplimit !== "") {
           _.forEach(match, list => {
             _.remove(list, obj => {
               return obj.FEnd < (uplimit * -1000);
             })
           })
         }
-        if (downlimit !== null) {
+        if (downlimit !== null && downlimit !== "") {
           _.forEach(match, list => {
             _.remove(list, obj => {
               return obj.FStart > (downlimit * 1000);
@@ -257,7 +272,49 @@ const countsFilter = Vue.component('countsFilter', {
 const overlapFilter = Vue.component('overlapFilter', {
   template: '#overlap-filter-template',
   data: function () {
-    return plotScope.info;
+    return {
+      celltypes: [],
+      features: [],
+      operators: operators,
+      cellTypeSelected: 'any',
+      firstFeatureSelected: '',
+      secondFeatureSelected: '',
+      relations: [{
+        name: 'Upstream To',
+        value: 'upstream'
+      }, {
+        name: 'Downstream To',
+        value: 'downstream'
+      }, {
+        name: 'Near',
+        value: 'near'
+      }, {
+        name: 'Overlapping',
+        value: 'overlap'
+      }],
+      relationSelected: 'upstream',
+      minDistance: null,
+      maxDistance: null,
+      upstreamLimit: null,
+      downstreamLimit: null
+    }
+  },
+  mounted: function () {
+    this.celltypes = JSON.parse(JSON.stringify(plotScope.info.celltypes));
+    this.features = JSON.parse(JSON.stringify(plotScope.info.features));
+    const any = {
+      name: 'Any',
+      value: 'any'
+    };
+    const featureOptions = [ {
+      name: 'Neighbors',
+      value: 'neighbor'
+    }, {
+      name: 'Exons',
+      value: 'exon'
+    }]
+    this.celltypes.unshift(any);
+    this.features.unshift(...featureOptions);
   }
 });
 
