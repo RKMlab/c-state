@@ -19,15 +19,24 @@ const mainpanel = Vue.component('mainpanel', {
     
     plotData: function () {
       const rootElement = this.$el;
+      const settings = this.settings.mainPanel;
+      const colors = this.settings.ui.colors;
       const numCellTypes = this.info.celltypes.length;
       const numFeatures = this.info.features.length;
       const panelWidth = (screen.width - 400)/numCellTypes;
-      const geneBarHeight = this.settings.main_panel_geneBar_height;
-      const regionBarHeight = geneBarHeight/3;
-      const featureBarHeight = this.settings.main_panel_featureBar_height;
-      const heightPadding = this.settings.main_panel_height_padding;
-      const widthPadding = this.settings.main_panel_width_padding;
-      const panelHeight = 50 + (heightPadding * 2) + featureBarHeight + (numFeatures * (featureBarHeight * 1.5));
+      const geneBarColor = settings.geneBarColor;
+      const regionBarColor = settings.regionBarColor;
+      const neighborBarColor = settings.neighborBarColor;
+      const geneBarHeight = settings.geneBarHeight;
+      const regionBarHeight = settings.regionBarHeight;
+      const featureBarHeight = settings.featureBarHeight;
+      const neighborBarHeight = settings.neighborBarHeight;
+      const heightPadding = settings.VPadding;
+      const widthPadding = settings.HPadding;
+      let panelHeight = 20 + regionBarHeight + (heightPadding * 2) + featureBarHeight + (numFeatures * (featureBarHeight * 1.5));
+      const addition = geneBarHeight > neighborBarHeight ? geneBarHeight * 2 : neighborBarHeight * 2;
+      panelHeight += addition;
+      const geneBarStart = addition + regionBarHeight;
       const availableHeight = panelHeight - heightPadding;
 
       const featureNames = _.map(this.info.features, 'name');
@@ -36,7 +45,7 @@ const mainpanel = Vue.component('mainpanel', {
       const neighbors = this.gene.geneinfo.neighbors;
       const geneStrand = this.gene.geneinfo.strand;
 
-      const colorScale = d3.scaleOrdinal(this.settings.colors);
+      const colorScale = d3.scaleOrdinal(colors);
       colorScale.domain(featureNames);
 
       const xScale = d3.scaleLinear()
@@ -45,7 +54,7 @@ const mainpanel = Vue.component('mainpanel', {
 
       const yScale = d3.scaleBand()
         .domain(featureNames)
-        .rangeRound([heightPadding, availableHeight - 50])
+        .rangeRound([heightPadding, (availableHeight - geneBarStart) - 15])
         .paddingInner(0.5)
         .paddingOuter(0.25)
 
@@ -87,7 +96,7 @@ const mainpanel = Vue.component('mainpanel', {
           .attr("width", function (d, i) {
             return xScale(d.FEnd) - xScale(d.FStart)
           })
-          .attr("height", 10)
+          .attr("height", featureBarHeight)
           .attr("opacity", function (d, i) {
             return d.FScore / 1000
           })
@@ -102,19 +111,19 @@ const mainpanel = Vue.component('mainpanel', {
       }
 
       const regionBar = chart.append("g")
-        .attr("transform", "translate(" + xScale(this.gene.geneinfo.RStart) + "," + ((availableHeight - 35) + geneBarHeight) + ")");
+        .attr("transform", "translate(" + xScale(this.gene.geneinfo.RStart) + "," + ((availableHeight - geneBarStart) + geneBarHeight) + ")");
 
       regionBar.append("rect")
         .attr("width", xScale(this.gene.geneinfo.REnd) - xScale(this.gene.geneinfo.RStart))
         .attr("height", regionBarHeight)
-        .style("fill", "#999999");
+        .style("fill", regionBarColor);
       
       const neighborBars = chart.selectAll("neighbor")
         .data(neighbors)
         .enter()
         .append("g")
         .attr("transform", function (d, i) {
-          const y = d.strand === geneStrand ? (availableHeight - 35) + (geneBarHeight/3) : (availableHeight - 35) + geneBarHeight + regionBarHeight;
+          const y = d.strand === geneStrand ? (availableHeight - geneBarStart) + (geneBarHeight - neighborBarHeight) : (availableHeight - geneBarStart) + geneBarHeight + regionBarHeight;
           return "translate(" + xScale(d.FStart) + ',' + y + ')';
         })
 
@@ -122,8 +131,8 @@ const mainpanel = Vue.component('mainpanel', {
         .attr("width", function (d, i) {
           return xScale(d.FEnd) - xScale(d.FStart);
         })
-        .attr("height", (geneBarHeight/3)*2)
-        .style("fill", "#888888")
+        .attr("height", neighborBarHeight)
+        .style("fill", neighborBarColor)
         // .style("stroke", "#333333")
         // .style("stroke-width", "4px");
       
@@ -133,12 +142,12 @@ const mainpanel = Vue.component('mainpanel', {
           })
 
       const geneBar = chart.append("g")
-        .attr("transform", "translate(" + xScale(this.gene.geneinfo.GStart) + "," + (availableHeight - 35) + ")");
+        .attr("transform", "translate(" + xScale(this.gene.geneinfo.GStart) + "," + (availableHeight - geneBarStart) + ")");
 
       geneBar.append("rect")
         .attr("width", xScale(this.gene.geneinfo.GEnd) - xScale(this.gene.geneinfo.GStart))
         .attr("height", (geneBarHeight + regionBarHeight))
-        .style("fill", "black");
+        .style("fill", geneBarColor);
     }
   }
 })

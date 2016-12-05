@@ -86,3 +86,7 @@ select.filter-input {
   float: right;
   /*background-color: #d9534f;*/
 }
+
+ul {
+  list-style-type: none;
+}

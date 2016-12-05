@@ -73,11 +73,10 @@
                     <th>Downstream Flank <br>(in KB)</th>
                   </tr>
                   <tr>
-                    <td style="text-align:center"> 
-                          <label class="text-center btn btn-primary btn-file">Choose File
+                    <td style="text-align:center">
+                      <label class="text-center btn btn-primary btn-file">Choose File
                       <input type="file" style="display: none" @change="onFileUpload" name="file">
-                    </label><br>
-                    {{ inputFile.name }} </td>
+                    </label><br> {{ inputFile.name }} </td>
                     <td>
                       <select @change="onTypeSelect" class="form-control" v-model="typeSelected">
                       <option v-for="option in typeOptions" :value="option.value">
@@ -105,7 +104,7 @@
                         {{ option.name }}
                       </option>
                     </select>
-                    <td></td>
+                      <td></td>
                     </td>
                     <td>
                       <input type="number" min="0" style="text-align:right" :disabled="typeSelected === 'plotdata'" class="form-control" v-model="flankUp">
@@ -185,20 +184,20 @@
             <div class="container-fluid" style="margin-left:10px; margin-right:10px;">
               <table style="width:100%; table-layout: fixed; margin-bottom: 0px;" class="table table-condensed">
                 <!--<thead><tr style="display: block; position: relative">-->
-                  <th style="text-align: center" v-for="type in info.celltypes"> {{ type.name }}</th>
+                <th style="text-align: center" v-for="type in info.celltypes"> {{ type.name }}</th>
                 <!--</tr></thead>-->
               </table>
             </div>
             <div class="container-fluid dragscroll" style="margin-left:10px; margin-right:10px; height: 85vh; overflow:auto" id='plotarea'>
               <table id="gene-table" style="width:100%;" class="table table-bordered table-condensed">
-                  <tr is="generow" :gene="gene" v-if="gene.show" v-for="gene in genes"></tr>
+                <tr is="generow" :gene="gene" v-if="gene.show" v-for="gene in genes"></tr>
                 <!--</tbody>-->
               </table>
             </div>
           </div>
         </div>
       </div>
-      
+
       <!--Main Div Ends Here-->
     </div>
 
@@ -224,8 +223,8 @@
               </div>
 
               <div class="modal-footer">
-                  <button class="btn btn-primary" onclick="events.$emit('reset_zoom')">Reset Zoom</button>
-                  <button class="btn btn-default" @click="closeModal()">Close</button>
+                <button class="btn btn-primary" onclick="events.$emit('reset_zoom')">Reset Zoom</button>
+                <button class="btn btn-default" @click="closeModal()">Close</button>
               </div>
 
             </div>
@@ -239,7 +238,7 @@
 
     <!--Filter Modal Div-->
     <div id='filter-button'>
-      <button type="button" title="Open Filters Panel" class="btn btn-block btn-lg btn-default glyphicon glyphicon-filter" onclick="showFilters()"></button>
+      <button onclick="showFilters()" type="button" title="Open Filters Panel" class="btn btn-block btn-lg btn-default glyphicon glyphicon-filter"></button>
     </div>
     <div id='filter-modal'>
       <div id='filter-mask' class="modal-wrapper animated slideInLeft" v-if="showFilterDiv">
@@ -256,7 +255,8 @@
                 <h6>Click on a filter to add it</h6><br><br>
                 <h5>Filter Genes By</h5>
                 <ol style="padding: 0">
-                  <button :disabled="!genesLoaded" style="width: 100%; margin-bottom: 5px" class="btn btn-default" v-for="(filter, index) in availableFilters" @click="addFilter(index)">
+                  <button :disabled="!genesLoaded" style="width: 100%; margin-bottom: 5px" class="btn btn-default" v-for="(filter, index) in availableFilters"
+                    @click="addFilter(index)">
                     {{ filter.name }}
                     <span class="badge" :style="{ backgroundColor: colors[index] }"> {{ _.filter(activeFilters, ['type', filter.type]).length }}</span>
                   </button>
@@ -267,9 +267,18 @@
                 <h4>Active Filters</h4>
                 <ul style="padding: 0">
                   <span :key="filter.type" v-for="(filter, index) in activeFilters">
-                    <button :style="{ marginTop: '10px', borderColor: getColor(filter.type) }" class="btn btn-default glyphicon glyphicon-remove" @click="activeFilters.splice(index, 1)"></button>
-                    <component :style="{ borderColor: getColor(filter.type) }" :is="filter.type">
-                    </component>
+                    <table style="width: 100%">
+                      <tr>
+                        <td>
+                          <component :style="{ borderColor: getColor(filter.type) }" :is="filter.type">
+                          </component>
+                        </td>
+                        <td>
+                          <button :style="{ marginTop: '10px', borderColor: getColor(filter.type) }" class="btn btn-default glyphicon glyphicon-remove" @click="activeFilters.splice(index, 1)">
+                          </button>
+                        </td>
+                      </tr>
+                    </table>
                   </span>
                 </ul>
               </div>
@@ -288,9 +297,99 @@
 
     <!--Settings Modal Div-->
     <div id='settings-button'>
-      <button type="button" title="Open Settings Panel" class="btn btn-block btn-lg btn-default glyphicon glyphicon-cog"></button>
+      <button onclick="showSettings()" type="button" title="Open Settings Panel" class="btn btn-block btn-lg btn-default glyphicon glyphicon-cog"></button>
     </div>
-    <div id='settings-modal'></div>      
+    <div id='settings-modal'>
+      <div id='settings-body' class="modal-wrapper animated slideInLeft" v-if="showSettingsDiv">
+        <div class="modal-container">
+
+          <div class="modal-header">
+            <h3 style="text-align: center">Settings Panel</h3>
+          </div>
+
+          <div class="modal-body" style="width:inherit;">
+            <div class="row" style="text-align: center">
+
+              <div class="col-md-4" style="border-right: 1px solid black; height: 70vh;">
+                <ul class="nav nav-pills nav-stacked">
+                  <li class="active"><a data-toggle="tab" href="#ui-settings">Interface</a></li>
+                  <li><a data-toggle="tab" href="#mainpanel-settings">Main Panels</a></li>
+                  <li><a data-toggle="tab" href="#genemodal-settings">Gene Modal</a></li>
+                </ul>
+              </div>
+
+              <div class="col-md-8">
+                <div class="tab-content">
+                  <div id="ui-settings" class="tab-pane fade in active">
+                    <h4>User Interface Settings</h4>
+                  </div>
+                  <div id="mainpanel-settings" class="tab-pane fade">
+                    <h4>Main Panel Settings</h4>
+                    <ul style="text-align: center; padding-left: 10%; padding-right: 20%">
+                      <li>
+                        <input type="checkbox" v-model="scope.settings.mainPanel.showExons">Show exons
+                      </li>
+                      <li>
+                        <input type="checkbox" v-model="scope.settings.mainPanel.showNeighbors">Show neighboring genes
+                      </li><br>
+                      <li>
+                        Gene Bar Height:
+                        <input class="filter-input" style="text-align:right; width: 20%" v-model.number="scope.settings.mainPanel.geneBarHeight">pixels
+                      </li>
+                      <li>
+                        Region Bar Height:
+                        <input class="filter-input" style="text-align:right; width: 20%" v-model.number="scope.settings.mainPanel.regionBarHeight">pixels
+                      </li>
+                      <li>
+                        Feature Bar Height:
+                        <input class="filter-input" style="text-align:right; width: 20%" v-model.number="scope.settings.mainPanel.featureBarHeight">pixels
+                      </li>
+                      <li>
+                        Neighbor Bar Height:
+                        <input class="filter-input" style="text-align:right; width: 20%" v-model.number="scope.settings.mainPanel.neighborBarHeight">pixels
+                      </li><br>
+                      <li>
+                        Gene Bar Color:
+                        <input class="filter-input" type="color" v-model="scope.settings.mainPanel.geneBarColor">
+                      </li>
+                      <li>
+                        Region Bar Color:
+                        <input class="filter-input" type="color" v-model="scope.settings.mainPanel.regionBarColor">
+                      </li>
+                      <li>
+                        Neighbor Bar Color:
+                        <input class="filter-input" type="color" v-model="scope.settings.mainPanel.neighborBarColor">
+                      </li>
+                    </ul>
+                  </div>
+                  <div id="genemodal-settings" class="tab-pane fade">
+                    <h4>Gene Modal Settings</h4>
+                    <ul style="text-align: left">
+                      <li>
+                        <input type="checkbox" v-model="scope.settings.geneModal.showExons">Show exons
+                      </li>
+                      <li>
+                        <input type="checkbox" v-model="scope.settings.geneModal.showNeighbors">Show neighboring genes
+                      </li>
+                      <li>
+                        <input type="checkbox" v-model="scope.settings.geneModal.showIsoforms">Show Isoforms track
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button class="btn btn-success" @click="applySettings">Apply Settings</button>
+            <button class="btn btn-danger" onclick="hideSettingsDiv()">Close</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
 
     <div id='spinner' v-if="loading">
       <div class="loading-overlay"></div>
@@ -367,12 +466,10 @@
         <input style="margin-top: 5px;" class="form-control" v-model="userInput">
       </div>
       <div class="row">
-        <input type="checkbox" :disabled="matchBeginning" v-model="matchPartial">
-        Allow partial match
+        <input type="checkbox" :disabled="matchBeginning" v-model="matchPartial"> Allow partial match
       </div>
       <div class="row">
-        <input type="checkbox" :disabled="matchPartial" v-model="matchBeginning">
-        Match beginning only
+        <input type="checkbox" :disabled="matchPartial" v-model="matchBeginning"> Match beginning only
       </div>
     </div>
   </template>
@@ -402,19 +499,19 @@
 
       <div class="container-fluid row">
         <!--<div class="container-fluid col-md-8">-->
-          <span>Features Count</span>
-          <select class="filter-input" v-model="operatorSelected">
+        <span>Features Count</span>
+        <select class="filter-input" v-model="operatorSelected">
             <option v-for="option in operators" :value="option.value">
               {{ option.name }}
             </option>
           </select>
-          <input class="filter-input" style="text-align:right; width: 20%" v-model.number="featureCount">
+        <input class="filter-input" style="text-align:right; width: 20%" v-model.number="featureCount">
         <!--</div>-->
       </div><br>
 
       <div class="container-fluid row">
         <!--<div class="container-fluid col-md-3">-->
-          <span>Distance from TSS (in KB)</span>
+        <span>Distance from TSS (in KB)</span>
         <!--</div>-->
       </div>
       <div class="container-fluid row">
@@ -511,6 +608,7 @@
   <script src="scripts/views/files.js"></script>
   <script src="scripts/views/genemodal.js"></script>
   <script src="scripts/views/filtermodal.js"></script>
+  <script src="scripts/views/settingsmodal.js"></script>
   <script src="scripts/parsers/bed.js"></script>
   <script>
     // Make the entire accordion header clickable

@@ -28,19 +28,40 @@ const spinner = new Vue({
 // Main variable with plot data
 const plotScope = {
   settings: {
-    main_panel_height: 0,
-    main_panel_exons: false,
-    main_panel_width_padding: 10,
-    main_panel_height_padding: 20,
-    main_panel_geneBar_height: 10,
-    main_panel_featureBar_height: 10,
-    modalpanel_width_padding: 40,
-    modalpanel_height_padding: 20,
-    modalpanel_label_width: 120,
-    modalpanel_height: 120,
-    modalpanel_geneBar_height: 10,
-    modalpanel_featureBar_height: 10,
-    colors: ["#cc4c58", "#73d54b", "#693dc0", "#cd4fc9", "#64c986", "#bf4988", "#c3d182", "#7673c9", "#c78c3a", "#472d5e", "#d04e28", "#80ccc3", "#612d26", "#6e99bc", "#5c7533", "#d2a6cf", "#384d40", "#caa789", "#9b6b72", "#ced13c"]
+    ui: {
+      colors: ["#cc4c58", "#73d54b", "#693dc0", "#cd4fc9", "#64c986", "#bf4988", "#c3d182", "#7673c9", "#c78c3a", "#472d5e", "#d04e28", "#80ccc3", "#612d26", "#6e99bc", "#5c7533", "#d2a6cf", "#384d40", "#caa789", "#9b6b72", "#ced13c"]
+    },
+    mainPanel: {
+      showExons: false,
+      showNeighbors: true,
+      HPadding: 10,
+      VPadding: 20,
+      geneBarColor: '#111111',
+      regionBarColor: '#999999',
+      neighborBarColor: '#888888',
+      geneBarHeight: 10,
+      regionBarHeight: 3,
+      neighborBarHeight: 7,
+      featureBarHeight: 10,
+      featurePadding: 0.5
+    },
+    geneModal: {
+      showExons: true,
+      showNeighbors: true,
+      showIsoforms: true,
+      panelHeight: 120,
+      HPadding: 40,
+      VPadding: 20,
+      labelWidth: 120,
+      geneBarColor: '#111111',
+      regionBarColor: '#999999',
+      neighborBarColor: '#888888',
+      geneBarHeight: 10,
+      regionBarHeight: 3,
+      neighborBarHeight: 7,
+      featureBarHeight: 10,
+      featurePadding: 0.5
+    },
   },
   info: {
     numGenes: 0

@@ -64,6 +64,34 @@
   font-family: Helvetica, Arial, sans-serif;
 }
 
+#settings-modal .modal-wrapper {
+  position: fixed;
+  z-index: 2500;
+  left: 0;
+  top: 0;
+}
+
+#settings-modal .modal-container {
+  width: 40vw;
+  height: 100vh;
+  margin: 0px auto;
+  padding: 20px 30px;
+  background-color: #fff;
+  border-radius: 2px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
+  /*transition: all 1s ease;*/
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+#settings-modal .modal-body {
+  height: 70vh;
+  margin: 20px 0;
+}
+
+#settings-modal li {
+  padding: 5px;
+}
+
 .modalaxis path {
   display: none;
 }

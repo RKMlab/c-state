@@ -25,17 +25,22 @@ const modalpanel = Vue.component('modalpanel', {
   methods: {
     plotData: function () {
       const rootElement = this.$el;
+      const settings = this.settings.geneModal;
+      const colors = this.settings.ui.colors;
       const modalWidth = screen.width * 0.8;
       const numFeatures = this.info.features.length;
-      const widthPadding = this.settings.modalpanel_width_padding;
-      const heightPadding = this.settings.modalpanel_height_padding;
-      const labelWidth = this.settings.modalpanel_label_width;
+      const widthPadding = settings.HPadding;
+      const heightPadding = settings.VPadding;
+      const labelWidth = settings.labelWidth;
       const panelWidth = modalWidth - (labelWidth + (widthPadding * 2));
-      const geneBarHeight = this.settings.modalpanel_geneBar_height;
-      const regionBarHeight = geneBarHeight/3;
-      const featureBarHeight = this.settings.modalpanel_featureBar_height;
+      const geneBarHeight = settings.geneBarHeight;
+      const regionBarHeight = settings.regionBarHeight;
+      const featureBarHeight = settings.featureBarHeight;
+      const neighborBarHeight = settings.neighborBarHeight;
       const panelHeight = 50 + (heightPadding * 2) + featureBarHeight + (numFeatures * (featureBarHeight * 1.5));
       const availableHeight = panelHeight - heightPadding;
+      const featurePadding = settings.featurePadding;
+      const geneBarStart = 35;
 
       const featureNames = _.map(this.info.features, 'name');
       const cellTypeName = this.info.celltypes[this.index].name;
@@ -45,7 +50,7 @@ const modalpanel = Vue.component('modalpanel', {
       const delay = (this.info.flankUp + this.info.flankDown)/1000 * (this.index + 1);
       // const delay = (50 + mappedFeatures.length) * 10 * (this.index + 1);
 
-      const colorScale = d3.scaleOrdinal(this.settings.colors);
+      const colorScale = d3.scaleOrdinal(colors);
       colorScale.domain(featureNames);
 
       const xScale = d3.scaleLinear()
@@ -55,7 +60,7 @@ const modalpanel = Vue.component('modalpanel', {
       const yScale = d3.scaleBand()
         .domain(featureNames)
         .rangeRound([heightPadding, availableHeight - 50])
-        .paddingInner(0.5)
+        .paddingInner(featurePadding)
         .paddingOuter(0.25)
 
       const chartRoot = d3.select(rootElement).select('.modal-panel-row').append("svg")
@@ -94,7 +99,7 @@ const modalpanel = Vue.component('modalpanel', {
           .attr("width", function (d, i) {
             return xScale(d.FEnd) - xScale(d.FStart)
           })
-          .attr("height", 10)
+          .attr("height", featureBarHeight)
           .attr("opacity", function (d, i) {
             return d.FScore / 1000
           })
@@ -110,7 +115,7 @@ const modalpanel = Vue.component('modalpanel', {
       }
 
       const regionBar = chart.append("g")
-        .attr("transform", "translate(" + xScale(this.gene.geneinfo.RStart) + "," + ((availableHeight - 35) + geneBarHeight) + ")");
+        .attr("transform", "translate(" + xScale(this.gene.geneinfo.RStart) + "," + ((availableHeight - geneBarStart) + geneBarHeight) + ")");
 
       regionBar.append("rect")
         .attr("width", xScale(this.gene.geneinfo.REnd) - xScale(this.gene.geneinfo.RStart))
@@ -122,7 +127,7 @@ const modalpanel = Vue.component('modalpanel', {
         .enter()
         .append("g")
         .attr("transform", function (d, i) {
-          const y = d.strand === geneStrand ? (availableHeight - 35) + (geneBarHeight/3) : (availableHeight - 35) + geneBarHeight + regionBarHeight;
+          const y = d.strand === geneStrand ? (availableHeight - geneBarStart) + (geneBarHeight - neighborBarHeight) : (availableHeight - geneBarStart) + geneBarHeight + regionBarHeight;
           return "translate(" + xScale(d.FStart) + ',' + y + ')';
         })
 
@@ -130,7 +135,7 @@ const modalpanel = Vue.component('modalpanel', {
         .attr("width", function (d, i) {
           return xScale(d.FEnd) - xScale(d.FStart);
         })
-        .attr("height", ((geneBarHeight/3)*2))
+        .attr("height", neighborBarHeight)
         .style("fill", "#888888")
         // .style("stroke", "#333333")
         // .style("stroke-width", "2px");
@@ -145,7 +150,7 @@ const modalpanel = Vue.component('modalpanel', {
         .enter()
         .append("g")
         .attr("transform", function(d) {
-          return "translate(" + xScale(d.start) + "," + (availableHeight - 35) + ")";
+          return "translate(" + xScale(d.start) + "," + (availableHeight - geneBarStart) + ")";
         });
       
       exonBars.append("rect")
@@ -156,7 +161,7 @@ const modalpanel = Vue.component('modalpanel', {
         .style("fill", "black")
       
       const geneBar = chart.append("g")
-        .attr("transform", "translate(" + xScale(this.gene.geneinfo.GStart) + "," + ((availableHeight - 35) + geneBarHeight) + ")");
+        .attr("transform", "translate(" + xScale(this.gene.geneinfo.GStart) + "," + ((availableHeight - geneBarStart) + geneBarHeight) + ")");
 
       geneBar.append("rect")
         .attr("width", xScale(this.gene.geneinfo.GEnd) - xScale(this.gene.geneinfo.GStart))
