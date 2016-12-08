@@ -269,12 +269,12 @@
                   <span :key="filter.type" v-for="(filter, index) in activeFilters">
                     <table style="width: 100%">
                       <tr>
-                        <td>
+                        <td style="width: 85%">
                           <component :style="{ borderColor: getColor(filter.type) }" :is="filter.type">
                           </component>
                         </td>
                         <td>
-                          <button :style="{ marginTop: '10px', borderColor: getColor(filter.type) }" class="btn btn-default glyphicon glyphicon-remove" @click="activeFilters.splice(index, 1)">
+                          <button style="margin-top: 10px; margin-left: 0px;" class="btn btn-default glyphicon glyphicon-remove" @click="activeFilters.splice(index, 1)">
                           </button>
                         </td>
                       </tr>
@@ -474,11 +474,26 @@
     </div>
   </template>
 
+  <!--Size Filter Template-->
+  <template id='size-filter-template'>
+    <div class="filter-component row">
+      <h5><strong>Gene Size Filter</strong></h5><br>
+      <div>Show
+        <select class="filter-input" v-model="locusSelected">
+          <option v-for="option in loci" :value="option.value"> {{option.name}} </option>
+        </select>
+        <select class="filter-input" v-model="operatorSelected">
+          <option v-for="option in operators" :value="option.value"> {{option.name}} </option>
+        </select>
+        <input style="text-align: right; width: 15%" class="filter-input" v-model.number="sizeCutOff">KB
+      </div>
+    </div>
+  </template>
 
-
+  <!--Counts Filter Template-->
   <template id='counts-filter-template'>
     <div class="filter-component">
-      <h5><strong>Features Count Filter</strong></h5>
+      <h5><strong>Feature Counts Filter</strong></h5>
 
       <div class="container-fluid row">
         <div class="container-fluid col-md-6">Choose Celltype:<br>
@@ -578,15 +593,53 @@
           </tr>
         </table>
       </div><br>
+      
+      <div class="container-fluid row">
+        <!--<div class="container-fluid col-md-3">-->
+        <span>Distance between features (in KB)</span>
+        <!--</div>-->
+      </div>
+      <div class="container-fluid row">
+        <table style="width: 50%; margin: auto">
+          <tr>
+            <td>Min</td>
+            <td>Max</td>
+          </tr>
+          <tr>
+            <td>
+              <input :disabled="relationSelected === 'overlap'" class="filter-input" style="text-align:right; width: 50%" v-model.number="minDistance">
+            </td>
+            <td>
+              <input :disabled="relationSelected === 'overlap'" class="filter-input" style="text-align:right; width: 50%" v-model.number="maxDistance">
+            </td>
+          </tr>
+        </table>
+      </div><br>
+
+      <div class="container-fluid row">
+        <!--<div class="container-fluid col-md-3">-->
+        <span>Distance of first feature from TSS (in KB)</span>
+        <!--</div>-->
+      </div>
+      <div class="container-fluid row">
+        <table style="width: 50%; margin: auto">
+          <tr>
+            <td>Upstream</td>
+            <td>Downstream</td>
+          </tr>
+          <tr>
+            <td>
+              <input class="filter-input" style="text-align:right; width: 50%" v-model.number="upstreamLimit">
+            </td>
+            <td>
+              <input class="filter-input" style="text-align:right; width: 50%" v-model.number="downstreamLimit">
+            </td>
+          </tr>
+        </table>
+      </div>
     </div>
   </template>
 
-  <!--Peak Score Filter Template-->
-  <template id='peakscore-filter-template'>
-    <div class="filter-component row">
-      TO BE DONE TOO
-    </div>
-  </template>
 
   <!-- JS Dependencies -->
   <script src="scripts/require/jquery-1.12.4.js"></script>
