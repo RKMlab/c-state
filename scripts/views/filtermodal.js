@@ -31,11 +31,17 @@ const filterModal = new Vue({
       name: 'Size',
       type: 'sizeFilter'
     }, {
+      name: 'Chromosome',
+      type: 'chromFilter'
+    }, {
       name: 'Feature Counts',
       type: 'countsFilter'
     }, {
       name: 'Feature Overlaps',
       type: 'overlapFilter'
+    }, {
+      name: 'Neighbor Counts',
+      type: 'neighborCountFilter'
     }],
     activeFilters: [],
     genes: '',
@@ -72,6 +78,10 @@ const filterModal = new Vue({
           case "sizeFilter":
             this.applySizeFilter(data.locusSelected, data.operatorSelected, data.sizeCutOff)
             break;
+          
+          case "chromFilter":
+            this.applyChromFilter(data.chromSelected, data.hideChrom.boolean, data.start, data.end)
+            break;
 
           case "countsFilter":
             if (data.featureCount === null || data.featureCount === "") {
@@ -95,7 +105,16 @@ const filterModal = new Vue({
             }
             this.applyOverlapFilter(data.cellTypeSelected, data.firstFeatureSelected, data.secondFeatureSelected, data.relationSelected, data.minDistance, data.maxDistance, data.upstreamLimit, data.downstreamLimit);
             break;
-
+          
+          case "neighborCountFilter":
+            if (data.countCutOff === '') {
+              alert('Invalid neighbor count. Input a number greater than or equal to 0');
+              spinner.loading = false;
+              return;
+            }
+            this.applyNeighborCountFilter(data.operatorSelected, data.countCutOff, data.ignoreOverlap);
+            break;
+            
           default:
             break;
         }
@@ -195,6 +214,31 @@ const filterModal = new Vue({
           default:
             alert('Unknown operator in size filter'); // This should never happen
             break;
+        }
+      }
+    },
+
+    applyChromFilter: function (chrom, hide, start, end) {
+      console.log("Apply chrom filter");
+      if (start === '') {
+        start = 0;
+      }
+      if (end === '') {
+        end = Infinity;
+      }
+      for (let i = 0; i < this.genes.length; i++) {
+        const gene = this.genes[i];
+        if (!gene.show) {
+          continue;
+        }
+        if (hide) {
+          if (gene.geneinfo.chrom === chrom && gene.geneinfo.txEnd >= start && gene.geneinfo.txStart <= end) {
+            gene.show = false;
+          }
+        } else {
+          if (!(gene.geneinfo.chrom === chrom && gene.geneinfo.txEnd >= start && gene.geneinfo.txStart <= end)) {
+            gene.show = false;
+          }
         }
       }
     },
@@ -424,84 +468,50 @@ const filterModal = new Vue({
           default:
             break;
         }
-        // let patternMatch = [];
-        // for (let i = 0; i < firstMatch.length; i++) {
-        //   const firstList = firstMatch[i];
-        //   const secondList = secondMatch[i];
-        //   switch (relation) {
-        //     case "upstream":
-        //       patternMatch = _.filter(firstList, function (first) {
-        //         let match = 0;
-        //         _.forEach(secondList, function (second) {
-        //           let distance = second.FStart - first.FEnd;
-        //           if (distance >= min && distance <= max) {
-        //             console.log(gene.name, distance, min, max);
-        //             match++;
-        //             return;
-        //           }
-        //         })
-        //         return match > 0;
-        //       });
-        //       break;
+      }
+    },
 
-        //     case "downstream":
-        //       patternMatch = _.filter(firstList, function (first) {
-        //         let match = 0;
-        //         _.forEach(secondList, function (second) {
-        //           let distance = first.FStart - second.FEnd;
-        //           if (distance >= min && distance <= max) {
-        //             match++;
-        //             return;
-        //           }
-        //         })
-        //         return match > 0;
-        //       });
-        //       break;
-
-        //     case "near":
-        //       patternMatch = _.filter(firstList, function (first) {
-        //         let match = 0;
-        //         _.forEach(secondList, function (second) {
-        //           let distance = second.FStart - first.FEnd;
-        //           if (distance >= min && distance <= max) { // downstream
-        //             match++;
-        //             return;
-        //           }
-        //           distance = second.FStart - first.FEnd;
-        //           if (distance >= min && distance <= max) { // upstream
-        //             match++;
-        //             return;
-        //           }
-        //         })
-        //         return match > 0;
-        //       });
-        //       break;
-
-        //     case "overlap":
-        //       patternMatch = _.filter(firstList, function (first) {
-        //         let match = 0;
-        //         _.forEach(secondList, function (second) {
-        //           if (first.FEnd - second.FStart < 0) {
-        //             return;
-        //           }
-        //           if (second.FEnd - first.FStart < 0) {
-        //             return;
-        //           }
-        //           match++;
-        //         })
-        //         return match > 0;
-        //       })
-        //       break;
-
-        //     default:
-        //       break;
-        //   }
-        //   console.log(patternMatch);
-        //   if (patternMatch.length > 0) {
-        //     break;
-        //   }
-        //   gene.show = false;
-        // }
+    applyNeighborCountFilter: function (operator, cutoff, ignoreOverlap) {
+      console.log("Applying neighbor counts filter");
+      for (let i = 0; i < this.genes.length; i++) {
+        const gene = this.genes[i];
+        if (!gene.show) {
+          continue;
+        }
+        let match = 0;
+        if (ignoreOverlap) {
+          match = _.filter(gene.geneinfo.neighbors, neighbor => {
+            if (+neighbor.txEnd <= +gene.geneinfo.txStart) {
+              return true;
+            }
+            if (+neighbor.txStart >= +gene.geneinfo.txEnd) {
+              return true;
+            }
+            return false;
+          }).length;
+        } else {
+          match = gene.geneinfo.neighbors.length;
+        }
+        switch (operator) {
+          case "=":
+            gene.show = match === cutoff;
+            break;
+          case "<":
+            gene.show = match < cutoff;
+            break;
+          case "<=":
+            gene.show = match <= cutoff;
+            break;
+          case ">":
+            gene.show = match > cutoff;
+            break;
+          case ">=":
+            gene.show = match >= cutoff;
+            break;
+          default:
+            alert('Unknown operator in size filter'); // This should never happen
+            break;
+        }
       }
     },
 
@@ -559,6 +569,24 @@ const sizeFilter = Vue.component('sizeFilter', {
       operatorSelected: '',
       sizeCutOff: null
     }
+  }
+})
+
+const chromFilter = Vue.component('chromFilter', {
+  template: '#chrom-filter-template',
+  data: function () {
+    return {
+      hideChrom: {
+        boolean: false
+      },
+      chromOptions: [],
+      chromSelected: '',
+      start: '',
+      end: ''
+    }
+  },
+  mounted: function () {
+    this.chromOptions = _.uniq(_.map(plotScope.genes, 'geneinfo.chrom')).sort();
   }
 })
 
@@ -638,3 +666,15 @@ const overlapFilter = Vue.component('overlapFilter', {
     this.features.unshift(exon);
   }
 });
+
+const neighborCountFilter = Vue.component('neighborCountFilter', {
+  template: '#neighbor-count-filter-template',
+  data: function () {
+    return {
+      operators: operators,
+      operatorSelected: '',
+      countCutOff: '',
+      ignoreOverlap: true
+    }
+  }
+})

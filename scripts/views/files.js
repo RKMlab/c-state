@@ -90,7 +90,6 @@ const main_file = new Vue({
       }
 
       const extractInfo = (geneList) => {
-        console.log(genomeData, geneList);
         const allMappedGenes = [];
         _.forEach(genomeData, chrom => {
           for (let i = 0; i < chrom.length; i++) {
@@ -132,7 +131,6 @@ const main_file = new Vue({
           geneObj.geneinfo.neighbors = _.uniqBy(_.sortBy(geneObj.geneinfo.neighbors, [function (o) {
             return +o.txSize;
           }]).reverse(), 'geneSymbol');
-          console.log(geneObj)
           this.geneList.push(geneObj);
         }
 

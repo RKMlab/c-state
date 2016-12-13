@@ -16,14 +16,14 @@ const mainpanel = Vue.component('mainpanel', {
       geneModal.$data.gene = gene;
       geneModal.$data.showModal = true;
     },
-    
+
     plotData: function () {
       const rootElement = this.$el;
       const settings = this.settings.mainPanel;
       const colors = this.settings.ui.colors;
       const numCellTypes = this.info.celltypes.length;
       const numFeatures = this.info.features.length;
-      const panelWidth = (screen.width - 400)/numCellTypes;
+      const panelWidth = (screen.width - 400) / numCellTypes;
       const geneBarColor = settings.geneBarColor;
       const regionBarColor = settings.regionBarColor;
       const neighborBarColor = settings.neighborBarColor;
@@ -77,7 +77,7 @@ const mainpanel = Vue.component('mainpanel', {
         .attr("class", "x-axis") //Assign "x axis" class
         .attr("transform", "translate(0," + availableHeight + ")")
         .call(xAxis);
-      
+
       const chart = chartRoot.append("g")
 
       const featureBars = chart.selectAll("bar")
@@ -103,7 +103,7 @@ const mainpanel = Vue.component('mainpanel', {
           .style("fill", function (d, i) {
             return colorScale(d.FName)
           });
-        
+
         featureBars.append("svg:title")
           .text(function (d) {
             return d.FName;
@@ -117,37 +117,63 @@ const mainpanel = Vue.component('mainpanel', {
         .attr("width", xScale(this.gene.geneinfo.REnd) - xScale(this.gene.geneinfo.RStart))
         .attr("height", regionBarHeight)
         .style("fill", regionBarColor);
-      
-      const neighborBars = chart.selectAll("neighbor")
-        .data(neighbors)
-        .enter()
-        .append("g")
-        .attr("transform", function (d, i) {
-          const y = d.strand === geneStrand ? (availableHeight - geneBarStart) + (geneBarHeight - neighborBarHeight) : (availableHeight - geneBarStart) + geneBarHeight + regionBarHeight;
-          return "translate(" + xScale(d.FStart) + ',' + y + ')';
-        })
 
-      neighborBars.append("rect")
-        .attr("width", function (d, i) {
-          return xScale(d.FEnd) - xScale(d.FStart);
-        })
-        .attr("height", neighborBarHeight)
-        .style("fill", neighborBarColor)
-        // .style("stroke", "#333333")
-        // .style("stroke-width", "4px");
-      
-      neighborBars.append("svg:title")
+      if (settings.showNeighbors) {
+        const neighborBars = chart.selectAll("neighbor")
+          .data(neighbors)
+          .enter()
+          .append("g")
+          .attr("transform", function (d, i) {
+            const y = d.strand === geneStrand ? (availableHeight - geneBarStart) + (geneBarHeight - neighborBarHeight) : (availableHeight - geneBarStart) + geneBarHeight + regionBarHeight;
+            return "translate(" + xScale(d.FStart) + ',' + y + ')';
+          })
+
+        neighborBars.append("rect")
+          .attr("width", function (d, i) {
+            return xScale(d.FEnd) - xScale(d.FStart);
+          })
+          .attr("height", neighborBarHeight)
+          .style("fill", neighborBarColor)
+
+        neighborBars.append("svg:title")
           .text(function (d) {
             return d.geneSymbol;
           })
+      }
 
-      const geneBar = chart.append("g")
-        .attr("transform", "translate(" + xScale(this.gene.geneinfo.GStart) + "," + (availableHeight - geneBarStart) + ")");
+      if (settings.showExons) {
+        const exonBars = chart.selectAll("exon")
+          .data(this.gene.geneinfo.exons)
+          .enter()
+          .append("g")
+          .attr("transform", function (d) {
+            return "translate(" + xScale(d.start) + "," + (availableHeight - geneBarStart) + ")";
+          });
 
-      geneBar.append("rect")
-        .attr("width", xScale(this.gene.geneinfo.GEnd) - xScale(this.gene.geneinfo.GStart))
-        .attr("height", (geneBarHeight + regionBarHeight))
-        .style("fill", geneBarColor);
+        exonBars.append("rect")
+          .attr("width", function (d) {
+            return xScale(d.end) - xScale(d.start);
+          })
+          .attr("height", geneBarHeight)
+          .style("fill", geneBarColor)
+
+        const geneBar = chart.append("g")
+          .attr("transform", "translate(" + xScale(this.gene.geneinfo.GStart) + "," + ((availableHeight - geneBarStart) + geneBarHeight) + ")");
+
+        geneBar.append("rect")
+          .attr("width", xScale(this.gene.geneinfo.GEnd) - xScale(this.gene.geneinfo.GStart))
+          .attr("height", regionBarHeight)
+          .style("fill", geneBarColor);
+
+      } else {
+        const geneBar = chart.append("g")
+          .attr("transform", "translate(" + xScale(this.gene.geneinfo.GStart) + "," + (availableHeight - geneBarStart) + ")");
+
+        geneBar.append("rect")
+          .attr("width", xScale(this.gene.geneinfo.GEnd) - xScale(this.gene.geneinfo.GStart))
+          .attr("height", (geneBarHeight + regionBarHeight))
+          .style("fill", geneBarColor);
+      }
     }
   }
 })

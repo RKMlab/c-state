@@ -47,8 +47,17 @@ const modalpanel = Vue.component('modalpanel', {
       const mappedFeatures = _.find(this.gene.mappedFeatures, ['name', cellTypeName]).features;
       const neighbors = this.gene.geneinfo.neighbors;
       const geneStrand = this.gene.geneinfo.strand;
-      const delay = (this.info.flankUp + this.info.flankDown)/1000 * (this.index + 1);
-      // const delay = (50 + mappedFeatures.length) * 10 * (this.index + 1);
+      const delay = (this.info.flankUp + this.info.flankDown) / 1000 * (this.index + 1);
+
+      let geneBarColor = settings.geneBarColor;
+      let regionBarColor = settings.regionBarColor;
+      let neighborBarColor = settings.neighborBarColor;
+
+      if (settings.sameColors) {
+        geneBarColor = this.settings.mainPanel.geneBarColor;
+        regionBarColor = this.settings.mainPanel.regionBarColor;
+        neighborBarColor = this.settings.mainPanel.neighborBarColor;
+      }
 
       const colorScale = d3.scaleOrdinal(colors);
       colorScale.domain(featureNames);
@@ -67,18 +76,18 @@ const modalpanel = Vue.component('modalpanel', {
         .attr("width", panelWidth)
         .attr("height", panelHeight)
         .attr("class", "svgClass")
-      
+
       const xAxis = d3.axisBottom(xScale)
         .ticks(5)
         .tickFormat(function (d) {
           return d / 1000;
         });
-      
+
       const xAxisElement = chartRoot.append("g")
         .attr("class", "modalaxis x-axis") //Assign "x axis" class
         .attr("transform", "translate(0," + availableHeight + ")")
         .call(xAxis);
-      
+
       const chart = chartRoot.append("g")
         .attr("class", "modalSVGClass")
 
@@ -96,18 +105,18 @@ const modalpanel = Vue.component('modalpanel', {
       if (featureBars) {
         _.delay(function () {
           featureBars.append("rect")
-          .attr("width", function (d, i) {
-            return xScale(d.FEnd) - xScale(d.FStart)
-          })
-          .attr("height", featureBarHeight)
-          .attr("opacity", function (d, i) {
-            return d.FScore / 1000
-          })
-          .style("fill", function (d, i) {
-            return colorScale(d.FName)
-          })
+            .attr("width", function (d, i) {
+              return xScale(d.FEnd) - xScale(d.FStart)
+            })
+            .attr("height", featureBarHeight)
+            .attr("opacity", function (d, i) {
+              return d.FScore / 1000
+            })
+            .style("fill", function (d, i) {
+              return colorScale(d.FName)
+            })
         }, delay);
-        
+
         featureBars.append("svg:title")
           .text(function (d) {
             return d.FName;
@@ -120,8 +129,8 @@ const modalpanel = Vue.component('modalpanel', {
       regionBar.append("rect")
         .attr("width", xScale(this.gene.geneinfo.REnd) - xScale(this.gene.geneinfo.RStart))
         .attr("height", regionBarHeight)
-        .style("fill", "#999999");
-      
+        .style("fill", regionBarColor);
+
       const neighborBars = chart.selectAll("neighbor")
         .data(neighbors)
         .enter()
@@ -131,52 +140,66 @@ const modalpanel = Vue.component('modalpanel', {
           return "translate(" + xScale(d.FStart) + ',' + y + ')';
         })
 
-      neighborBars.append("rect")
-        .attr("width", function (d, i) {
-          return xScale(d.FEnd) - xScale(d.FStart);
-        })
-        .attr("height", neighborBarHeight)
-        .style("fill", "#888888")
-        // .style("stroke", "#333333")
-        // .style("stroke-width", "2px");
-      
-      neighborBars.append("svg:title")
+      if (settings.showNeighbors) {
+        neighborBars.append("rect")
+          .attr("width", function (d, i) {
+            return xScale(d.FEnd) - xScale(d.FStart);
+          })
+          .attr("height", neighborBarHeight)
+          .style("fill", neighborBarColor)
+
+        neighborBars.append("svg:title")
           .text(function (d) {
             return d.geneSymbol;
           })
-      
-      const exonBars = chart.selectAll("exon")
-        .data(this.gene.geneinfo.exons)
-        .enter()
-        .append("g")
-        .attr("transform", function(d) {
-          return "translate(" + xScale(d.start) + "," + (availableHeight - geneBarStart) + ")";
-        });
-      
-      exonBars.append("rect")
-        .attr("width", function (d) {
-          return xScale(d.end) - xScale(d.start);
-        })
-        .attr("height", geneBarHeight)
-        .style("fill", "black")
-      
-      const geneBar = chart.append("g")
-        .attr("transform", "translate(" + xScale(this.gene.geneinfo.GStart) + "," + ((availableHeight - geneBarStart) + geneBarHeight) + ")");
+      }
 
-      geneBar.append("rect")
-        .attr("width", xScale(this.gene.geneinfo.GEnd) - xScale(this.gene.geneinfo.GStart))
-        .attr("height", regionBarHeight)
-        .style("fill", "black");
-      
+      if (settings.showExons) {
+        const exonBars = chart.selectAll("exon")
+          .data(this.gene.geneinfo.exons)
+          .enter()
+          .append("g")
+          .attr("transform", function (d) {
+            return "translate(" + xScale(d.start) + "," + (availableHeight - geneBarStart) + ")";
+          });
+
+        exonBars.append("rect")
+          .attr("width", function (d) {
+            return xScale(d.end) - xScale(d.start);
+          })
+          .attr("height", geneBarHeight)
+          .style("fill", geneBarColor)
+
+        const geneBar = chart.append("g")
+          .attr("transform", "translate(" + xScale(this.gene.geneinfo.GStart) + "," + ((availableHeight - geneBarStart) + geneBarHeight) + ")");
+
+        geneBar.append("rect")
+          .attr("width", xScale(this.gene.geneinfo.GEnd) - xScale(this.gene.geneinfo.GStart))
+          .attr("height", regionBarHeight)
+          .style("fill", geneBarColor);
+
+      } else {
+        const geneBar = chart.append("g")
+          .attr("transform", "translate(" + xScale(this.gene.geneinfo.GStart) + "," + (availableHeight - geneBarStart) + ")");
+
+        geneBar.append("rect")
+          .attr("width", xScale(this.gene.geneinfo.GEnd) - xScale(this.gene.geneinfo.GStart))
+          .attr("height", (geneBarHeight + regionBarHeight))
+          .style("fill", geneBarColor);
+      }
+
       const zoom = d3.zoom()
-        .scaleExtent([1, (this.gene.geneinfo.REnd - this.gene.geneinfo.RStart)/10])
-        .translateExtent([[0,0], [panelWidth,0]])
+        .scaleExtent([1, (this.gene.geneinfo.REnd - this.gene.geneinfo.RStart) / 10])
+        .translateExtent([
+          [0, 0],
+          [panelWidth, 0]
+        ])
         .on("zoom", zoomHandler)
 
       zoom.filter(function () {
         return !event.button && event.type !== "click"
       })
-      
+
       function zoomHandler() {
         chart.attr("transform", "translate(" + d3.event.transform.x + ",0" + ") scale(" + d3.event.transform.k + ",1)");
         xAxisElement.call(xAxis.scale(d3.event.transform.rescaleX(xScale)));
@@ -194,20 +217,19 @@ const modalpanel = Vue.component('modalpanel', {
       const index = this.index;
       const reset_zoom = () => {
         // _.defer( () => {
-          chartRoot.transition()
+        chartRoot.transition()
           // d3.selectAll(".modal-body").select("svg").transition()
-            .duration(200)
-            .delay(index * 250)
-            .call(zoom.transform, d3.zoomIdentity);
+          .duration(200)
+          .delay(index * 250)
+          .call(zoom.transform, d3.zoomIdentity);
         // })
       }
 
       events.$on('reset_zoom', reset_zoom);
-      events.$on('zoom_all', function(transform) {
+      events.$on('zoom_all', function (transform) {
         zoomHandlerAll(transform)
       })
 
-      // chartRoot.on("mousemove", zoomHandler)
       chartRoot.call(zoom)
         // .on("dblclick.zoom", null)
         // .on("click.zoom", null)

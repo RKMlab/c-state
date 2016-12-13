@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>C-State v0.2</title>
+  <title>C-State v0.2.1</title>
   <!-- CSS links -->
   <link href="scripts/require/bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="scripts/require/animate.min.css" rel="stylesheet">
@@ -16,8 +16,9 @@
 
   <div class="container-fluid">
 
-    <div style="position: absolute; top: 0; left: 0;">
-      <a href="http://ccmb.res.in/rakeshmishra/c-state/"> <img style="margin-left: 5px; margin-top: 5px;" width="80%" src="images/c-state_logo.png" alt="C-State Logo">
+    <div style="position: absolute; top: 0; left: 0; width: 200px; height: 65px">
+      <a href="http://ccmb.res.in/rakeshmishra/c-state/"> <img style="margin-left: 5px; margin-top: 5px;" width="100%" src="images/c-state_logo.png" alt="C-State Logo"></a>
+      <br><span style="position:absolute; margin-top: -15px; margin-left: 160px; font-weight: bold">v0.2.1</span>
     </div>
 
     <div style="position: absolute; top: 0; right: 0; ">
@@ -36,54 +37,16 @@
 
           <div class="panel-body" v-cloak id="main-file">
             <div class="row">
-              <div class="container-fluid col-md-2"></div>
-              <div class="container-fluid col-md-4">
-                <div style="text-align:center; font-size: 18px; font-weight:bold">Choose a file below to begin</div>
-                <p style="text-align:justify; margin: 5 20 5 20">This can be a list of gene identifiers that you are interested in, or it could be a previously downloaded
-                  plot data of C-State</p>
-              </div>
-              <div class="container-fluid col-md-1" style="text-align: center; font-size: 20px; margin-top: 20px;">OR</div>
-              <div class="container-fluid col-md-3">
-                <button class="text-center btn btn-warning btn-file">LOAD EXAMPLE DATA</button>
-                <span style="margin-left: 6px; display: inline-block; margin-top: 20px;">of
-                <input type="number" size="1" min="1" max="6" style="margin-left: 6px; width:35px;text-align: right;"/>
-                Cell Types</span><br>
-              </div>
-            </div><br>
-
-            <div class="row">
-              <div class="container-fluid col-md-11">
-                <table style="margin: 20 10 20 20; width: 100%">
-                  <col style="width: 15%">
-                  <col style="width: 15%">
-                  <col style="width: 15%">
-                  <col style="width: 15%">
-                  <col style="width: 15%">
-                  <col style="width: 5%">
-                  <col style="width: 10%">
-                  <col style="width: 10%">
+              <div class="container-fluid col-md-9" style="border-right: 1px dotted #666666">
+                <div style="text-align:center; font-size: 18px; font-weight:bold">Choose a file below to begin</div><br>
+                <table style="width: 50%; margin: auto">
+                  <col style="width: 30%">
+                  <col style="width: 30%">
                   <tr>
-                    <th>File Selected</th>
-                    <th>Select File Type</th>
-                    <th>Select Genome</th>
+                    <th>Select Species</th>
                     <th>Select Build</th>
-                    <th>Select Identifier</th>
-                    <th></th>
-                    <th>Upstream Flank <br>(in KB)</th>
-                    <th>Downstream Flank <br>(in KB)</th>
                   </tr>
                   <tr>
-                    <td style="text-align:center">
-                      <label class="text-center btn btn-primary btn-file">Choose File
-                      <input type="file" style="display: none" @change="onFileUpload" name="file">
-                    </label><br> {{ inputFile.name }} </td>
-                    <td>
-                      <select @change="onTypeSelect" class="form-control" v-model="typeSelected">
-                      <option v-for="option in typeOptions" :value="option.value">
-                        {{ option.name }}
-                      </option>
-                    </select>
-                    </td>
                     <td>
                       <select @change="onGenomeSelect" :disabled="typeSelected === 'plotdata'" class="form-control" v-model="genomeSelected">
                       <option v-for="option in genomes.species">
@@ -98,13 +61,44 @@
                       </option>
                     </select>
                     </td>
+                  </tr>
+                </table><br>
+                <table style="width: 80%; margin: auto">
+                  <col style="width: 15%">
+                  <col style="width: 20%">
+                  <col style="width: 20%">
+                  <col style="width: 10%">
+                  <col style="width: 15%">
+                  <col style="width: 15%">
+                  <tr>
+                    <th>File Selected</th>
+                    <th>Select File Type</th>
+                    <th>Select Identifier</th>
+                    <th></th>
+                    <th>Upstream Flank <br>(in KB)</th>
+                    <th>Downstream Flank <br>(in KB)</th>
+                  </tr>
+                  <tr>
+                    <td style="text-align:center">
+                      <label class="text-center btn btn-default btn-file">Choose File
+                      <input type="file" style="display: none" @change="onFileUpload" name="file">
+                    </label><br> {{ inputFile.name }} 
+                    </td>
+                    <td>
+                      <select @change="onTypeSelect" class="form-control" v-model="typeSelected">
+                        <option v-for="option in typeOptions" :value="option.value">
+                          {{ option.name }}
+                        </option>
+                      </select>
+                    </td>
                     <td>
                       <select @change="onIDSelect" :disabled="typeSelected === 'plotdata'" class="form-control" v-model="idSelected">
-                      <option v-for="option in idOptions" :value="option.value">
-                        {{ option.name }}
-                      </option>
-                    </select>
-                      <td></td>
+                        <option v-for="option in idOptions" :value="option.value">
+                          {{ option.name }}
+                        </option>
+                      </select>
+                    </td>
+                    <td>
                     </td>
                     <td>
                       <input type="number" min="0" style="text-align:right" :disabled="typeSelected === 'plotdata'" class="form-control" v-model="flankUp">
@@ -115,36 +109,50 @@
                   </tr>
                 </table>
               </div>
-            </div>
+
+              <div class="container-fluid col-md-3" style="text-align:center">
+                <span style="font-size: 20px; font-weight: bold;">OR</span><br><br>
+                <button id="example-button" class="text-center btn btn-file">LOAD EXAMPLE DATA</button><br>
+                <span style="margin-left: 6px; display: inline-block; margin-top: 20px;">of
+                <input type="number" size="1" min="1" max="6" value="4" style="margin-left: 6px; width:50px;text-align: right;"/>
+                Cell Types</span><br>
+              </div>
+            </div> 
 
             <!--Main File Div Ends Here-->
           </div>
 
           <div class="panel-body" id="feature-files" v-cloak v-if="showDiv">
             <div class="row">
-              <div class="container-fluid col-md-2 col-md-offset-1">
-                <label :disabled="!showFeatureButton" class="text-center btn btn-default btn-file">Add Feature Files
-                  <input :disabled="!showFeatureButton" @change="onFileUpload" type="file" style="display: none" name="files[]" multiple>
-                </label><br>
-              </div>
-              <div class="container-fluid col-md-1">
-                <button :disabled="inputFiles.length === 0" @click="inputFiles.splice(0)" type="button" class="btn btn-danger">Clear All Files</button>
-                <br>
-              </div>
-              <div class="container-fluid col-md-1">
-                <button :disabled="inputFiles.length === 0" @click="getFileData" type="button" class="btn btn-success">Process All Files</button>
-                <br>
-              </div>
-              <div class="container-fluid col-md-2">
-                <button type="button" class="btn btn-primary" :disabled="!showPlotButton" onclick="formatPlotScope()">
-                  View Data
-                </button>
-              </div>
-              <div class="container-fluid col-md-1">
-                <button type="button" class="btn btn-primary" :disabled="!showDownloadButton" onclick="exportJSONtoFile()">
-                  Download Plot Data
-                </button>
-              </div>
+              <table style="width: 80%; margin: auto">
+                <col style="width: 2%">
+                <col style="width: 10%">
+                <col style="width: 1%">
+                <col style="width: 10%">
+                <col style="width: 10%">
+                <tr>
+                  <td>
+                  </td>
+                  <td>
+                    <label :disabled="!showFeatureButton" class="text-center btn btn-default btn-file">Add Feature Files
+                      <input :disabled="!showFeatureButton" @change="onFileUpload" type="file" style="display: none" name="files[]" multiple>
+                    </label>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                    <button :disabled="inputFiles.length === 0" @click="inputFiles.splice(0)" type="button" class="btn btn-danger">Clear All Files</button>
+                  <!--</td>
+                  <td>-->
+                    <button :disabled="inputFiles.length === 0" @click="getFileData" type="button" class="btn btn-success">Process All Files</button>
+                  </td>
+                  <td>
+                    <button type="button" class="btn btn-primary" :disabled="!showPlotButton" onclick="formatPlotScope()">
+                      View Data
+                    </button>
+                  </td>
+                </tr>
+              </table><br>
             </div>
 
             <div class="row"><br>
@@ -181,6 +189,13 @@
         </div>
         <div id="view-body" class="panel-collapse collapse">
           <div class="row">
+            <div class="container-fluid col-md-10" v-if="numFilteredGenes > 0">
+              <my-legend loc='mainpanel' style="margin: 0px 20px 0px 20px">
+              </my-legend>
+            </div>
+            <div class="container-fluid col-md-2" v-if="numFilteredGenes > 0" style="height: 50px; text-align: right">
+              <span style="height: 50px; display: block; margin-top: 20px; margin-right: 15px; font-weight: bold">Scale in KB</span>
+            </div>
             <div class="container-fluid" style="margin-left:10px; margin-right:10px;">
               <table style="width:100%; table-layout: fixed; margin-bottom: 0px;" class="table table-condensed">
                 <!--<thead><tr style="display: block; position: relative">-->
@@ -223,8 +238,13 @@
               </div>
 
               <div class="modal-footer">
-                <button class="btn btn-primary" onclick="events.$emit('reset_zoom')">Reset Zoom</button>
-                <button class="btn btn-default" @click="closeModal()">Close</button>
+                <div class="col-md-8">
+                  <my-legend loc='geneModal' style="margin: 0px 20px 0px 20px; width: 80%"></my-legend>
+                </div>
+                <div class="col-md-4">
+                  <button class="btn btn-primary" onclick="events.$emit('reset_zoom')">Reset Zoom</button>
+                  <button class="btn btn-default" @click="closeModal()">Close</button>
+                </div>
               </div>
 
             </div>
@@ -236,10 +256,26 @@
     <!--Common Mask for panels-->
     <div id="common-mask" class="modal-mask"></div>
 
-    <!--Filter Modal Div-->
-    <div id='filter-button'>
+    <!--Side Buttons-->
+    <div id='analysis-button' class="side-button">
+      <button type="button" title="Perform Downstream Analysis" class="btn btn-block btn-lg btn-default glyphicon glyphicon-stats"></button>
+    </div>
+    <div id='filter-button' class="side-button">
       <button onclick="showFilters()" type="button" title="Open Filters Panel" class="btn btn-block btn-lg btn-default glyphicon glyphicon-filter"></button>
     </div>
+    <div id='settings-button' class="side-button">
+      <button onclick="showSettings()" type="button" title="Open Settings Panel" class="btn btn-block btn-lg btn-default glyphicon glyphicon-cog"></button>
+    </div>
+    <div id='tables-button' class="side-button">
+      <button type="button" title="Table Summary" class="btn btn-block btn-lg btn-default glyphicon glyphicon-th-list"></button>
+    </div>
+    <div id='download-button' class="side-button">
+      <button type="button" title="Download Options" onclick="exportJSONToFile()" class="btn btn-block btn-lg btn-default glyphicon glyphicon-download-alt"></button>
+    </div>
+
+
+
+    <!--Filter Modal Div-->
     <div id='filter-modal'>
       <div id='filter-mask' class="modal-wrapper animated slideInLeft" v-if="showFilterDiv">
         <div class="modal-container">
@@ -296,9 +332,6 @@
     </div>
 
     <!--Settings Modal Div-->
-    <div id='settings-button'>
-      <button onclick="showSettings()" type="button" title="Open Settings Panel" class="btn btn-block btn-lg btn-default glyphicon glyphicon-cog"></button>
-    </div>
     <div id='settings-modal'>
       <div id='settings-body' class="modal-wrapper animated slideInLeft" v-if="showSettingsDiv">
         <div class="modal-container">
@@ -312,7 +345,7 @@
 
               <div class="col-md-4" style="border-right: 1px solid black; height: 70vh;">
                 <ul class="nav nav-pills nav-stacked">
-                  <li class="active"><a data-toggle="tab" href="#ui-settings">Interface</a></li>
+                  <li class="active"><a data-toggle="tab" href="#general-settings">General</a></li>
                   <li><a data-toggle="tab" href="#mainpanel-settings">Main Panels</a></li>
                   <li><a data-toggle="tab" href="#genemodal-settings">Gene Modal</a></li>
                 </ul>
@@ -320,61 +353,129 @@
 
               <div class="col-md-8">
                 <div class="tab-content">
-                  <div id="ui-settings" class="tab-pane fade in active">
-                    <h4>User Interface Settings</h4>
+                  <div id="general-settings" class="tab-pane fade in active">
+                    <h4>General Settings</h4>
                   </div>
                   <div id="mainpanel-settings" class="tab-pane fade">
                     <h4>Main Panel Settings</h4>
-                    <ul style="text-align: center; padding-left: 10%; padding-right: 20%">
+                    <ul style="text-align: left; padding-left: 10%; padding-right: 20%">
                       <li>
                         <input type="checkbox" v-model="scope.settings.mainPanel.showExons">Show exons
                       </li>
                       <li>
                         <input type="checkbox" v-model="scope.settings.mainPanel.showNeighbors">Show neighboring genes
-                      </li><br>
-                      <li>
-                        Gene Bar Height:
-                        <input class="filter-input" style="text-align:right; width: 20%" v-model.number="scope.settings.mainPanel.geneBarHeight">pixels
                       </li>
-                      <li>
-                        Region Bar Height:
-                        <input class="filter-input" style="text-align:right; width: 20%" v-model.number="scope.settings.mainPanel.regionBarHeight">pixels
-                      </li>
-                      <li>
-                        Feature Bar Height:
-                        <input class="filter-input" style="text-align:right; width: 20%" v-model.number="scope.settings.mainPanel.featureBarHeight">pixels
-                      </li>
-                      <li>
-                        Neighbor Bar Height:
-                        <input class="filter-input" style="text-align:right; width: 20%" v-model.number="scope.settings.mainPanel.neighborBarHeight">pixels
-                      </li><br>
-                      <li>
-                        Gene Bar Color:
-                        <input class="filter-input" type="color" v-model="scope.settings.mainPanel.geneBarColor">
-                      </li>
-                      <li>
-                        Region Bar Color:
-                        <input class="filter-input" type="color" v-model="scope.settings.mainPanel.regionBarColor">
-                      </li>
-                      <li>
-                        Neighbor Bar Color:
-                        <input class="filter-input" type="color" v-model="scope.settings.mainPanel.neighborBarColor">
-                      </li>
-                    </ul>
+                    </ul><br>
+                    <table style="width: 80%; margin: auto; text-align: left">
+                      <tr>
+                        <td>Gene Bar Height:</td>
+                        <td>
+                          <input class="filter-input" style="text-align:right; width: 20%" v-model.number="scope.settings.mainPanel.geneBarHeight">pixels
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Region Bar Height:</td>
+                        <td>
+                          <input class="filter-input" style="text-align:right; width: 20%" v-model.number="scope.settings.mainPanel.regionBarHeight">pixels
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Feature Bar Height:</td>
+                        <td>
+                          <input class="filter-input" style="text-align:right; width: 20%" v-model.number="scope.settings.mainPanel.featureBarHeight">pixels
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Neighbor Bar Height:</td>
+                        <td>
+                          <input class="filter-input" style="text-align:right; width: 20%" v-model.number="scope.settings.mainPanel.neighborBarHeight">pixels
+                        </td>
+                      </tr>
+                    </table><br><br>
+                    <table style="width: 80%; margin: auto; text-align: left">
+                      <col style="width: 40%">
+                      <tr>
+                        <td>Gene Bar Color:</td>
+                        <td>
+                          <input class="filter-input" type="color" v-model="scope.settings.mainPanel.geneBarColor">{{scope.settings.mainPanel.geneBarColor}}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Region Bar Color:</td>
+                        <td>
+                          <input class="filter-input" type="color" v-model="scope.settings.mainPanel.regionBarColor">{{scope.settings.mainPanel.regionBarColor}}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Neighbor Bar Color:</td>
+                        <td>
+                          <input class="filter-input" type="color" v-model="scope.settings.mainPanel.neighborBarColor">{{scope.settings.mainPanel.neighborBarColor}}
+                        </td>
+                      </tr>
+                    </table>
                   </div>
                   <div id="genemodal-settings" class="tab-pane fade">
                     <h4>Gene Modal Settings</h4>
-                    <ul style="text-align: left">
+                    <ul style="text-align: left; padding-left: 10%; padding-right: 20%">
                       <li>
                         <input type="checkbox" v-model="scope.settings.geneModal.showExons">Show exons
                       </li>
                       <li>
                         <input type="checkbox" v-model="scope.settings.geneModal.showNeighbors">Show neighboring genes
                       </li>
+                    </ul><br>
+                    <table style="width: 80%; margin: auto; text-align: left">
+                      <tr>
+                        <td>Gene Bar Height:</td>
+                        <td>
+                          <input class="filter-input" style="text-align:right; width: 20%" v-model.number="scope.settings.geneModal.geneBarHeight">pixels
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Region Bar Height:</td>
+                        <td>
+                          <input class="filter-input" style="text-align:right; width: 20%" v-model.number="scope.settings.geneModal.regionBarHeight">pixels
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Feature Bar Height:</td>
+                        <td>
+                          <input class="filter-input" style="text-align:right; width: 20%" v-model.number="scope.settings.geneModal.featureBarHeight">pixels
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Neighbor Bar Height:</td>
+                        <td>
+                          <input class="filter-input" style="text-align:right; width: 20%" v-model.number="scope.settings.geneModal.neighborBarHeight">pixels
+                        </td>
+                      </tr>
+                    </table><br><br>
+                    <ul style="text-align: left">
                       <li>
-                        <input type="checkbox" v-model="scope.settings.geneModal.showIsoforms">Show Isoforms track
+                        <input type="checkbox" v-model="scope.settings.geneModal.sameColors">Use same colors as Main panel
                       </li>
                     </ul>
+                    <table style="width: 80%; margin: auto; text-align: left" v-if="!scope.settings.geneModal.sameColors">
+                      <col style="width: 40%">
+                      <tr>
+                        <td>Gene Bar Color:</td>
+                        <td>
+                          <input class="filter-input" :disabled="scope.settings.geneModal.sameColors" type="color" v-model="scope.settings.geneModal.geneBarColor">{{scope.settings.geneModal.geneBarColor}}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Region Bar Color:</td>
+                        <td>
+                          <input class="filter-input" :disabled="scope.settings.geneModal.sameColors" type="color" v-model="scope.settings.geneModal.regionBarColor">{{scope.settings.geneModal.regionBarColor}}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Neighbor Bar Color:</td>
+                        <td>
+                          <input class="filter-input" :disabled="scope.settings.geneModal.sameColors" type="color" v-model="scope.settings.geneModal.neighborBarColor">{{scope.settings.geneModal.neighborBarColor}}
+                        </td>
+                      </tr>
+                    </table>
                   </div>
                 </div>
               </div>
@@ -431,6 +532,13 @@
     </tr>
   </template>
 
+  <!--template for legend-->
+  <template id='legend-template'>
+    <div class="legend-panel">
+    </div>
+  </template>
+
+
   <!--template for gene panel in main view-->
   <template id='mainpanel-template'>
     <td>
@@ -486,6 +594,38 @@
           <option v-for="option in operators" :value="option.value"> {{option.name}} </option>
         </select>
         <input style="text-align: right; width: 15%" class="filter-input" v-model.number="sizeCutOff">KB
+      </div>
+    </div>
+  </template>
+
+  <!--Chromosome Filter Template-->
+  <template id='chrom-filter-template'>
+    <div class="filter-component row">
+      <h5><strong>Chromosome Filter</strong></h5>
+      <div>
+        <select class="filter-input" v-model="hideChrom">
+          <option :value="{ boolean: false}">Show</option>
+          <option :value="{ boolean: true}">Hide</option>
+        </select>genes of
+        <select class="filter-input" v-model="chromSelected">
+          <option v-for="option in chromOptions">{{option}}</option>
+        </select>
+      </div><br>
+      <div>
+        <table style="width: 90%; margin: auto">
+          <tr>
+            <td>Start</td>
+            <td>Stop</td>
+          </tr>
+          <tr>
+            <td>
+              <input style="text-align: right; width: 80%" class="filter-input" v-model.number="start">
+            </td>
+            <td>
+              <input style="text-align: right; width: 80%" class="filter-input" v-model.number="end">
+            </td>
+          </tr>
+        </table>
       </div>
     </div>
   </template>
@@ -640,6 +780,22 @@
     </div>
   </template>
 
+  <!--Neighbor Counts filter-->
+  <template id='neighbor-count-filter-template'>
+    <div class="filter-component row">
+      <h5><strong>Neighbor Counts Filter</strong></h5><br>
+      <div>Show genes with
+        <select class="filter-input" v-model="operatorSelected">
+          <option v-for="option in operators" :value="option.value"> {{option.name}} </option>
+        </select>
+        <input style="text-align: right; width: 15%" class="filter-input" v-model.number="countCutOff">Neighbors
+      </div><br>
+      <div>
+        <input type="checkbox" v-model="ignoreOverlap"> Ignore overlapping genes
+      </div>
+    </div>
+  </template>
+
 
   <!-- JS Dependencies -->
   <script src="scripts/require/jquery-1.12.4.js"></script>
@@ -655,6 +811,7 @@
   <!--Vue components-->
   <script src="scripts/components/filerow.js"></script>
   <script src="scripts/components/generow.js"></script>
+  <script src="scripts/components/legend.js"></script>
   <script src="scripts/components/mainpanel.js"></script>
   <script src="scripts/components/modalpanel.js"></script>
   <!--Vue based views-->

@@ -91,3 +91,41 @@ select.filter-input {
 ul {
   list-style-type: none;
 }
+
+.side-button {
+  position: fixed;
+  left: 0px;
+  width: 4vw;
+}
+
+.side-button .btn {
+  color: #0F0752;
+  font-size: 20px;
+  border-radius: 1px 7px 7px 1px;
+  border-color: #666666;
+}
+
+#analysis-button {
+  top: 250px;
+}
+
+#filter-button {
+  top: 300px;
+}
+
+#settings-button {
+  top: 350px;
+}
+
+#tables-button {
+  top: 400px;
+}
+
+#download-button {
+  top: 450px;
+}
+
+#example-button {
+  color: #eeeeee;
+  background-color: #0F0752;
+}

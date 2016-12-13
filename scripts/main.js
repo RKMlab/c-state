@@ -48,6 +48,7 @@ const plotScope = {
     geneModal: {
       showExons: true,
       showNeighbors: true,
+      sameColors: true,
       showIsoforms: true,
       panelHeight: 120,
       HPadding: 40,
@@ -106,11 +107,14 @@ const readFile = function (fileobj, callback) {
   reader.readAsText(fileobj);
 }
 
-const exportJSONtoFile = function (obj = plotScope) {
+const exportJSONToFile = function (obj = plotScope) {
+  if (plotScope.genes.length === 0) {
+    return;
+  }
   const data = new Blob([JSON.stringify(obj)], {
     type: 'text/json;charset=utf-8'
   });
-  saveAs(data, 'cstate_data.json')
+  saveAs(data, 'cstate_data.json');
 }
 
 const resetModalZoom = function (gene) {
@@ -226,10 +230,8 @@ const formatPlotScope = function (scope = plotScope) {
           obj.FEnd = gene.geneinfo.REnd;
         }
         gene.geneinfo.neighbors.push(JSON.parse(JSON.stringify(obj)))
-        console.log(gene.name, gene.geneinfo.strand, gene.geneinfo.FlankStart, gene.geneinfo.FlankEnd, obj.geneSymbol, obj.txStart, obj.txEnd, obj.FStart, obj.FEnd)
       });
       // gene = JSON.parse(JSON.stringify(gene));
-      console.log(gene);
       Vue.set(gene, 'mappedFeatures', []);
     }
 
@@ -309,10 +311,7 @@ const formatPlotScope = function (scope = plotScope) {
         }
         gene.mappedFeatures.push(mapped);
         if (cellTypeCount == scope.info.celltypes.length) {
-          console.log(gene.name, gene.geneinfo.strand, gene.geneinfo.FlankStart, gene.geneinfo.FlankEnd, gene.geneinfo.neighbors);
-          // _.delay(() => {
-            scope.genes.push(gene);
-          // }, i*10);
+          scope.genes.push(gene);
           feature_files.$data.showDownloadButton = true;
           if (scope.genes.length === mainFileData.geneList.length) {
             _.delay(function () {
