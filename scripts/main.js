@@ -117,6 +117,17 @@ const exportJSONToFile = function (obj = plotScope) {
   saveAs(data, 'cstate_data.json');
 }
 
+const hideSideDivs = function () {
+  hideFilterDiv();
+  hideSettingsDiv();
+  hideAnalysis();
+}
+
+$('.side-button button').tipsy({
+  gravity: 'w',
+  fade: true
+});
+
 const resetModalZoom = function (gene) {
   const zoom = d3.zoom();
   const xScale = d3.scaleLinear()

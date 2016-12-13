@@ -36,7 +36,7 @@ const settingsModal = new Vue({
       //     this.genes[i].show = true;
       //   }, i*5);
       // }
-      _.delay(() => spinner.loading = false, (this.scope.genes.length+1) * 5);
+      _.delay(() => spinner.loading = false, 1000);
     }
   }
 })

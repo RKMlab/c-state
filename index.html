@@ -8,6 +8,7 @@
   <!-- CSS links -->
   <link href="scripts/require/bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="scripts/require/animate.min.css" rel="stylesheet">
+  <link href="scripts/require/tipsy/tipsy.css" rel="stylesheet">
   <link href="styles/main.css" rel="stylesheet">
   <link href="styles/modals.css" rel="stylesheet">
 </head>
@@ -16,11 +17,13 @@
 
   <div class="container-fluid">
 
+    <!--C-State Logo-->
     <div style="position: absolute; top: 0; left: 0; width: 200px; height: 65px">
       <a href="http://ccmb.res.in/rakeshmishra/c-state/"> <img style="margin-left: 5px; margin-top: 5px;" width="100%" src="images/c-state_logo.png" alt="C-State Logo"></a>
       <br><span style="position:absolute; margin-top: -15px; margin-left: 160px; font-weight: bold">v0.2.1</span>
     </div>
 
+    <!--CCMB Logo-->
     <div style="position: absolute; top: 0; right: 0; ">
       <a href="http://ccmb.res.in/"> <img style="float: right; margin-right: 20px; margin-top: 5px;" src="images/ccmb_logo_new.png" alt="CSIR Logo">
     </div>
@@ -179,7 +182,7 @@
         <!--File Accordion Ends Here-->
       </div>
 
-
+      <!--View Accordion-->
       <div id="view" class="panel panel-default viewClass" href="#view-body">
         <div class="panel-heading">
           <h4 class="panel-title">
@@ -254,11 +257,11 @@
     </div>
 
     <!--Common Mask for panels-->
-    <div id="common-mask" class="modal-mask"></div>
+    <div id="common-mask" onclick="hideSideDivs()" class="modal-mask"></div>
 
     <!--Side Buttons-->
     <div id='analysis-button' class="side-button">
-      <button type="button" title="Perform Downstream Analysis" class="btn btn-block btn-lg btn-default glyphicon glyphicon-stats"></button>
+      <button onclick="showAnalysis()" type="button" title="Perform Downstream Analysis" class="btn btn-block btn-lg btn-default glyphicon glyphicon-stats"></button>
     </div>
     <div id='filter-button' class="side-button">
       <button onclick="showFilters()" type="button" title="Open Filters Panel" class="btn btn-block btn-lg btn-default glyphicon glyphicon-filter"></button>
@@ -273,7 +276,28 @@
       <button type="button" title="Download Options" onclick="exportJSONToFile()" class="btn btn-block btn-lg btn-default glyphicon glyphicon-download-alt"></button>
     </div>
 
+    <!--Analysis Modal-->
+    <div id='analysis-modal'>
+      <div id='analysis-body' class="modal-wrapper animated rotateInDownLeft" v-if="showAnalysisDiv">
+        <div class="modal-container">
 
+          <div class="modal-header">
+            <h3 style="text-align: center">Downstream Analysis</h3>
+          </div>
+
+          <div class="modal-body" style="width:inherit;">
+            <div class="row" style="text-align: center">
+
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button class="btn btn-danger" onclick="hideAnalysis()">Close</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
 
     <!--Filter Modal Div-->
     <div id='filter-modal'>
@@ -492,6 +516,7 @@
       </div>
     </div>
 
+    <!--Spinner for loading screen-->
     <div id='spinner' v-if="loading">
       <div class="loading-overlay"></div>
       <clip-loader :loading="loading" :color="color" :size="size"></clip-loader>
@@ -799,6 +824,7 @@
 
   <!-- JS Dependencies -->
   <script src="scripts/require/jquery-1.12.4.js"></script>
+  <script src="scripts/require/tipsy/jquery.tipsy.js"></script>
   <script src="scripts/require/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
   <script src="scripts/require/d3v4/d3.js"></script>
   <script src="scripts/require/vue_v2.js"></script>
@@ -815,13 +841,14 @@
   <script src="scripts/components/mainpanel.js"></script>
   <script src="scripts/components/modalpanel.js"></script>
   <!--Vue based views-->
+  <script src="scripts/views/analysis.js"></script>
   <script src="scripts/views/files.js"></script>
   <script src="scripts/views/genemodal.js"></script>
   <script src="scripts/views/filtermodal.js"></script>
   <script src="scripts/views/settingsmodal.js"></script>
   <script src="scripts/parsers/bed.js"></script>
+  <!--Make the entire accordion header clickable-->
   <script>
-    // Make the entire accordion header clickable
     $(".panel.panel-default").click(function (e) {
       let panel = $(this).find("div.panel-collapse");
       $(this).toggleClass("active");

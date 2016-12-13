@@ -87,6 +87,7 @@ const mainpanel = Vue.component('mainpanel', {
           })
         )
         .enter().append("g")
+        .attr("class", "featureClass")
         .attr("transform", function (d, i) {
           return "translate(" + xScale(d.FStart) + ',' + yScale(d.FName) + ")";
         });
@@ -106,7 +107,7 @@ const mainpanel = Vue.component('mainpanel', {
 
         featureBars.append("svg:title")
           .text(function (d) {
-            return d.FName;
+            return `Score: ${d.FScore}, Width: ${d.FEnd - d.FStart}bp`;
           })
       }
 
