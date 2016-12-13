@@ -6,8 +6,8 @@ const showAnalysis = function () {
     "visibility": "visible",
     "opacity": "1"
   });
-  $("#analysis-body").removeClass("rotateOut");
-  $("#analysis-body").addClass("rotateInDownLeft");
+  $("#analysis-body").removeClass("fadeOut");
+  $("#analysis-body").addClass("slideInLeft");
 }
 
 const hideAnalysis = function () {
@@ -15,8 +15,8 @@ const hideAnalysis = function () {
     "visibility": "hidden",
     "opacity": "0"
   });
-  $("#analysis-body").removeClass("rotateInDownLeft");
-  $("#analysis-body").addClass("rotateOut");
+  $("#analysis-body").removeClass("slideInLeft");
+  $("#analysis-body").addClass("fadeOut");
   // analysisModal.showAnalysisDiv = false;
 }
 
