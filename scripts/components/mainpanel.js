@@ -107,7 +107,7 @@ const mainpanel = Vue.component('mainpanel', {
 
         featureBars.append("svg:title")
           .text(function (d) {
-            return `Score: ${d.FScore}, Width: ${d.FEnd - d.FStart}bp`;
+            return `Score: ${d.FScore}\nWidth: ${d.FEnd - d.FStart}bp`;
           })
       }
 
@@ -138,7 +138,7 @@ const mainpanel = Vue.component('mainpanel', {
 
         neighborBars.append("svg:title")
           .text(function (d) {
-            return d.geneSymbol;
+            return `Gene Symbol: ${d.geneSymbol}\nGene Size: ${d.txSize}bp`;
           })
       }
 

@@ -120,7 +120,7 @@ const modalpanel = Vue.component('modalpanel', {
 
         featureBars.append("svg:title")
           .text(function (d) {
-            return `Score: ${d.FScore}, Width: ${d.FEnd - d.FStart}bp`;
+            return `Score: ${d.FScore}\nWidth: ${d.FEnd - d.FStart}bp`;
           })
       }
 
@@ -151,7 +151,7 @@ const modalpanel = Vue.component('modalpanel', {
 
         neighborBars.append("svg:title")
           .text(function (d) {
-            return d.geneSymbol;
+            return `Gene Symbol: ${d.geneSymbol}\nGene Size: ${d.txSize}bp`;
           })
       }
 
