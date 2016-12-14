@@ -32,17 +32,22 @@
 #gene-modal .modal-container {
   width: 80vw;
   height: 90vh;
-  margin: 0px auto;
-  padding: 20px 30px;
+  margin: auto;
+  padding: 0px 20px 0px 20px;
   background-color: #fff;
   border-radius: 2px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
   font-family: Helvetica, Arial, sans-serif;
 }
 
+#gene-modal .modal-header {
+  height: 10vh;
+}
+
 #gene-modal .modal-body {
-  height: 60vh;
-  margin: 20px 0;
+  height: 70vh;
+  margin: 0px 20px;
+  padding: 0px;
 }
 
 .modalaxis path {
@@ -129,4 +134,8 @@
 
 #settings-modal li {
   padding: 5px;
+}
+
+.tipsy-w {
+  font-size: 12px;
 }

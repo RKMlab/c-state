@@ -226,11 +226,11 @@
           <div class="modal-wrapper">
             <div class="modal-container">
 
-              <div class="modal-header">
-                <h3>
+              <div class="modal-header" style="margin: 0px 20px 0px 20px">
+                <h3 style="margin-top: 0px">
                   {{ gene.name }}
                 </h3>
-                <h4>{{ gene.geneinfo.chrom }}:{{ gene.geneinfo.txStart }}-{{gene.geneinfo.txEnd}}({{gene.geneinfo.strand}})</h4>
+                <h4 style="margin-top: 0px">{{ gene.geneinfo.chrom }}:{{ gene.geneinfo.txStart }}-{{gene.geneinfo.txEnd}}({{gene.geneinfo.strand}})</h4>
               </div>
 
               <div class="modal-body dragscroll" style="overflow: auto; width:inherit;">
@@ -278,16 +278,35 @@
 
     <!--Analysis Modal-->
     <div id='analysis-modal'>
-      <div id='analysis-body' class="modal-wrapper animated slideInLeft" v-if="showAnalysisDiv">
+      <div id='analysis-body' class="modal-wrapper animated rollIn" v-if="showAnalysisDiv">
         <div class="modal-container">
 
           <div class="modal-header">
-            <h3 style="text-align: center">Downstream Analysis</h3>
+            <h3 style="text-align: center">Downstream Analysis</h3><br>
           </div>
 
-          <div class="modal-body" style="width:inherit;">
+          <div class="modal-body" style="width:inherit; padding-top: 0px">
             <div class="row" style="text-align: center">
+              <ul class="nav nav-tabs nav-justified">
+                <li class="active"><a data-toggle="tab" href="#analysis-all">All Genes</a></li>
+                <li><a data-toggle="tab" href="#analysis-filtered">Filtered Genes</a></li>
+              </ul>
+            </div>
 
+            <div class="tab-content">
+              <div id="analysis-all" class="tab-pane fade in active">
+                <br>
+                <table style="margin: auto; width: 80%">
+                  <tr v-for="celltype in celltypes">
+                    <td is="avgprofile" v-for="feature in features" :celltype="celltype.name" :feature="feature.name">
+                    </td>
+                  </tr>
+                </table>
+              </div>
+
+              <div id="analysis-filtered" class="tab-pane fade">
+                <h3>Filtered</h3>
+              </div>
             </div>
           </div>
 
@@ -585,6 +604,13 @@
     </tr>
   </template>
 
+  <!--Analysis templates-->
+  <template id='avgprofile-template'>
+    <td>
+      <div>
+      </div>
+    </td>
+  </template>
   <!--Filter templates-->
 
   <!--Name Filter template-->
@@ -835,6 +861,7 @@
   <!-- My JS Files -->
   <script src="scripts/main.js"></script>
   <!--Vue components-->
+  <script src="scripts/components/avgprofile.js"></script>
   <script src="scripts/components/filerow.js"></script>
   <script src="scripts/components/generow.js"></script>
   <script src="scripts/components/legend.js"></script>

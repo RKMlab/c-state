@@ -23,19 +23,24 @@ const settingsModal = new Vue({
 
   methods: {
     applySettings: function () {
-      // console.log(this.genes)
       spinner.loading = true;
-      _.forEach(this.scope.genes, gene => {
+      const names = [];
+      for (let i = 0; i < this.scope.genes.length; i++) {
+        const gene = this.scope.genes[i];
+        if (!gene.show) {
+          continue;
+        }
+        names.push(gene.name);
         gene.show = false;
-      });
+      }
       _.delay(() => {
-        _.forEach(this.scope.genes, gene => gene.show = true)
+        for (let i = 0; i < this.scope.genes.length; i++) {
+          const gene = this.scope.genes[i];
+          if (_.includes(names, gene.name)) {
+            gene.show = true;
+          }
+        }
       }, 500);
-      // for (let i = 0; i < this.genes.length; i++) {
-      //   _.delay(() => {
-      //     this.genes[i].show = true;
-      //   }, i*5);
-      // }
       _.delay(() => spinner.loading = false, 1000);
     }
   }

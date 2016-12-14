@@ -6,8 +6,8 @@ const showAnalysis = function () {
     "visibility": "visible",
     "opacity": "1"
   });
-  $("#analysis-body").removeClass("fadeOut");
-  $("#analysis-body").addClass("slideInLeft");
+  $("#analysis-body").removeClass("rotateOut");
+  $("#analysis-body").addClass("rollIn");
 }
 
 const hideAnalysis = function () {
@@ -15,14 +15,25 @@ const hideAnalysis = function () {
     "visibility": "hidden",
     "opacity": "0"
   });
-  $("#analysis-body").removeClass("slideInLeft");
-  $("#analysis-body").addClass("fadeOut");
-  // analysisModal.showAnalysisDiv = false;
+  $("#analysis-body").removeClass("rollIn");
+  $("#analysis-body").addClass("rotateOut");
+  _.delay(() => {
+    analysisModal.showAnalysisDiv = false;
+  }, 510);
 }
 
 const analysisModal = new Vue({
   el: '#analysis-modal',
   data: {
-    showAnalysisDiv: false
+    showAnalysisDiv: false,
+    filtered: false
+  },
+  computed: {
+    celltypes: function () {
+      return plotScope.info.celltypes;
+    },
+    features: function () {
+      return plotScope.info.features;
+    }
   }
 })
