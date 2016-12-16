@@ -20,7 +20,7 @@ const mainpanel = Vue.component('mainpanel', {
     plotData: function () {
       const rootElement = this.$el;
       const settings = this.settings.mainPanel;
-      const colors = this.settings.ui.colors;
+      const colors = this.settings.general.colors;
       const numCellTypes = this.info.celltypes.length;
       const numFeatures = this.info.features.length;
       const panelWidth = (screen.width - 400) / numCellTypes;
@@ -41,7 +41,7 @@ const mainpanel = Vue.component('mainpanel', {
 
       const featureNames = _.map(this.info.features, 'name');
       const cellTypeName = this.info.celltypes[this.index].name;
-      const mappedFeatures = _.find(this.gene.mappedFeatures, ['name', cellTypeName]).features;
+      const mappedFeatures = getFilteredFeatures(_.find(this.gene.mappedFeatures, ['name', cellTypeName]).features);
       const neighbors = this.gene.geneinfo.neighbors;
       const geneStrand = this.gene.geneinfo.strand;
 

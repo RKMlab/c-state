@@ -28,7 +28,7 @@ const spinner = new Vue({
 // Main variable with plot data
 const plotScope = {
   settings: {
-    ui: {
+    general: {
       colors: ["#cc4c58", "#73d54b", "#693dc0", "#cd4fc9", "#64c986", "#bf4988", "#c3d182", "#7673c9", "#c78c3a", "#472d5e", "#d04e28", "#80ccc3", "#612d26", "#6e99bc", "#5c7533", "#d2a6cf", "#384d40", "#caa789", "#9b6b72", "#ced13c"]
     },
     mainPanel: {
@@ -36,9 +36,9 @@ const plotScope = {
       showNeighbors: true,
       HPadding: 10,
       VPadding: 20,
-      geneBarColor: '#111111',
-      regionBarColor: '#999999',
-      neighborBarColor: '#888888',
+      geneBarColor: '#333333',
+      regionBarColor: '#4682B4',
+      neighborBarColor: '#C0C0C0',
       geneBarHeight: 10,
       regionBarHeight: 3,
       neighborBarHeight: 7,
@@ -54,15 +54,21 @@ const plotScope = {
       HPadding: 40,
       VPadding: 20,
       labelWidth: 120,
-      geneBarColor: '#111111',
-      regionBarColor: '#999999',
-      neighborBarColor: '#888888',
+      geneBarColor: '#333333',
+      regionBarColor: '#4682B4',
+      neighborBarColor: '#C0C0C0',
       geneBarHeight: 10,
       regionBarHeight: 3,
       neighborBarHeight: 7,
       featureBarHeight: 10,
       featurePadding: 0.5
     },
+    featureTracks: {
+      minSize: '',
+      maxSize: '',
+      minScore: 0,
+      maxScore: 1000
+    }
   },
   info: {
     numGenes: 0
@@ -128,6 +134,26 @@ $('.side-button button').tipsy({
   fade: true
 });
 
+const getFilteredFeatures = function (features) {
+  const settings = JSON.parse(JSON.stringify(plotScope.settings.featureTracks));
+  const filtered = JSON.parse(JSON.stringify(features));
+  if (settings.minSize === '') {
+    settings.minSize = 0;
+  }
+  if (settings.maxSize === '') {
+    settings.maxSize = Infinity;
+  }
+  _.remove(filtered, function (f) {
+    const size = f.FEnd - f.FStart;
+    return size < settings.minSize || size > settings.maxSize;
+  })
+
+  _.remove(filtered, function (f) {
+    return f.FScore < settings.minScore || f.FScore > settings.maxScore;
+  })
+  return(filtered);
+}
+
 const resetModalZoom = function (gene) {
   const zoom = d3.zoom();
   const xScale = d3.scaleLinear()
@@ -159,6 +185,7 @@ const formatPlotScope = function (scope = plotScope) {
         Vue.set(scope, 'genes', obj.genes);
         Vue.set(scope, 'info', obj.info);
         Vue.set(scope, 'settings', obj.settings);
+        _.forEach(scope.genes, gene => gene.show = true);
       }, 250);
 
       _.delay(function () {
@@ -167,7 +194,7 @@ const formatPlotScope = function (scope = plotScope) {
         $("#view.panel.panel-default").addClass("active");
         $("#view-body.panel-collapse").addClass("in");
         spinner.loading = false;
-      }, 250, 'Switching accordions');
+      }, 500, 'Switching accordions');
     }
   }
 

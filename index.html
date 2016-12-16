@@ -19,13 +19,13 @@
 
     <!--C-State Logo-->
     <div style="position: absolute; top: 0; left: 0; width: 200px; height: 65px">
-      <a href="http://ccmb.res.in/rakeshmishra/c-state/"> <img style="margin-left: 5px; margin-top: 5px;" width="100%" src="images/c-state_logo.png" alt="C-State Logo"></a>
+      <a href="http://ccmb.res.in/rakeshmishra/c-state/" target="_blank"> <img style="margin-left: 5px; margin-top: 5px;" width="100%" src="images/c-state_logo.png" alt="C-State Logo"></a>
       <br><span style="position:absolute; margin-top: -15px; margin-left: 160px; font-weight: bold">v0.2.1</span>
     </div>
 
     <!--CCMB Logo-->
     <div style="position: absolute; top: 0; right: 0; ">
-      <a href="http://ccmb.res.in/"> <img style="float: right; margin-right: 20px; margin-top: 5px;" src="images/ccmb_logo_new.png" alt="CSIR Logo">
+      <a href="http://ccmb.res.in/" target="_blank"> <img style="float: right; margin-right: 20px; margin-top: 12px; width: 70%" src="images/ccmb_logo_new.png" alt="CSIR Logo">
     </div>
 
     <div class="panel-group" id="main">
@@ -137,8 +137,11 @@
                   <td>
                   </td>
                   <td>
-                    <label :disabled="!showFeatureButton" class="text-center btn btn-default btn-file">Add Feature Files
+                    <label :disabled="!showFeatureButton" class="text-center btn btn-default btn-file">Load Feature Files
                       <input :disabled="!showFeatureButton" @change="onFileUpload" type="file" style="display: none" name="files[]" multiple>
+                    </label>
+                    <label :disabled="!showFeatureButton" class="text-center btn btn-default btn-file">Load Expression Data
+                      <input :disabled="!showFeatureButton" type="file" style="display: none">
                     </label>
                   </td>
                   <td>
@@ -260,14 +263,11 @@
     <div id="common-mask" onclick="hideSideDivs()" class="modal-mask"></div>
 
     <!--Side Buttons-->
-    <div id='analysis-button' class="side-button">
-      <button onclick="showAnalysis()" type="button" title="Perform Downstream Analysis" class="btn btn-block btn-lg btn-default glyphicon glyphicon-stats"></button>
-    </div>
     <div id='filter-button' class="side-button">
       <button onclick="showFilters()" type="button" title="Open Filters Panel" class="btn btn-block btn-lg btn-default glyphicon glyphicon-filter"></button>
     </div>
-    <div id='settings-button' class="side-button">
-      <button onclick="showSettings()" type="button" title="Open Settings Panel" class="btn btn-block btn-lg btn-default glyphicon glyphicon-cog"></button>
+    <div id='analysis-button' class="side-button">
+      <button onclick="showAnalysis()" type="button" title="Plots and Analysis" class="btn btn-block btn-lg btn-default glyphicon glyphicon-stats"></button>
     </div>
     <div id='tables-button' class="side-button">
       <button type="button" title="Table Summary" class="btn btn-block btn-lg btn-default glyphicon glyphicon-th-list"></button>
@@ -275,37 +275,73 @@
     <div id='download-button' class="side-button">
       <button type="button" title="Download Options" onclick="exportJSONToFile()" class="btn btn-block btn-lg btn-default glyphicon glyphicon-download-alt"></button>
     </div>
+    <div id='settings-button' class="side-button">
+      <button onclick="showSettings()" type="button" title="Open Settings Panel" class="btn btn-block btn-lg btn-default glyphicon glyphicon-cog"></button>
+    </div>
 
     <!--Analysis Modal-->
     <div id='analysis-modal'>
       <div id='analysis-body' class="modal-wrapper animated rollIn" v-if="showAnalysisDiv">
         <div class="modal-container">
 
-          <div class="modal-header">
+          <!--<div class="modal-header">
             <h3 style="text-align: center">Downstream Analysis</h3><br>
-          </div>
+          </div>-->
 
-          <div class="modal-body" style="width:inherit; padding-top: 0px">
+          <div class="modal-body" style="width:inherit; padding-top: 10px; overflow-y: scroll">
             <div class="row" style="text-align: center">
               <ul class="nav nav-tabs nav-justified">
-                <li class="active"><a data-toggle="tab" href="#analysis-all">All Genes</a></li>
-                <li><a data-toggle="tab" href="#analysis-filtered">Filtered Genes</a></li>
+                <li class="active"><a data-toggle="tab" href="#histograms">Feature Histograms</a></li>
+                <li><a data-toggle="tab" @click="showAverage=true" href="#average-profile">Average Feature Profile</a></li>
+                <li><a data-toggle="tab" href="#feature-heatmap">Heatmap of Features</a></li>                
               </ul>
             </div>
 
             <div class="tab-content">
-              <div id="analysis-all" class="tab-pane fade in active">
-                <br>
-                <table style="margin: auto; width: 80%">
-                  <tr v-for="celltype in celltypes">
-                    <td is="avgprofile" v-for="feature in features" :celltype="celltype.name" :feature="feature.name">
-                    </td>
-                  </tr>
-                </table>
+              <div style="text-align: center" id="histograms" class="tab-pane fade in active"><br><br>
+                <h3>Histograms Go Here</h3>
+                <h4>Yet to do them!!!</h4>
               </div>
 
-              <div id="analysis-filtered" class="tab-pane fade">
-                <h3>Filtered</h3>
+              <div id="average-profile" class="tab-pane fade">
+                <div class="row" style="padding: 15px 0px 10px 10vw; border-bottom: 1px dotted #666666">
+                  <button @click="switchCols" class="btn btn-primary">Switch Rows/Columns</button>
+                  <span style="padding-left: 10vw">Show
+                    <select class="filter-input" @change="showFiltered" v-model="filtered">
+                      <option :value="{ boolean: false}">All</option>
+                      <option :value="{ boolean: true}">Filtered</option>
+                    </select>Genes
+                  </span> 
+                </div>
+                <div style="padding-top: 10px" v-if="showAverage">
+                  <table style="margin: auto; width: 100%" v-if="colWise">
+                    <tr>
+                      <th>CellType/Feature</th>
+                      <th v-for="feature in features">{{feature.name}}</th>
+                    </tr>
+                    <tr v-for="(celltype, cellindex) in celltypes">
+                      <td>{{celltype.name}}</td>
+                      <td is="avgprofile" v-for="(feature, featindex) in features" :featindex="featindex" :cellindex="cellindex" :colwise="true" :celltype="celltype" :feature="feature" :filtered="filtered.boolean">
+                      </td>
+                    </tr>
+                  </table>
+                  <table style="margin: auto; width: 100%" v-else>
+                    <tr>
+                      <th>CellType/Feature</th>
+                      <th v-for="(celltype, cellindex) in celltypes">{{celltype.name}}</th>
+                    </tr>
+                    <tr v-for="(feature, featindex) in features" >
+                      <td>{{feature.name}}</td>
+                      <td is="avgprofile" v-for="(celltype, cellindex) in celltypes" :featindex="featindex" :cellindex="cellindex" :colwise="false" :celltype="celltype" :feature="feature" :filtered="filtered.boolean">
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+
+              <div style="text-align: center" id="feature-heatmap" class="tab-pane fade"><br><br>
+                <h3>Heatmaps Go Here</h3>
+                <h4>This is to be done too!</h4>
               </div>
             </div>
           </div>
@@ -334,7 +370,7 @@
                 <h6>Click on a filter to add it</h6><br><br>
                 <h5>Filter Genes By</h5>
                 <ol style="padding: 0">
-                  <button :disabled="!genesLoaded" style="width: 100%; margin-bottom: 5px" class="btn btn-default" v-for="(filter, index) in availableFilters"
+                  <button :disabled="!genesLoaded" style="width: 100%; margin-bottom: 5px" class="btn btn-default" :class="{filtergap: filter.type === 'countsFilter'}" v-for="(filter, index) in availableFilters"
                     @click="addFilter(index)">
                     {{ filter.name }}
                     <span class="badge" :style="{ backgroundColor: colors[index] }"> {{ _.filter(activeFilters, ['type', filter.type]).length }}</span>
@@ -344,6 +380,7 @@
 
               <div class="container-fluid col-md-8 dragscroll" style="height: 70vh; overflow-y: auto">
                 <h4>Active Filters</h4>
+                <h6 v-if="activeFilters.length > 0">All active filters are chained, and applied sequentially</h6>
                 <ul style="padding: 0">
                   <span :key="filter.type" v-for="(filter, index) in activeFilters">
                     <table style="width: 100%">
@@ -381,6 +418,7 @@
 
           <div class="modal-header">
             <h3 style="text-align: center">Settings Panel</h3>
+            <h5 style="text-align: center">This panel controls global settings</h5>
           </div>
 
           <div class="modal-body" style="width:inherit;">
@@ -391,6 +429,7 @@
                   <li class="active"><a data-toggle="tab" href="#general-settings">General</a></li>
                   <li><a data-toggle="tab" href="#mainpanel-settings">Main Panels</a></li>
                   <li><a data-toggle="tab" href="#genemodal-settings">Gene Modal</a></li>
+                  <li><a data-toggle="tab" href="#feature-settings">Feature Tracks</a></li>
                 </ul>
               </div>
 
@@ -399,6 +438,7 @@
                   <div id="general-settings" class="tab-pane fade in active">
                     <h4>General Settings</h4>
                   </div>
+
                   <div id="mainpanel-settings" class="tab-pane fade">
                     <h4>Main Panel Settings</h4>
                     <ul style="text-align: left; padding-left: 10%; padding-right: 20%">
@@ -409,54 +449,57 @@
                         <input type="checkbox" v-model="scope.settings.mainPanel.showNeighbors">Show neighboring genes
                       </li>
                     </ul><br>
+                    <div style="text-align: left; width: 80%; margin: auto"><strong>Bar Height</strong></div>
                     <table style="width: 80%; margin: auto; text-align: left">
                       <tr>
-                        <td>Gene Bar Height:</td>
+                        <td>Genes</td>
                         <td>
                           <input class="filter-input" style="text-align:right; width: 20%" v-model.number="scope.settings.mainPanel.geneBarHeight">pixels
                         </td>
                       </tr>
                       <tr>
-                        <td>Region Bar Height:</td>
+                        <td>Regions</td>
                         <td>
                           <input class="filter-input" style="text-align:right; width: 20%" v-model.number="scope.settings.mainPanel.regionBarHeight">pixels
                         </td>
                       </tr>
                       <tr>
-                        <td>Feature Bar Height:</td>
+                        <td>Features</td>
                         <td>
                           <input class="filter-input" style="text-align:right; width: 20%" v-model.number="scope.settings.mainPanel.featureBarHeight">pixels
                         </td>
                       </tr>
                       <tr>
-                        <td>Neighbor Bar Height:</td>
+                        <td>Neighbors</td>
                         <td>
                           <input class="filter-input" style="text-align:right; width: 20%" v-model.number="scope.settings.mainPanel.neighborBarHeight">pixels
                         </td>
                       </tr>
                     </table><br><br>
+                    <div style="text-align: left; width: 80%; margin: auto"><strong>Bar Color</strong></div>
                     <table style="width: 80%; margin: auto; text-align: left">
-                      <col style="width: 40%">
+                      <!--<col style="width: 40%">-->
                       <tr>
-                        <td>Gene Bar Color:</td>
+                        <td>Genes</td>
                         <td>
                           <input class="filter-input" type="color" v-model="scope.settings.mainPanel.geneBarColor">{{scope.settings.mainPanel.geneBarColor}}
                         </td>
                       </tr>
                       <tr>
-                        <td>Region Bar Color:</td>
+                        <td>Regions</td>
                         <td>
                           <input class="filter-input" type="color" v-model="scope.settings.mainPanel.regionBarColor">{{scope.settings.mainPanel.regionBarColor}}
                         </td>
                       </tr>
                       <tr>
-                        <td>Neighbor Bar Color:</td>
+                        <td>Neighbors</td>
                         <td>
                           <input class="filter-input" type="color" v-model="scope.settings.mainPanel.neighborBarColor">{{scope.settings.mainPanel.neighborBarColor}}
                         </td>
                       </tr>
                     </table>
                   </div>
+
                   <div id="genemodal-settings" class="tab-pane fade">
                     <h4>Gene Modal Settings</h4>
                     <ul style="text-align: left; padding-left: 10%; padding-right: 20%">
@@ -467,58 +510,103 @@
                         <input type="checkbox" v-model="scope.settings.geneModal.showNeighbors">Show neighboring genes
                       </li>
                     </ul><br>
+                    <div style="text-align: left; width: 80%; margin: auto"><strong>Bar Height</strong></div>
                     <table style="width: 80%; margin: auto; text-align: left">
                       <tr>
-                        <td>Gene Bar Height:</td>
+                        <td>Genes</td>
                         <td>
                           <input class="filter-input" style="text-align:right; width: 20%" v-model.number="scope.settings.geneModal.geneBarHeight">pixels
                         </td>
                       </tr>
                       <tr>
-                        <td>Region Bar Height:</td>
+                        <td>Regions</td>
                         <td>
                           <input class="filter-input" style="text-align:right; width: 20%" v-model.number="scope.settings.geneModal.regionBarHeight">pixels
                         </td>
                       </tr>
                       <tr>
-                        <td>Feature Bar Height:</td>
+                        <td>Features</td>
                         <td>
                           <input class="filter-input" style="text-align:right; width: 20%" v-model.number="scope.settings.geneModal.featureBarHeight">pixels
                         </td>
                       </tr>
                       <tr>
-                        <td>Neighbor Bar Height:</td>
+                        <td>Neighbors</td>
                         <td>
                           <input class="filter-input" style="text-align:right; width: 20%" v-model.number="scope.settings.geneModal.neighborBarHeight">pixels
                         </td>
                       </tr>
                     </table><br><br>
+                    <div style="text-align: left; width: 80%; margin: auto"><strong>Bar Color</strong></div>
                     <ul style="text-align: left">
                       <li>
                         <input type="checkbox" v-model="scope.settings.geneModal.sameColors">Use same colors as Main panel
                       </li>
-                    </ul>
+                    </ul>                    
                     <table style="width: 80%; margin: auto; text-align: left" v-if="!scope.settings.geneModal.sameColors">
-                      <col style="width: 40%">
+                      <!--<col style="width: 40%">-->
                       <tr>
-                        <td>Gene Bar Color:</td>
+                        <td>Genes</td>
                         <td>
                           <input class="filter-input" :disabled="scope.settings.geneModal.sameColors" type="color" v-model="scope.settings.geneModal.geneBarColor">{{scope.settings.geneModal.geneBarColor}}
                         </td>
                       </tr>
                       <tr>
-                        <td>Region Bar Color:</td>
+                        <td>Regions</td>
                         <td>
                           <input class="filter-input" :disabled="scope.settings.geneModal.sameColors" type="color" v-model="scope.settings.geneModal.regionBarColor">{{scope.settings.geneModal.regionBarColor}}
                         </td>
                       </tr>
                       <tr>
-                        <td>Neighbor Bar Color:</td>
+                        <td>Neighbors</td>
                         <td>
                           <input class="filter-input" :disabled="scope.settings.geneModal.sameColors" type="color" v-model="scope.settings.geneModal.neighborBarColor">{{scope.settings.geneModal.neighborBarColor}}
                         </td>
                       </tr>
                     </table>
+                  </div>
+
+                  <div id="feature-settings" class="tab-pane fade">
+                    <h4>Feature Track Settings</h4><br><br>
+                    <div class="container-fluid row">
+                      <span>Feature size cut-off (in bp)</span>
+                    </div>
+                    <div class="container-fluid row">
+                      <table style="width: 80%; margin: auto">
+                        <tr>
+                          <td>Min</td>
+                          <td>Max</td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <input class="filter-input" style="text-align:right; width: 50%" v-model.number="scope.settings.featureTracks.minSize">
+                          </td>
+                          <td>
+                            <input class="filter-input" style="text-align:right; width: 50%" v-model.number="scope.settings.featureTracks.maxSize">
+                          </td>
+                        </tr>
+                      </table>
+                    </div><br><br>
+                    <div class="container-fluid row">
+                      <span>Feature score cut-off</span>
+                    </div>
+                    <div class="container-fluid row">
+                      <table style="width: 80%; margin: auto">
+                        <tr>
+                          <td>Min</td>
+                          <td>Max</td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <input class="filter-input" style="text-align:right; width: 50%" v-model.number="scope.settings.featureTracks.minScore">
+                          </td>
+                          <td>
+                            <input class="filter-input" style="text-align:right; width: 50%" v-model.number="scope.settings.featureTracks.maxScore">
+                          </td>
+                        </tr>
+                      </table>
+                    </div>
+  
                   </div>
                 </div>
               </div>
@@ -606,7 +694,7 @@
 
   <!--Analysis templates-->
   <template id='avgprofile-template'>
-    <td>
+    <td v-show="show">
       <div>
       </div>
     </td>
@@ -616,7 +704,7 @@
   <!--Name Filter template-->
   <template id='name-filter-template'>
     <div class="filter-component row">
-      <h5><strong>Name Filter</strong></h5>
+      <h5><strong>Gene Name Filter</strong></h5>
       <div>
         <select class="filter-input" v-model="hideGene">
           <option :value="{ boolean: false}">Show</option>

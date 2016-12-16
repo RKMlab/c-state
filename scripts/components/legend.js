@@ -27,7 +27,7 @@ const myLegend = Vue.component('my-legend', {
     }
     this.info = plotScope.info;
     const rootElement = this.$el;
-    const colors = plotScope.settings.ui.colors;
+    const colors = plotScope.settings.general.colors;
     const features = this.info.features;
     const numFeatures = features.length;
     const panelWidth = 1000;

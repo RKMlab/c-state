@@ -81,11 +81,14 @@
 }
 
 #analysis-modal .modal-header {
-  height: 8vh;
+  height: 5vh;
+  padding: 0;
+  margin-bottom: 10px;
+  border-bottom: none;
 }
 
 #analysis-modal .modal-body {
-  height: 75vh;
+  height: 80vh;
   margin: 0px 20px 0 2px;
 }
 

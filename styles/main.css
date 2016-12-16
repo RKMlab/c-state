@@ -105,27 +105,31 @@ ul {
   border-color: #666666;
 }
 
-#analysis-button {
+#filter-button {
   top: 250px;
 }
 
-#filter-button {
+#analysis-button {
   top: 300px;
 }
 
-#settings-button {
+#tables-button {
   top: 350px;
 }
 
-#tables-button {
+#download-button {
   top: 400px;
 }
 
-#download-button {
+#settings-button {
   top: 450px;
 }
 
 #example-button {
   color: #eeeeee;
   background-color: #0F0752;
+}
+
+.filtergap {
+  margin-top: 20px;
 }

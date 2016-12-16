@@ -34,14 +34,14 @@ const filterModal = new Vue({
       name: 'Chromosome',
       type: 'chromFilter'
     }, {
+      name: 'Neighbor Counts',
+      type: 'neighborCountFilter'
+    }, {
       name: 'Feature Counts',
       type: 'countsFilter'
     }, {
       name: 'Feature Overlaps',
       type: 'overlapFilter'
-    }, {
-      name: 'Neighbor Counts',
-      type: 'neighborCountFilter'
     }],
     activeFilters: [],
     genes: '',
@@ -72,19 +72,34 @@ const filterModal = new Vue({
         const data = this.$children[i];
         switch (filter.type) {
           case "nameFilter":
+            if (data.userInput === '') {
+              alert('Gene name cannot be left blank');
+              spinner.loading = false;
+              return;
+            }
             this.applyNameFilter(data.names, data.hideGene.boolean, data.matchPartial, data.matchBeginning);
             break;
 
           case "sizeFilter":
+            if (data.operatorSelected === '' || data.sizeCutOff === '') {
+              alert('Invalid operator or size');
+              spinner.loading = false;
+              return;
+            }
             this.applySizeFilter(data.locusSelected, data.operatorSelected, data.sizeCutOff)
             break;
           
           case "chromFilter":
+            if (data.chromSelected === '') {
+              alert('No Chromosome chosen');
+              spinner.loading = false;
+              return;
+            }
             this.applyChromFilter(data.chromSelected, data.hideChrom.boolean, data.start, data.end)
             break;
 
           case "countsFilter":
-            if (data.featureCount === null || data.featureCount === "") {
+            if (data.featureCount === "") {
               alert('Feature Count cannot be left empty');
               spinner.loading = false;
               return;
@@ -107,8 +122,8 @@ const filterModal = new Vue({
             break;
           
           case "neighborCountFilter":
-            if (data.countCutOff === '') {
-              alert('Invalid neighbor count. Input a number greater than or equal to 0');
+            if (data.operatorSelected === '' || data.countCutOff === '') {
+              alert('Invalid operator or neighbor count');
               spinner.loading = false;
               return;
             }
@@ -213,7 +228,7 @@ const filterModal = new Vue({
             break;
           default:
             alert('Unknown operator in size filter'); // This should never happen
-            break;
+            return;
         }
       }
     },
@@ -254,10 +269,12 @@ const filterModal = new Vue({
         // Filter features belonging to celltype
         if (celltype === 'any') {
           _.forEach(gene.mappedFeatures, list => {
-            match.push(JSON.parse(JSON.stringify(list.features)));
+            match.push(getFilteredFeatures(list.features));
+            // match.push(JSON.parse(JSON.stringify(list.features)));
           });
         } else {
-          match.push(JSON.parse(JSON.stringify(_.find(gene.mappedFeatures, ['value', celltype]).features)));
+          match.push(getFilteredFeatures(_.find(gene.mappedFeatures, ['value', celltype]).features));
+          // match.push(JSON.parse(JSON.stringify(_.find(gene.mappedFeatures, ['value', celltype]).features)));
         }
         // Filter features by feature name
         if (feature !== 'all') {
@@ -268,14 +285,14 @@ const filterModal = new Vue({
           });
         }
         // Restrict wrt TSS
-        if (uplimit !== null && uplimit !== "") {
+        if (uplimit !== "") {
           _.forEach(match, list => {
             _.remove(list, obj => {
               return obj.FEnd < (uplimit * -1000);
             })
           })
         }
-        if (downlimit !== null && downlimit !== "") {
+        if (downlimit !== "") {
           _.forEach(match, list => {
             _.remove(list, obj => {
               return obj.FStart > (downlimit * 1000);
@@ -346,9 +363,12 @@ const filterModal = new Vue({
         //   }
         // } else {
           if (firstFeature !== 'exon') {
-            firstMatch = JSON.parse(JSON.stringify(_.filter(_.find(gene.mappedFeatures, ['value', celltype]).features, function (o) {
+            firstMatch = getFilteredFeatures(_.filter(_.find(gene.mappedFeatures, ['value', celltype]).features, function (o) {
               return o.FName.toUpperCase() === firstFeature;
-            })));
+            }));
+            // firstMatch = JSON.parse(JSON.stringify(_.filter(_.find(gene.mappedFeatures, ['value', celltype]).features, function (o) {
+            //   return o.FName.toUpperCase() === firstFeature;
+            // })));
           } else {
             firstMatch = JSON.parse(JSON.stringify(gene.geneinfo.exons));
             _.forEach(firstMatch, function (o) {
@@ -357,9 +377,12 @@ const filterModal = new Vue({
             });
           }
           if (secondFeature !== 'exon') {
-            secondMatch = JSON.parse(JSON.stringify(_.filter(_.find(gene.mappedFeatures, ['value', celltype]).features, function (o) {
+            secondMatch = getFilteredFeatures(_.filter(_.find(gene.mappedFeatures, ['value', celltype]).features, function (o) {
               return o.FName.toUpperCase() === secondFeature;
-            })));
+            }));
+            // secondMatch = JSON.parse(JSON.stringify(_.filter(_.find(gene.mappedFeatures, ['value', celltype]).features, function (o) {
+            //   return o.FName.toUpperCase() === secondFeature;
+            // })));
           } else {
             secondMatch = JSON.parse(JSON.stringify(gene.geneinfo.exons));
             _.forEach(secondMatch, function (o) {
@@ -369,14 +392,14 @@ const filterModal = new Vue({
           }
         // }
         // Restrict wrt TSS
-        if (uplimit !== null && uplimit !== "") {
+        if (uplimit !== "") {
           // _.forEach(firstMatch, list => {
             _.remove(firstMatch, obj => {
               return obj.FEnd < (uplimit * -1000);
             })
           // })
         }
-        if (downlimit !== null && downlimit !== "") {
+        if (downlimit !== "") {
           // _.forEach(firstMatch, list => {
             _.remove(firstMatch, obj => {
               return obj.FStart > (downlimit * 1000);
@@ -567,7 +590,7 @@ const sizeFilter = Vue.component('sizeFilter', {
       locusSelected: 'gene',
       operators: operators,
       operatorSelected: '',
-      sizeCutOff: null
+      sizeCutOff: ''
     }
   }
 })
@@ -600,9 +623,9 @@ const countsFilter = Vue.component('countsFilter', {
       cellTypeSelected: 'any',
       featureSelected: 'all',
       operatorSelected: '=',
-      featureCount: null,
-      upstreamLimit: null,
-      downstreamLimit: null
+      featureCount: '',
+      upstreamLimit: '',
+      downstreamLimit: ''
     }
   },
   mounted: function () {
@@ -647,8 +670,8 @@ const overlapFilter = Vue.component('overlapFilter', {
       relationSelected: 'upstream',
       minDistance: 0,
       maxDistance: Infinity,
-      upstreamLimit: null,
-      downstreamLimit: null
+      upstreamLimit: '',
+      downstreamLimit: ''
     }
   },
   mounted: function () {

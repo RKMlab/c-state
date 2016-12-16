@@ -19,6 +19,7 @@ const hideAnalysis = function () {
   $("#analysis-body").addClass("rotateOut");
   _.delay(() => {
     analysisModal.showAnalysisDiv = false;
+    analysisModal.showAverage = false;
   }, 510);
 }
 
@@ -26,7 +27,11 @@ const analysisModal = new Vue({
   el: '#analysis-modal',
   data: {
     showAnalysisDiv: false,
-    filtered: false
+    showAverage: false,
+    filtered: {
+      boolean: false
+    },
+    colWise: false,
   },
   computed: {
     celltypes: function () {
@@ -34,6 +39,22 @@ const analysisModal = new Vue({
     },
     features: function () {
       return plotScope.info.features;
+    }
+  },
+  methods: {
+    switchCols: function () {
+      this.colWise = !this.colWise;
+      this.showAverage = false;
+      _.delay(() => {
+        this.showAverage = true;
+      }, 250)
+    },
+
+    showFiltered: function () {
+      this.showAverage = false;
+      _.delay(() => {
+        this.showAverage = true;
+      }, 250)
     }
   }
 })

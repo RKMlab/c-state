@@ -26,7 +26,7 @@ const modalpanel = Vue.component('modalpanel', {
     plotData: function () {
       const rootElement = this.$el;
       const settings = this.settings.geneModal;
-      const colors = this.settings.ui.colors;
+      const colors = this.settings.general.colors;
       const modalWidth = screen.width * 0.8;
       const numFeatures = this.info.features.length;
       const widthPadding = settings.HPadding;
@@ -44,7 +44,8 @@ const modalpanel = Vue.component('modalpanel', {
 
       const featureNames = _.map(this.info.features, 'name');
       const cellTypeName = this.info.celltypes[this.index].name;
-      const mappedFeatures = _.find(this.gene.mappedFeatures, ['name', cellTypeName]).features;
+      const mappedFeatures = getFilteredFeatures(_.find(this.gene.mappedFeatures, ['name', cellTypeName]).features);
+      // getFilteredFeatures(mappedFeatures);
       const neighbors = this.gene.geneinfo.neighbors;
       const geneStrand = this.gene.geneinfo.strand;
       const delay = (this.info.flankUp + this.info.flankDown) / 1000 * (this.index + 1);
@@ -196,10 +197,6 @@ const modalpanel = Vue.component('modalpanel', {
           [panelWidth, 0]
         ])
         .on("zoom", zoomHandler)
-
-      zoom.filter(function () {
-        return !event.button && event.type !== "click"
-      })
 
       function zoomHandler() {
         chart.attr("transform", "translate(" + d3.event.transform.x + ",0" + ") scale(" + d3.event.transform.k + ",1)");
