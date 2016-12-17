@@ -190,6 +190,7 @@
         <div class="panel-heading">
           <h4 class="panel-title">
             <a href="#view-body">View - Showing {{numFilteredGenes}} of {{genes.length}} genes</a>
+            <a style="float: right" v-if="activeFilters > 0">{{activeFilters}} Active Filter(s)</a>
             <!--<p style="text-align:center"> </p>-->
           </h4>
         </div>
@@ -248,6 +249,7 @@
                   <my-legend loc='geneModal' style="margin: 0px 20px 0px 20px; width: 80%"></my-legend>
                 </div>
                 <div class="col-md-4">
+                  <button class="btn btn-success" @click="saveAsSVG()">Download As SVG</button>
                   <button class="btn btn-primary" onclick="events.$emit('reset_zoom')">Reset Zoom</button>
                   <button class="btn btn-default" @click="closeModal()">Close</button>
                 </div>
@@ -270,7 +272,7 @@
       <button onclick="showAnalysis()" type="button" title="Plots and Analysis" class="btn btn-block btn-lg btn-default glyphicon glyphicon-stats"></button>
     </div>
     <div id='tables-button' class="side-button">
-      <button type="button" title="Table Summary" class="btn btn-block btn-lg btn-default glyphicon glyphicon-th-list"></button>
+      <button onclick="showTable()" type="button" title="Table Summary" class="btn btn-block btn-lg btn-default glyphicon glyphicon-th-list"></button>
     </div>
     <div id='download-button' class="side-button">
       <button type="button" title="Download Options" onclick="exportJSONToFile()" class="btn btn-block btn-lg btn-default glyphicon glyphicon-download-alt"></button>
@@ -407,6 +409,24 @@
             <button class="btn btn-danger" onclick="hideFilterDiv()">Close</button>
           </div>
 
+        </div>
+      </div>
+    </div>
+
+    <!--Table Summary Div-->
+    <div id="table-summary">
+      <div id='table-body' class="modal-wrapper animated fadeIn" v-if="showTableDiv">
+        <div class="modal-container">
+
+           <div class="modal-body" style="width:inherit; padding-top: 10px; overflow-y: scroll">
+             <!--<table class="table table-striped table-hover table-bordered table-condensed">
+               <tr>
+                 <th-->
+           </div>
+
+           <div class="modal-footer">
+            <button class="btn btn-danger" onclick="hideTable()">Close</button>
+          </div>
         </div>
       </div>
     </div>
@@ -684,7 +704,7 @@
   <!--template for gene panel in modal view-->
   <template id='modalpanel-template'>
     <tr>
-      <td style="font-weight: bold; width: 30px; text-align: right; word-wrap: break-word; padding-right: 20px"> {{ cellTypeName }}</td>
+      <td class="celltype-name" style="font-weight: bold; width: 30px; text-align: right; word-wrap: break-word; padding-right: 20px"> {{ cellTypeName }}</td>
       <td>
         <div class="modal-panel-row">
         </div>
@@ -699,6 +719,7 @@
       </div>
     </td>
   </template>
+
   <!--Filter templates-->
 
   <!--Name Filter template-->
@@ -935,7 +956,13 @@
     </div>
   </template>
 
-
+  <!--Table Row template-->
+  <template id='table-row-template'>
+    <tr>
+      <td>
+      </td>
+    </tr>
+  </template>
   <!-- JS Dependencies -->
   <script src="scripts/require/jquery-1.12.4.js"></script>
   <script src="scripts/require/tipsy/jquery.tipsy.js"></script>
@@ -957,11 +984,12 @@
   <script src="scripts/components/modalpanel.js"></script>
   <!--Vue based views-->
   <script src="scripts/views/analysis.js"></script>
-  <script src="scripts/views/files.js"></script>
   <script src="scripts/views/genemodal.js"></script>
   <script src="scripts/views/filtermodal.js"></script>
   <script src="scripts/views/settingsmodal.js"></script>
+  <script src="scripts/views/tables.js"></script>
   <script src="scripts/parsers/bed.js"></script>
+  <script src="scripts/views/files.js"></script>
   <!--Make the entire accordion header clickable-->
   <script>
     $(".panel.panel-default").click(function (e) {

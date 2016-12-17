@@ -186,6 +186,9 @@ const plot = new Vue({
   computed: {
     numFilteredGenes: function () {
       return _.filter(plotScope.genes, 'show').length;
+    },
+    activeFilters: function () {
+      return filterModal.activeFilters.length;
     }
   }
 })

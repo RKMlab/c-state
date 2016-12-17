@@ -118,6 +118,36 @@
   top: 0;
 }
 
+#table-summary .modal-wrapper {
+  position: fixed;
+  z-index: 2500;
+  top: 2vw;
+  left: 5vw;
+}
+
+#table-summary .modal-container {
+  width: 90vw;
+  height: 90vh;
+  margin: 0px auto;
+  /*padding: 20px 30px;*/
+  background-color: #fff;
+  border-radius: 2px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+#table-summary .modal-header {
+  height: 5vh;
+  padding: 0;
+  margin-bottom: 10px;
+  border-bottom: none;
+}
+
+#table-summary .modal-body {
+  height: 80vh;
+  margin: 0px 20px 0 2px;
+}
+
 #settings-modal .modal-container {
   width: 40vw;
   height: 100vh;

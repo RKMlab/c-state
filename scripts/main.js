@@ -127,6 +127,7 @@ const hideSideDivs = function () {
   hideFilterDiv();
   hideSettingsDiv();
   hideAnalysis();
+  hideTable();
 }
 
 $('.side-button button').tipsy({

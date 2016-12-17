@@ -2,7 +2,7 @@
 
 const avgprofile = Vue.component('avgprofile', {
   template: '#avgprofile-template',
-  props: ['celltype', 'feature', 'filtered', 'cellindex', 'featindex', 'colwise'],
+  props: ['celltype', 'feature', 'filtered', 'cellindex', 'featindex', 'colwise', 'tssonly'],
   data: function () {
     return {
       scope: plotScope,
@@ -13,11 +13,11 @@ const avgprofile = Vue.component('avgprofile', {
   mounted: function () {
     const factor = (this.scope.info.flankUp + this.scope.info.flankDown)/200;
     const delay = (this.cellindex+1)*factor + (this.featindex * factor)
-    _.delay(this.getProfile, delay);
+    _.delay(this.getFullProfile, delay);
   },
   methods: {
 
-    getProfile: function () {
+    getFullProfile: function () {
       const profile = this.profile;
       const scope = this.scope;
       const binSize = 100;
