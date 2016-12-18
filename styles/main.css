@@ -133,3 +133,16 @@ ul {
 .filtergap {
   margin-top: 20px;
 }
+
+input[type=checkbox] {
+  margin-right: 4px
+}
+
+.VuePagination {
+  text-align: center
+}
+
+.VueTables select{
+  margin-left: 5px;
+  margin-right: 10px;
+}

@@ -1,5 +1,29 @@
 'use strict';
 
+const showGeneModal = function () {
+  geneModal.showModal = true;
+  $("#common-mask").css({
+    "visibility": "visible",
+    "opacity": "1"
+  });
+  $("#gene-modal-body").removeClass("zoomOut");
+  $("#gene-modal-body").addClass("zoomIn");
+}
+
+const hideGeneModal = function () {
+  if (!tableSummary.showTableDiv) {
+    $("#common-mask").css({
+      "visibility": "hidden",
+      "opacity": "0"
+    });
+  }
+  $("#gene-modal-body").removeClass("zoomIn");
+  $("#gene-modal-body").addClass("zoomOut");
+  _.delay(() => {
+    geneModal.showModal = false;
+  }, 510);
+}
+
 const geneModal = new Vue({
   el: '#gene-modal',
   data: {

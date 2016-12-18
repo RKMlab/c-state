@@ -27,7 +27,7 @@ const modalpanel = Vue.component('modalpanel', {
       const rootElement = this.$el;
       const settings = this.settings.geneModal;
       const colors = this.settings.general.colors;
-      const modalWidth = screen.width * 0.8;
+      const modalWidth = screen.width * 0.9;
       const numFeatures = this.info.features.length;
       const widthPadding = settings.HPadding;
       const heightPadding = settings.VPadding;
@@ -80,6 +80,7 @@ const modalpanel = Vue.component('modalpanel', {
 
       const xAxis = d3.axisBottom(xScale)
         .ticks(5)
+        .tickSize(0)
         .tickFormat(function (d) {
           return d / 1000;
         });
