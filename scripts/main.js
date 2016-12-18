@@ -3,6 +3,7 @@
 // Main event bus for Vue components
 const events = new Vue({});
 
+Vue.use(VueTables.client);
 // Vue loading spinner
 const FadeLoader = VueSpinner.FadeLoader;
 const RotateLoader = VueSpinner.RotateLoader;
@@ -100,6 +101,12 @@ const resetScope = function (scope = plotScope) {
   Vue.set(scope, 'info', {})
 }
 
+const openGeneModal = function (name) {
+  console.log(`Modal for ${name} opened`);
+  geneModal.$data.gene = _.find(plotScope.genes, ['name', name]);
+  geneModal.$data.showModal = true;
+}
+
 // Alert the user and throw an error with given string
 const handleError = function (string) {
   alert(string);
@@ -128,6 +135,7 @@ const hideSideDivs = function () {
   hideSettingsDiv();
   hideAnalysis();
   hideTable();
+  hideGeneModal();
 }
 
 $('.side-button button').tipsy({

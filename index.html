@@ -85,7 +85,7 @@
                     <td style="text-align:center">
                       <label class="text-center btn btn-default btn-file">Choose File
                       <input type="file" style="display: none" @change="onFileUpload" name="file">
-                    </label><br> {{ inputFile.name }} 
+                    </label><br> {{ inputFile.name }}
                     </td>
                     <td>
                       <select @change="onTypeSelect" class="form-control" v-model="typeSelected">
@@ -120,7 +120,7 @@
                 <input type="number" size="1" min="1" max="6" value="4" style="margin-left: 6px; width:50px;text-align: right;"/>
                 Cell Types</span><br>
               </div>
-            </div> 
+            </div>
 
             <!--Main File Div Ends Here-->
           </div>
@@ -148,7 +148,7 @@
                   </td>
                   <td>
                     <button :disabled="inputFiles.length === 0" @click="inputFiles.splice(0)" type="button" class="btn btn-danger">Clear All Files</button>
-                  <!--</td>
+                    <!--</td>
                   <td>-->
                     <button :disabled="inputFiles.length === 0" @click="getFileData" type="button" class="btn btn-success">Process All Files</button>
                   </td>
@@ -225,40 +225,36 @@
 
     <!--Gene modal div-->
     <div id='gene-modal' v-cloak>
-      <transition name="gene-transition" enter-active-class="animated zoomIn" leave-active-class="animated zoomOut">
-        <div class="modal-mask" v-if="this.showModal">
-          <div class="modal-wrapper">
-            <div class="modal-container">
+      <div id='gene-modal-body' class="modal-wrapper animated zoomIn" v-if="showModal">  
+        <div class="modal-container">
 
-              <div class="modal-header" style="margin: 0px 20px 0px 20px">
-                <h3 style="margin-top: 0px">
-                  {{ gene.name }}
-                </h3>
-                <h4 style="margin-top: 0px">{{ gene.geneinfo.chrom }}:{{ gene.geneinfo.txStart }}-{{gene.geneinfo.txEnd}}({{gene.geneinfo.strand}})</h4>
-              </div>
+          <div class="modal-header" style="margin: 0px 20px 0px 20px">
+            <h3 style="margin-top: 0px">
+              {{ gene.name }}
+            </h3>
+            <h4 style="margin-top: 0px">{{ gene.geneinfo.chrom }}:{{ gene.geneinfo.txStart }}-{{gene.geneinfo.txEnd}}({{gene.geneinfo.strand}})</h4>
+          </div>
 
-              <div class="modal-body dragscroll" style="overflow: auto; width:inherit;">
-                <table class="modaltable" style="margin: 0px; table-layout: fixed">
-                  <tr is="modalpanel" :index="index-1" :gene="gene" v-for="index in numCellTypes">
-                  </tr>
-                </table>
-              </div>
+          <div class="modal-body dragscroll" style="overflow: auto; width:inherit;">
+            <table class="modaltable" style="margin: 0px; table-layout: fixed">
+              <tr is="modalpanel" :index="index-1" :gene="gene" v-for="index in numCellTypes">
+              </tr>
+            </table>
+          </div>
 
-              <div class="modal-footer">
-                <div class="col-md-8">
-                  <my-legend loc='geneModal' style="margin: 0px 20px 0px 20px; width: 80%"></my-legend>
-                </div>
-                <div class="col-md-4">
-                  <button class="btn btn-success" @click="saveAsSVG()">Download As SVG</button>
-                  <button class="btn btn-primary" onclick="events.$emit('reset_zoom')">Reset Zoom</button>
-                  <button class="btn btn-default" @click="closeModal()">Close</button>
-                </div>
-              </div>
-
+          <div class="modal-footer">
+            <div class="col-md-8">
+              <my-legend loc='geneModal' style="margin: 0px 20px 0px 20px; width: 80%"></my-legend>
+            </div>
+            <div class="col-md-4">
+              <button class="btn btn-success" @click="saveAsSVG()">Download As SVG</button>
+              <button class="btn btn-primary" onclick="events.$emit('reset_zoom')">Reset Zoom</button>
+              <button class="btn btn-default" onclick="hideGeneModal()">Close</button>
             </div>
           </div>
+
         </div>
-      </transition>
+      </div>
     </div>
 
     <!--Common Mask for panels-->
@@ -295,7 +291,7 @@
               <ul class="nav nav-tabs nav-justified">
                 <li class="active"><a data-toggle="tab" href="#histograms">Feature Histograms</a></li>
                 <li><a data-toggle="tab" @click="showAverage=true" href="#average-profile">Average Feature Profile</a></li>
-                <li><a data-toggle="tab" href="#feature-heatmap">Heatmap of Features</a></li>                
+                <li><a data-toggle="tab" href="#feature-heatmap">Heatmap of Features</a></li>
               </ul>
             </div>
 
@@ -313,7 +309,7 @@
                       <option :value="{ boolean: false}">All</option>
                       <option :value="{ boolean: true}">Filtered</option>
                     </select>Genes
-                  </span> 
+                  </span>
                 </div>
                 <div style="padding-top: 10px" v-if="showAverage">
                   <table style="margin: auto; width: 100%" v-if="colWise">
@@ -323,7 +319,8 @@
                     </tr>
                     <tr v-for="(celltype, cellindex) in celltypes">
                       <td>{{celltype.name}}</td>
-                      <td is="avgprofile" v-for="(feature, featindex) in features" :featindex="featindex" :cellindex="cellindex" :colwise="true" :celltype="celltype" :feature="feature" :filtered="filtered.boolean">
+                      <td is="avgprofile" v-for="(feature, featindex) in features" :featindex="featindex" :cellindex="cellindex" :colwise="true"
+                        :celltype="celltype" :feature="feature" :filtered="filtered.boolean">
                       </td>
                     </tr>
                   </table>
@@ -332,9 +329,10 @@
                       <th>CellType/Feature</th>
                       <th v-for="(celltype, cellindex) in celltypes">{{celltype.name}}</th>
                     </tr>
-                    <tr v-for="(feature, featindex) in features" >
+                    <tr v-for="(feature, featindex) in features">
                       <td>{{feature.name}}</td>
-                      <td is="avgprofile" v-for="(celltype, cellindex) in celltypes" :featindex="featindex" :cellindex="cellindex" :colwise="false" :celltype="celltype" :feature="feature" :filtered="filtered.boolean">
+                      <td is="avgprofile" v-for="(celltype, cellindex) in celltypes" :featindex="featindex" :cellindex="cellindex" :colwise="false"
+                        :celltype="celltype" :feature="feature" :filtered="filtered.boolean">
                       </td>
                     </tr>
                   </table>
@@ -372,8 +370,8 @@
                 <h6>Click on a filter to add it</h6><br><br>
                 <h5>Filter Genes By</h5>
                 <ol style="padding: 0">
-                  <button :disabled="!genesLoaded" style="width: 100%; margin-bottom: 5px" class="btn btn-default" :class="{filtergap: filter.type === 'countsFilter'}" v-for="(filter, index) in availableFilters"
-                    @click="addFilter(index)">
+                  <button :disabled="!genesLoaded" style="width: 100%; margin-bottom: 5px" class="btn btn-default" :class="{filtergap: filter.type === 'countsFilter'}"
+                    v-for="(filter, index) in availableFilters" @click="addFilter(index)">
                     {{ filter.name }}
                     <span class="badge" :style="{ backgroundColor: colors[index] }"> {{ _.filter(activeFilters, ['type', filter.type]).length }}</span>
                   </button>
@@ -418,13 +416,14 @@
       <div id='table-body' class="modal-wrapper animated fadeIn" v-if="showTableDiv">
         <div class="modal-container">
 
-           <div class="modal-body" style="width:inherit; padding-top: 10px; overflow-y: scroll">
-             <!--<table class="table table-striped table-hover table-bordered table-condensed">
-               <tr>
-                 <th-->
-           </div>
+          <div class="modal-body" style="width:inherit; padding-top: 10px; overflow-y: scroll; ">
+            <v-client-table v-if="showTableDiv" :data="tableData" :columns="columns" :options="options"></v-client-table>
+          </div>
 
-           <div class="modal-footer">
+          <div class="modal-footer">
+            <div style="float: left; font-size: 16px">
+              <input type="checkbox" v-model="showFiltered">Show Filtered Genes Only
+            </div>
             <button class="btn btn-danger" onclick="hideTable()">Close</button>
           </div>
         </div>
@@ -562,7 +561,7 @@
                       <li>
                         <input type="checkbox" v-model="scope.settings.geneModal.sameColors">Use same colors as Main panel
                       </li>
-                    </ul>                    
+                    </ul>
                     <table style="width: 80%; margin: auto; text-align: left" v-if="!scope.settings.geneModal.sameColors">
                       <!--<col style="width: 40%">-->
                       <tr>
@@ -626,7 +625,7 @@
                         </tr>
                       </table>
                     </div>
-  
+
                   </div>
                 </div>
               </div>
@@ -704,7 +703,8 @@
   <!--template for gene panel in modal view-->
   <template id='modalpanel-template'>
     <tr>
-      <td class="celltype-name" style="font-weight: bold; width: 30px; text-align: right; word-wrap: break-word; padding-right: 20px"> {{ cellTypeName }}</td>
+      <td class="celltype-name" style="font-weight: bold; width: 30px; text-align: right; word-wrap: break-word; padding-right: 20px">
+      {{ cellTypeName }}</td>
       <td>
         <div class="modal-panel-row">
         </div>
@@ -893,7 +893,7 @@
           </tr>
         </table>
       </div><br>
-      
+
       <div class="container-fluid row">
         <!--<div class="container-fluid col-md-3">-->
         <span>Distance between features (in KB)</span>
@@ -959,19 +959,28 @@
   <!--Table Row template-->
   <template id='table-row-template'>
     <tr>
-      <td>
-      </td>
+      <td>{{gene.geneinfo.chrom}}</td>
+      <td>{{+gene.geneinfo.txStart}}</td>
+      <td>{{gene.geneinfo.txEnd}}</td>
+      <td>{{gene.name}}</td>
+      <td>{{gene.geneinfo.txSize}}</td>
+      <td>{{gene.geneinfo.strand}}</td>
+      <td>{{gene.geneinfo.exonCount}}</td>
+      <td>{{gene.geneinfo.description}}</td>
     </tr>
   </template>
   <!-- JS Dependencies -->
   <script src="scripts/require/jquery-1.12.4.js"></script>
   <script src="scripts/require/tipsy/jquery.tipsy.js"></script>
+  <script src="scripts/require/jquery.tablesorter.min.js"></script>
   <script src="scripts/require/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
   <script src="scripts/require/d3v4/d3.js"></script>
   <script src="scripts/require/vue_v2.js"></script>
   <script src="scripts/require/vue-spinner.min.js"></script>
+  <script src="scripts/require/vue-tables.min.js"></script>
   <script src="scripts/require/lodash.js"></script>
   <script src="scripts/require/dragscroll.js"></script>
+
   <script src="scripts/require/FileSaver.min.js"></script>
   <!-- My JS Files -->
   <script src="scripts/main.js"></script>
@@ -1000,7 +1009,7 @@
 
     // Stop click event on accordion body
     $(".panel-collapse").click(function (e) {
-    e.stopPropagation();
+      e.stopPropagation();
     });
   </script>
 </body>

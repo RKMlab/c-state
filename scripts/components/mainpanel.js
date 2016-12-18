@@ -14,7 +14,7 @@ const mainpanel = Vue.component('mainpanel', {
     openModal: function (gene) {
       console.log(`Modal for ${gene.name} clicked`);
       geneModal.$data.gene = gene;
-      geneModal.$data.showModal = true;
+      showGeneModal();
     },
 
     plotData: function () {
