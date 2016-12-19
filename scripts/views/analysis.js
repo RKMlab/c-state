@@ -27,11 +27,18 @@ const analysisModal = new Vue({
   el: '#analysis-modal',
   data: {
     showAnalysisDiv: false,
+    showHist: true,
     showAverage: false,
+    colorHistBy: 'none',
+    histType: 'score',
+    tssonly: false,
+    tssUp: 3,
+    tssDown: 3,
     filtered: {
       boolean: false
     },
-    colWise: false,
+    colWiseHist: false,
+    colWiseAvg: false,
   },
   computed: {
     celltypes: function () {
@@ -39,11 +46,26 @@ const analysisModal = new Vue({
     },
     features: function () {
       return plotScope.info.features;
-    }
+    },
   },
   methods: {
-    switchCols: function () {
-      this.colWise = !this.colWise;
+    switchHistCols: function () {
+      this.colWiseHist = !this.colWiseHist;
+      this.showHist = false;
+      _.delay(() => {
+        this.showHist = true;
+      }, 250)
+    },
+
+    changeHistType: function () {
+      this.showHist = false;
+      _.delay(() => {
+        this.showHist = true;
+      }, 250)
+    },
+
+    switchAvgCols: function () {
+      this.colWiseAvg = !this.colWiseAvg;
       this.showAverage = false;
       _.delay(() => {
         this.showAverage = true;

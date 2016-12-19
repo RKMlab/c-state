@@ -38,7 +38,7 @@ const tableSummary = new Vue({
   data: {
     showTableDiv: false,
     showFiltered: false,
-    columns: ['chrom', 'txStart', 'txEnd', 'name', 'txSize', 'strand', 'geneSymbol', 'exonCount', 'description'],
+    columns: ['chrom', 'txStart', 'txEnd', 'name', 'txSize', 'strand', 'geneSymbol', 'exonCount', 'cdsSize', 'isoforms', 'neighbors', 'description'],
     options: {
       headings: {
         chrom: 'Chromosome',
@@ -49,12 +49,15 @@ const tableSummary = new Vue({
         strand: 'Strand',
         geneSymbol: 'Gene Symbol',
         exonCount: 'Exon Count',
+        cdsSize: 'CDS Size',
+        isoforms: 'Transcript Variants',
+        neighbors: 'Neighboring genes',
         description: 'Description'
       },
       templates:{
         name: 'tablename'
       },
-      filterable: false,
+      filterable: true,
       orderBy: {
         column: 'name',
         ascending: true
@@ -88,6 +91,9 @@ const tableSummary = new Vue({
           strand: gene.geneinfo.strand,
           geneSymbol: gene.geneinfo.geneSymbol,
           exonCount: +gene.geneinfo.exonCount,
+          cdsSize: +gene.geneinfo.cdsSize,
+          isoforms: gene.geneinfo.isoforms.length,
+          neighbors: gene.geneinfo.neighbors.length,
           description: gene.geneinfo.description
         };
         rows.push(JSON.parse(JSON.stringify(obj)));

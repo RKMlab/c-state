@@ -3,7 +3,12 @@
 // Main event bus for Vue components
 const events = new Vue({});
 
+// Vue Table initilize
 Vue.use(VueTables.client);
+
+let palettes = {};
+d3.json("data/colors.json", data => palettes = data);
+
 // Vue loading spinner
 const FadeLoader = VueSpinner.FadeLoader;
 const RotateLoader = VueSpinner.RotateLoader;
@@ -61,7 +66,7 @@ const plotScope = {
       geneBarHeight: 10,
       regionBarHeight: 3,
       neighborBarHeight: 7,
-      featureBarHeight: 10,
+      featureBarHeight: 7,
       featurePadding: 0.5
     },
     featureTracks: {

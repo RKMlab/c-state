@@ -20,7 +20,11 @@ const settingsModal = new Vue({
     genes: '',
     scope: plotScope
   },
-
+  computed: {
+    availableSchemes: function () {
+      return palettes;
+    }
+  },
   methods: {
     applySettings: function () {
       spinner.loading = true;
@@ -42,6 +46,17 @@ const settingsModal = new Vue({
         }
       }, 500);
       _.delay(() => spinner.loading = false, 1000);
+    },
+    changeColorScheme: function (id) {
+      console.log(`Changing color scheme to ${id}`);
+      this.scope.settings.general.colors = this.availableSchemes[id]
+    }
+  },
+  filters: {
+    formatName: function (string) {
+      if (!string) return '';
+      string = string.toString()
+      return string.charAt(0).toUpperCase() + string.slice(1,3) + ' ' + string.slice(3)
     }
   }
 })

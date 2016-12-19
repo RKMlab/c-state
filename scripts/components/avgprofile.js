@@ -2,7 +2,7 @@
 
 const avgprofile = Vue.component('avgprofile', {
   template: '#avgprofile-template',
-  props: ['celltype', 'feature', 'filtered', 'cellindex', 'featindex', 'colwise', 'tssonly'],
+  props: ['celltype', 'feature', 'filtered', 'cellindex', 'featindex', 'colwise', 'tssonly', 'tssup', 'tssdown'],
   data: function () {
     return {
       scope: plotScope,
@@ -13,9 +13,51 @@ const avgprofile = Vue.component('avgprofile', {
   mounted: function () {
     const factor = (this.scope.info.flankUp + this.scope.info.flankDown)/200;
     const delay = (this.cellindex+1)*factor + (this.featindex * factor)
-    _.delay(this.getFullProfile, delay);
+    if (this.tssonly) {
+      _.delay(this.getTSSProfile, delay);
+    } else {
+      _.delay(this.getFullProfile, delay);
+    }
   },
   methods: {
+
+    getTSSProfile: function () {
+      const profile = this.profile;
+      const scope = this.scope;
+      const binSize = 100;
+      const flankUp = this.tssup * 1000;
+      const flankDown = this.tssdown * 1000;
+      const upBins = flankUp/binSize;
+      const downBins = flankDown/binSize;
+
+      for (let i = 0; i < upBins+downBins; i++) {
+        profile.push(0);
+      }
+      for (let i = 0; i < scope.genes.length; i++) {
+        const gene = scope.genes[i];
+        if (this.filtered && !gene.show) {
+          continue;
+        }
+        const features = getFilteredFeatures(_.filter(_.find(gene.mappedFeatures, ['value', this.celltype.value]).features, ['FName', this.feature.name]));
+        let binStart = flankUp * -1;
+        let binEnd = 0
+        for (let i = 0; i < profile.length; i++) {
+          binEnd = binStart + binSize;
+          const length = _.filter(features, function (f) {
+            if (f.FEnd < binStart) {
+              return false;
+            }
+            if (f.FStart > binEnd) {
+              return false;
+            }
+            return true;
+          }).length;
+          profile[i] += length;
+          binStart = binEnd;
+        }
+      }
+      this.plotFullProfile(profile, upBins, downBins)
+    },
 
     getFullProfile: function () {
       const profile = this.profile;
@@ -65,10 +107,10 @@ const avgprofile = Vue.component('avgprofile', {
           binStart = binEnd;
         }
       }
-      this.plotProfile(profile, upBins, geneBins);
+      this.plotFullProfile(profile, upBins, geneBins);
     },
     
-    plotProfile: function (profile, upBins, geneBins) {
+    plotFullProfile: function (profile, upBins, geneBins) {
       const scope = this.scope;
       const margin = {
         top: 0,

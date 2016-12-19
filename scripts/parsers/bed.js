@@ -4,7 +4,7 @@ const parseBED = function (string, fileName, featureName) {
   console.log(`Reading BED File ${fileName}`);
   const rows = d3.tsvParseRows(string, function (d, i) {
     let strand = '+';
-    let score = 1000;
+    let score = 'NA';
     // if (d.length < 3) {
     //   handleError(`Less than 3 columns found at line ${i}. Please verify the file format and upload again.`);
     // }
@@ -19,6 +19,10 @@ const parseBED = function (string, fileName, featureName) {
     if ( d[4] && (!_.isNaN(+d[4])) ) {
       score = +d[4];
     }
+    if (d[4] && +d[4] === 0) {
+      score = 'NA';
+    } 
+
     if ( (d[5]) && (d[5] === '+' || d[5] === '-') ) {
       strand = d[5];
     }
