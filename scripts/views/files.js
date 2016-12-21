@@ -138,6 +138,10 @@ const main_file = new Vue({
         if (unmappedCount > 0) {
           alert(`${unmappedCount} out of ${geneList.length} genes could not be mapped`);
         }
+        if (unmappedCount === geneList.length) {
+          return;
+        }
+        spinner.loading = true;
         events.$emit('process-features');
       }
     }
@@ -174,6 +178,7 @@ const feature_files = new Vue({
       this.featureFileData.push(data)
       if (this.featureFileData.length === this.inputFiles.length) {
         console.log("Received all file data");
+        spinner.loading = false;
         this.showPlotButton = true;
       }
     }

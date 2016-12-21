@@ -53,7 +53,11 @@ const filterModal = new Vue({
   },
   methods: {
     addFilter: function (index) {
-      this.activeFilters.push(this.availableFilters[index]);
+      const filter = JSON.parse(JSON.stringify(this.availableFilters[index]));
+      this.activeFilters.push(filter);
+      for (let i = 0; i < this.activeFilters.length; i++) {
+        this.activeFilters[i].id = i;
+      }
     },
 
     getColor: function (type) {

@@ -29,16 +29,21 @@ const analysisModal = new Vue({
     showAnalysisDiv: false,
     showHist: true,
     showAverage: false,
+    showCor: false,
     colorHistBy: 'none',
-    histType: 'score',
+    corBy: '',
+    corUp: 3,
+    corDown: 3,
+    histType: 'size',
     tssonly: false,
-    tssUp: 3,
-    tssDown: 3,
+    tssUp: 10,
+    tssDown: 10,
     filtered: {
       boolean: false
     },
     colWiseHist: false,
     colWiseAvg: false,
+    colWiseCor: false
   },
   computed: {
     celltypes: function () {
@@ -77,6 +82,18 @@ const analysisModal = new Vue({
       _.delay(() => {
         this.showAverage = true;
       }, 250)
+    },
+
+    changeCorType: function () {
+      this.showCor = false;
+      _.delay(() => {
+        this.showCor = true;
+      }, 250)
+    },
+
+    switchCorCols: function () {
+      this.colWiseCor = !this.colWiseCor;
+      this.corBy = '';
     }
   }
 })

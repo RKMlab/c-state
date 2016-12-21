@@ -6,7 +6,7 @@ const showTable = function () {
     "visibility": "visible",
     "opacity": "1"
   });
-  $("#table-body").removeClass("flipOutY");
+  $("#table-body").removeClass("fadeOut");
   $("#table-body").addClass("fadeIn");
 }
 
@@ -16,10 +16,10 @@ const hideTable = function () {
     "opacity": "0"
   });
   $("#table-body").removeClass("fadeIn");
-  $("#table-body").addClass("flipOutY");
+  $("#table-body").addClass("fadeOut");
   _.delay(() => {
     tableSummary.showTableDiv = false;
-  }, 600)
+  }, 400)
 }
 
 Vue.component('tablename', {

@@ -41,15 +41,22 @@
           <div class="panel-body" v-cloak id="main-file">
             <div class="row">
               <div class="container-fluid col-md-9" style="border-right: 1px dotted #666666">
-                <div style="text-align:center; font-size: 18px; font-weight:bold">Choose a file below to begin</div><br>
-                <table style="width: 50%; margin: auto">
-                  <col style="width: 30%">
-                  <col style="width: 30%">
+                <div style="text-align:center; font-size: 18px; font-weight:bold">Welcome to C-State! Load a file to begin</div><br>
+                <table style="width: 60%; margin: auto; text-align: center">
+                  <col style="width: 15%">
+                  <col style="width: 20%">
+                  <col style="width: 20%">
                   <tr>
+                    <th></th>
                     <th>Select Species</th>
                     <th>Select Build</th>
                   </tr>
                   <tr>
+                    <td>
+                      <label class="text-center main-button btn btn-default btn-file my-tipsy-class" title="A list of gene names or identifiers in a txt file, one entry per line. See example data on C-State website.">Load File
+                        <input type="file" style="display: none" @change="onFileUpload" name="file">
+                      </label>
+                    </td>
                     <td>
                       <select @change="onGenomeSelect" :disabled="typeSelected === 'plotdata'" class="form-control" v-model="genomeSelected">
                       <option v-for="option in genomes.species">
@@ -83,9 +90,8 @@
                   </tr>
                   <tr>
                     <td style="text-align:center">
-                      <label class="text-center btn btn-default btn-file">Choose File
-                      <input type="file" style="display: none" @change="onFileUpload" name="file">
-                    </label><br> {{ inputFile.name }}
+                      <span v-if="inputFile">{{ inputFile.name }}</span>
+                      <span v-else>No File Selected</span>
                     </td>
                     <td>
                       <select @change="onTypeSelect" class="form-control" v-model="typeSelected">
@@ -115,7 +121,7 @@
 
               <div class="container-fluid col-md-3" style="text-align:center">
                 <span style="font-size: 20px; font-weight: bold;">OR</span><br><br>
-                <button id="example-button" class="text-center btn btn-file">LOAD EXAMPLE DATA</button><br>
+                <button id="example-button" class="my-tipsy-class text-center main-button btn btn-default btn-file" title="Don't have data? Test C-State with pre-loaded datasets">LOAD EXAMPLE DATA</button><br>
                 <span style="margin-left: 6px; display: inline-block; margin-top: 20px;">of
                 <input type="number" size="1" min="1" max="6" value="4" style="margin-left: 6px; width:50px;text-align: right;"/>
                 Cell Types</span><br>
@@ -127,38 +133,30 @@
 
           <div class="panel-body" id="feature-files" v-cloak v-if="showDiv">
             <div class="row">
-              <table style="width: 80%; margin: auto">
-                <col style="width: 2%">
+              <div class="container-fluid col-md-9">
+              <table style="width: 50%; margin: auto">
+                <!--<col style="width: 2%">
                 <col style="width: 10%">
                 <col style="width: 1%">
                 <col style="width: 10%">
-                <col style="width: 10%">
+                <col style="width: 10%">-->
                 <tr>
                   <td>
-                  </td>
-                  <td>
-                    <label :disabled="!showFeatureButton" class="text-center btn btn-default btn-file">Load Feature Files
+                    <label :disabled="!showFeatureButton" title="Select all your feature data files in BED format (see example data on C-State website), ideally named as CellTypeName_FeatureName. Selected files are shown below. Edit file details manually in case they are missing or erroneous." style="width: 150px" class="text-center live-tipsy main-button btn btn-default btn-file">Load Feature Files
                       <input :disabled="!showFeatureButton" @change="onFileUpload" type="file" style="display: none" name="files[]" multiple>
                     </label>
-                    <label :disabled="!showFeatureButton" class="text-center btn btn-default btn-file">Load Expression Data
-                      <input :disabled="!showFeatureButton" type="file" style="display: none">
-                    </label>
                   </td>
                   <td>
+                    <button :disabled="inputFiles.length === 0" @click="getFileData" style="width: 150px" type="button" class="btn btn-success">Process All Files</button>
                   </td>
                   <td>
-                    <button :disabled="inputFiles.length === 0" @click="inputFiles.splice(0)" type="button" class="btn btn-danger">Clear All Files</button>
-                    <!--</td>
-                  <td>-->
-                    <button :disabled="inputFiles.length === 0" @click="getFileData" type="button" class="btn btn-success">Process All Files</button>
-                  </td>
-                  <td>
-                    <button type="button" class="btn btn-primary" :disabled="!showPlotButton" onclick="formatPlotScope()">
+                    <button type="button" class="btn btn-primary" :disabled="!showPlotButton" style="width: 150px" onclick="formatPlotScope()">
                       View Data
                     </button>
                   </td>
                 </tr>
               </table><br>
+              </div>
             </div>
 
             <div class="row"><br>
@@ -167,10 +165,12 @@
                 <tr v-if="inputFiles.length > 0">
                   <th>File Name</th>
                   <th>Celltype Name</th>
-                  <th>Feature Name</th>
+                  <th>Feature Name
+                    <span class="glyphicon glyphicon-info-sign" title="Feature names must be consistent across cell types"></span>
+                  </th>
                   <th>File Format</th>
                   <!--<th>Color</th>-->
-                  <th></th>
+                  <th><button :disabled="inputFiles.length === 0" @click="inputFiles.splice(0)" type="button" title="Removes all files from C-State. However, the view pane stays populated with the last gene set till 'Process All Files' button is pressed again. Individual files can be removed using the close button provided next to each entry." class="btn btn-danger my-tipsy-class">Clear All Files</button></th>
                 </tr>
                 <tr is="filerow" :file="file" @add="addData" @remove="inputFiles.splice(index, 1)" :key="file.name" v-for="(file, index) in inputFiles">
                 </tr>
@@ -262,7 +262,7 @@
 
     <!--Side Buttons-->
     <div id='filter-button' class="side-button">
-      <button onclick="showFilters()" type="button" title="Open Filters Panel" class="btn btn-block btn-lg btn-default glyphicon glyphicon-filter"></button>
+      <button onclick="showFilters()" type="button" title="Filters Panel" class="btn btn-block btn-lg btn-default glyphicon glyphicon-filter"></button>
     </div>
     <div id='analysis-button' class="side-button">
       <button onclick="showAnalysis()" type="button" title="Plots and Analysis" class="btn btn-block btn-lg btn-default glyphicon glyphicon-stats"></button>
@@ -274,7 +274,7 @@
       <button type="button" title="Download Options" onclick="exportJSONToFile()" class="btn btn-block btn-lg btn-default glyphicon glyphicon-download-alt"></button>
     </div>
     <div id='settings-button' class="side-button">
-      <button onclick="showSettings()" type="button" title="Open Settings Panel" class="btn btn-block btn-lg btn-default glyphicon glyphicon-cog"></button>
+      <button onclick="showSettings()" type="button" title="Settings Panel" class="btn btn-block btn-lg btn-default glyphicon glyphicon-cog"></button>
     </div>
 
     <!--Analysis Modal-->
@@ -291,7 +291,7 @@
               <ul class="nav nav-tabs nav-justified">
                 <li class="active"><a data-toggle="tab" href="#histograms">Feature Histograms</a></li>
                 <li><a data-toggle="tab" @click="showAverage=true" href="#average-profile">Average Feature Profile</a></li>
-                <li><a data-toggle="tab" href="#feature-heatmap">Heatmap of Features</a></li>
+                <li><a data-toggle="tab" href="#feature-correlation">Feature Correlation</a></li>
               </ul>
             </div>
 
@@ -301,8 +301,8 @@
                   <button @click="switchHistCols" class="btn btn-primary">Switch Rows/Columns</button>
                   <span style="padding-left: 10vw">Show histogram of
                     <select class="filter-input" @change="changeHistType" v-model="histType">
-                      <option value="score">Feature Scores</option>
                       <option value="size">Feature Sizes (in bp)</option>
+                      <option value="score">Feature Scores</option>
                     </select>
                   </span>
                   <span style="padding-left: 20px">Color By
@@ -363,7 +363,7 @@
                         </td>
                       </tr>
                     </table>
-                    <button style="margin-left: 10px" :disabled="!tssonly" class="btn btn-primary" @click="showFiltered">Plot</button>
+                    <button style="margin-left: 10px" v-if="tssonly" class="btn btn-primary" @click="showFiltered">Plot</button>
                   </span>
                 </div>
                 <div style="padding-top: 10px" v-if="showAverage">
@@ -394,9 +394,57 @@
                 </div>
               </div>
 
-              <div style="text-align: center" id="feature-heatmap" class="tab-pane fade"><br><br>
-                <h3>Heatmaps Go Here</h3>
-                <h4>This is to be done too!</h4>
+              <div id="feature-correlation" class="tab-pane fade">
+                <div style="padding: 15px 0px 10px 10vw; border-bottom: 1px dotted #666666">
+                  <button @click="switchCorCols" class="btn btn-primary">Switch Rows/Columns</button>
+                  <span style="padding-left: 10vw" v-if="colWiseCor">Center By
+                    <select class="filter-input" v-model="corBy">
+                      <option v-for="feature in features" :value="feature.name">{{feature.name}}</option>
+                    </select>
+                  </span>
+                  <span style="padding-left: 10vw" v-else>Center By
+                    <select class="filter-input" v-model="corBy">
+                      <option v-for="celltype in celltypes" :value="celltype.value">{{celltype.name}}</option>
+                    </select>
+                  </span>
+                  <table style="width: 30%; margin: auto; display: inline-table; text-align: center">
+                    <tr>
+                      <td>Upstream:
+                        <input type="number" min="0" style="text-align:right; width: 30%" :disabled="corBy === ''" class="filter-input" v-model.number="corUp">KB
+                      </td>
+                      <td>Downstream:
+                        <input type="number" min="0" style="text-align:right; width: 30%" :disabled="corBy === ''" class="filter-input" v-model.number="corDown">KB
+                      </td>
+                    </tr>
+                  </table>
+                  <button style="margin-left: 10px" v-if="corBy !== ''" class="btn btn-primary" @click="changeCorType">Plot</button>
+                </div>
+                <div style="padding-top: 10px" v-if="showCor">
+                  <table style="margin: auto; width: 100%" v-if="!colWiseCor">
+                    <tr>
+                      <th>CellType/Feature</th>
+                      <th v-for="feature in features">{{feature.name}}</th>
+                    </tr>
+                    <tr v-for="(celltype, cellindex) in celltypes">
+                      <td>{{celltype.name}}</td>
+                      <td is="featurecorrelation" v-for="(feature, featindex) in features" :featindex="featindex" :cellindex="cellindex" :colwise="false"
+                        :celltype="celltype" :flankup="corUp" :flankdown="corDown" :feature="feature" :by="corBy">
+                      </td>
+                    </tr>
+                  </table>
+                  <table style="margin: auto; width: 100%" v-else>
+                    <tr>
+                      <th>CellType/Feature</th>
+                      <th v-for="(celltype, cellindex) in celltypes">{{celltype.name}}</th>
+                    </tr>
+                    <tr v-for="(feature, featindex) in features">
+                      <td>{{feature.name}}</td>
+                      <td is="featurecorrelation" v-for="(celltype, cellindex) in celltypes" :featindex="featindex" :cellindex="cellindex" :colwise="true"
+                        :celltype="celltype" :flankup="corUp" :flankdown="corDown" :feature="feature" :by="corBy">
+                      </td>
+                    </tr>
+                  </table>
+                </div>
               </div>
             </div>
           </div>
@@ -437,7 +485,7 @@
                 <h4>Active Filters</h4>
                 <h6 v-if="activeFilters.length > 0">All active filters are chained, and applied sequentially</h6>
                 <ul style="padding: 0">
-                  <span :key="filter.type" v-for="(filter, index) in activeFilters">
+                  <span :key="filter.id" v-for="(filter, index) in activeFilters">
                     <table style="width: 100%">
                       <tr>
                         <td style="width: 85%">
@@ -737,7 +785,7 @@
           </option>
         </select>
       </td>
-      <td>
+      <td style="text-align: center">
         <button class="btn btn-default glyphicon glyphicon-remove" @click="$emit('remove')"></button>
       </td>
     </tr>
@@ -1052,6 +1100,7 @@
   <script src="scripts/main.js"></script>
   <!--Vue components-->
   <script src="scripts/components/avgprofile.js"></script>
+  <script src="scripts/components/featurecorrelation.js"></script>
   <script src="scripts/components/filerow.js"></script>
   <script src="scripts/components/generow.js"></script>
   <script src="scripts/components/histogram.js"></script>

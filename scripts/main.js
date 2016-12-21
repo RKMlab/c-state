@@ -115,6 +115,7 @@ const openGeneModal = function (name) {
 // Alert the user and throw an error with given string
 const handleError = function (string) {
   alert(string);
+  spinner.loading = false;
   throw new Error(string);
 }
 
@@ -143,9 +144,16 @@ const hideSideDivs = function () {
   hideGeneModal();
 }
 
-$('.side-button button').tipsy({
-  gravity: 'w',
-  fade: true
+$(document).ready(function() {
+  $('.side-button button').tipsy({
+    gravity: 'w',
+    fade: true
+  });
+
+  $('.my-tipsy-class').tipsy({
+    gravity: 's',
+    fade: true,
+  });
 });
 
 const getFilteredFeatures = function (features) {

@@ -57,7 +57,7 @@ const filerow = Vue.component('filerow', {
 
     sendDataToParent: function () {
       if (!this.cellType.name || !this.feature.name || !this.formatSelected) {
-        handleError(`Blank fields in file ${this.file.name}`);
+        handleError(`Please fill all details for file ${this.file.name}`);
       }
       this.cellType.value = this.cellType.name.toUpperCase();
       this.feature.value = this.feature.name.toUpperCase();

@@ -18,10 +18,10 @@ const parseBED = function (string, fileName, featureName) {
     // }
     if ( d[4] && (!_.isNaN(+d[4])) ) {
       score = +d[4];
+      if (+d[4] < 100 || +d[4] > 1000) {
+        score = 'NA'
+      }
     }
-    if (d[4] && +d[4] === 0) {
-      score = 'NA';
-    } 
 
     if ( (d[5]) && (d[5] === '+' || d[5] === '-') ) {
       strand = d[5];
@@ -44,7 +44,11 @@ const validateBED = function (string, fileName) {
     let strand = '+';
     let score = 0;
     if (d.length < 3) {
-      handleError(`Less than 3 columns found at line ${i} in ${fileName}. Please verify the file format and upload again.`);
+      if (i === 0) {
+        console.log(`Invalid first line in ${fileName}. Perhaps file contains header line? Skipping the row...`)
+      } else {
+        handleError(`Less than 3 columns found at line ${i+1} in ${fileName}. Please verify the file format and upload again.`);
+      }
     }
     d[1] = +d[1];
     d[2] = +d[2];

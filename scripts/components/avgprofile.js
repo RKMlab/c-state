@@ -112,11 +112,12 @@ const avgprofile = Vue.component('avgprofile', {
     
     plotFullProfile: function (profile, upBins, geneBins) {
       const scope = this.scope;
+      const start = this.tssup * -1000;
       const margin = {
         top: 0,
         left: 20,
         bottom: 15,
-        right: 0
+        right: 15
       };
       let availableWidth = (screen.width * 0.9 * 0.8)/scope.info.features.length;
       let availableHeight = (screen.height * 0.55)/scope.info.celltypes.length;
@@ -147,9 +148,6 @@ const avgprofile = Vue.component('avgprofile', {
       const xAxis = d3.axisBottom(xScale)
         .ticks(5)
         .tickSize(0)
-        .tickFormat(function(d) {
-          return;
-        })
       
       const yAxis = d3.axisLeft(yScale)
         .ticks(5)
@@ -167,10 +165,6 @@ const avgprofile = Vue.component('avgprofile', {
       const chart = chartRoot.append("g")
         .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
-      chart.append("g")
-        .attr("class", "x-axis analysis-axis")
-        .attr("transform", `translate(0, ${panelHeight-margin.bottom})`)
-        .call(xAxis)
       
       chartRoot.append("g")
         .attr("class", "y-axis analysis-axis")
@@ -186,33 +180,59 @@ const avgprofile = Vue.component('avgprofile', {
         .attr("stroke-width", "1.5px")
       
       // Axis Labels
-      chart.append("text")
-        .text("TSS")
-        .attr("x", xScale(upBins))
-        .attr("y", panelHeight)
-        .attr("text-anchor", "middle")
-        .style("font-size", "10px")
-      
-      chart.append("line")
-        .attr("x1", xScale(upBins))
-        .attr("y1", panelHeight-margin.bottom)
-        .attr("x2", xScale(upBins))
-        .attr("y2", 0)
-        .attr("stroke", "#999999")
-      
-      chart.append("text")
-        .text("TES")
-        .attr("x", xScale(upBins+geneBins))
-        .attr("y", panelHeight)
-        .attr("text-anchor", "middle")
-        .style("font-size", "10px")
-      
-      chart.append("line")
-        .attr("x1", xScale(upBins+geneBins))
-        .attr("y1", panelHeight-margin.bottom)
-        .attr("x2", xScale(upBins+geneBins))
-        .attr("y2", 0)
-        .attr("stroke", "#999999")
+      if (!this.tssonly) {
+        chart.append("g")
+          .attr("class", "x-axis analysis-axis")
+          .attr("transform", `translate(0, ${panelHeight-margin.bottom})`)
+          .call(xAxis
+            .tickFormat(function (d) {
+              return;
+            }))
+
+        chart.append("text")
+          .text("TSS")
+          .attr("x", xScale(upBins))
+          .attr("y", panelHeight)
+          .attr("text-anchor", "middle")
+          .style("font-size", "10px")
+        
+        chart.append("line")
+          .attr("x1", xScale(upBins))
+          .attr("y1", panelHeight-margin.bottom)
+          .attr("x2", xScale(upBins))
+          .attr("y2", 0)
+          .attr("stroke", "#999999")
+        
+        chart.append("text")
+          .text("TES")
+          .attr("x", xScale(upBins+geneBins))
+          .attr("y", panelHeight)
+          .attr("text-anchor", "middle")
+          .style("font-size", "10px")
+        
+        chart.append("line")
+          .attr("x1", xScale(upBins+geneBins))
+          .attr("y1", panelHeight-margin.bottom)
+          .attr("x2", xScale(upBins+geneBins))
+          .attr("y2", 0)
+          .attr("stroke", "#999999")
+      } else {
+        chart.append("g")
+          .attr("class", "x-axis analysis-axis")
+          .attr("transform", `translate(0, ${panelHeight-margin.bottom})`)
+          .call(xAxis
+            .tickFormat(function (d) {
+              return Math.round((start + d*100)/1000)
+            }))
+
+        chart.append("line")
+          .attr("x1", xScale(upBins))
+          .attr("y1", panelHeight-margin.bottom)
+          .attr("x2", xScale(upBins))
+          .attr("y2", 0)
+          .attr("stroke", "#999999")
+
+      }
     }
   }
 })
