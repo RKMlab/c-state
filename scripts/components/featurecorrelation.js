@@ -81,7 +81,7 @@ const featurecorrelation = Vue.component('featurecorrelation', {
       };
       let availableWidth = (screen.width * 0.9 * 0.8)/scope.info.features.length;
       let availableHeight = (screen.height * 0.55)/scope.info.celltypes.length;
-      if (!this.colwise) {
+      if (this.colwise) {
         availableWidth =  (screen.width * 0.9 * 0.8)/scope.info.celltypes.length;
         availableHeight = (screen.height * 0.55)/scope.info.features.length;
       }

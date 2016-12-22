@@ -30,9 +30,10 @@ const myLegend = Vue.component('my-legend', {
     const colors = plotScope.settings.general.colors;
     const features = this.info.features;
     const numFeatures = features.length;
-    const panelWidth = 1000;
+    const featurePerRow = 5;
+    const panelWidth = 100 + (featurePerRow * 150);
     const VPadding = 5;
-    const panelHeight = 50; //this.settings.geneBarHeight + this.settings.featureBarHeight + VPadding*6;
+    const panelHeight = (VPadding * 3) + 10 + ((Math.floor(numFeatures/featurePerRow) + 1) * (10 + VPadding));
 
     const geneBarColor = this.settings.geneBarColor;
     const regionBarColor = this.settings.regionBarColor;
@@ -48,7 +49,7 @@ const myLegend = Vue.component('my-legend', {
       .attr("class", "svgLegendClass")
     
     const chart = chartRoot.append("g")
-      .attr("transform", "translate(5,10)")
+      .attr("transform", `translate(5,${VPadding})`)
     
 
     chart.selectAll("rect")
@@ -56,9 +57,13 @@ const myLegend = Vue.component('my-legend', {
       .enter()
       .append("rect")
       .attr("x", function (d, i) {
-        return i * 150 + 80;
+        const offset = i % featurePerRow;
+        return offset * 150 + 80;
       })
-      .attr("y", VPadding*3)
+      .attr("y", function (d, i) {
+        const offset = Math.floor(i/featurePerRow) + 1;
+        return (offset * (10 + VPadding));
+      })
       .attr("width", 20)
       .attr("height", 10)
       .style("fill", function (d) {
@@ -70,9 +75,13 @@ const myLegend = Vue.component('my-legend', {
       .enter()
       .append("text")
       .attr("x", function (d, i) {
-        return i * 150 + 102;
+        const offset = i % featurePerRow
+        return offset * 150 + 102;
       })
-      .attr("y", VPadding*3 + 10)
+      .attr("y", function (d, i) {
+        const offset = Math.floor(i/featurePerRow) + 1;
+        return (offset * (10 + VPadding)) + 10;
+      })
       .attr("fill", function (d) {
         return colorScale(d)
       })

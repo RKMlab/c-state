@@ -1,0 +1,14 @@
+[
+  {
+    "name": "Gene Symbol",
+    "value": "geneSymbol"
+  },
+  {
+    "name": "SGD transcript ID",
+    "value": "uniqueID"
+  },
+  {
+    "name": "UniProt ID",
+    "value": "uniprotID"
+  }
+]

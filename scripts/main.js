@@ -35,7 +35,27 @@ const spinner = new Vue({
 const plotScope = {
   settings: {
     general: {
-      colors: ["#cc4c58", "#73d54b", "#693dc0", "#cd4fc9", "#64c986", "#bf4988", "#c3d182", "#7673c9", "#c78c3a", "#472d5e", "#d04e28", "#80ccc3", "#612d26", "#6e99bc", "#5c7533", "#d2a6cf", "#384d40", "#caa789", "#9b6b72", "#ced13c"]
+      colors: ["#863e10",
+        "#0175ab",
+        "#92ab76",
+        "#73daa6",
+        "#ff9ce3",
+        "#a8d45c",
+        "#ab0092",
+        "#4e8bff",
+        "#024cb5",
+        "#ff925d",
+        "#c87c00",
+        "#de0e3b",
+        "#7d2d9a",
+        "#a11e05",
+        "#dc006a",
+        "#b7b3ff",
+        "#e471f7",
+        "#978a00",
+        "#01c480",
+        "#feb1bf"
+      ],
     },
     mainPanel: {
       showExons: false,
@@ -188,6 +208,38 @@ const resetModalZoom = function (gene) {
     .call(zoom.transform, d3.zoomIdentity)
 
 }
+
+const exampleScope = function (scope = plotScope) {
+  spinner.loading = true;
+  const num = $('#example-number').val();
+  if (_.isNaN(num) || num < 1 || num > 6) {
+    alert('Invalid number. Input a number between 1 and 6');
+    spinner.loading = false;
+    return;
+  }
+  const filename = `data/examples/${num}_celltypes.json`;
+  d3.json(filename, data => {
+    triggerView(data);
+  });
+  const triggerView = function (obj) {
+    scope.genes.splice(0);
+    _.delay(function () {
+      Vue.set(scope, 'genes', obj.genes);
+      Vue.set(scope, 'info', obj.info);
+      Vue.set(scope, 'settings', obj.settings);
+      _.forEach(scope.genes, gene => gene.show = true);
+    }, 250);
+
+    _.delay(function () {
+      $("#files.panel.panel-default").removeClass("active");
+      $("#files-body.panel-collapse").removeClass("in");
+      $("#view.panel.panel-default").addClass("active");
+      $("#view-body.panel-collapse").addClass("in");
+      spinner.loading = false;
+    }, 500, 'Switching accordions');
+  }
+}
+
 const formatPlotScope = function (scope = plotScope) {
   const mainFileData = main_file.$data;
   if (!mainFileData.inputFile) {

@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>C-State v0.2.1</title>
+  <title>C-State v0.2.2</title>
   <!-- CSS links -->
   <link href="scripts/require/bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="scripts/require/animate.min.css" rel="stylesheet">
@@ -20,7 +20,7 @@
     <!--C-State Logo-->
     <div style="position: absolute; top: 0; left: 0; width: 200px; height: 65px">
       <a href="http://ccmb.res.in/rakeshmishra/c-state/" target="_blank"> <img style="margin-left: 5px; margin-top: 5px;" width="100%" src="images/c-state_logo.png" alt="C-State Logo"></a>
-      <br><span style="position:absolute; margin-top: -15px; margin-left: 160px; font-weight: bold">v0.2.1</span>
+      <br><span style="position:absolute; margin-top: -15px; margin-left: 160px; font-weight: bold">v0.2.2</span>
     </div>
 
     <!--CCMB Logo-->
@@ -121,9 +121,9 @@
 
               <div class="container-fluid col-md-3" style="text-align:center">
                 <span style="font-size: 20px; font-weight: bold;">OR</span><br><br>
-                <button id="example-button" class="my-tipsy-class text-center main-button btn btn-default btn-file" title="Don't have data? Test C-State with pre-loaded datasets">LOAD EXAMPLE DATA</button><br>
+                <button onclick="exampleScope()" id="example-button" class="my-tipsy-class text-center main-button btn btn-default btn-file" title="Don't have data? Test C-State with pre-loaded datasets">LOAD EXAMPLE DATA</button><br>
                 <span style="margin-left: 6px; display: inline-block; margin-top: 20px;">of
-                <input type="number" size="1" min="1" max="6" value="4" style="margin-left: 6px; width:50px;text-align: right;"/>
+                <input id="example-number" type="number" size="1" min="1" max="6" value="4" style="margin-left: 6px; width:50px;text-align: right;"/>
                 Cell Types</span><br>
               </div>
             </div>
@@ -197,7 +197,7 @@
         <div id="view-body" class="panel-collapse collapse">
           <div class="row">
             <div class="container-fluid col-md-10" v-if="numFilteredGenes > 0">
-              <my-legend loc='mainpanel' style="margin: 0px 20px 0px 20px">
+              <my-legend loc='mainpanel' style="margin: 5px 20px 0px 20px">
               </my-legend>
             </div>
             <div class="container-fluid col-md-2" v-if="numFilteredGenes > 0" style="height: 50px; text-align: right">
@@ -243,7 +243,7 @@
           </div>
 
           <div class="modal-footer">
-            <div class="col-md-8">
+            <div class="col-md-8" style="text-align: left">
               <my-legend loc='geneModal' style="margin: 0px 20px 0px 20px; width: 80%"></my-legend>
             </div>
             <div class="col-md-4">
@@ -548,33 +548,17 @@
 
               <div class="col-md-4" style="border-right: 1px solid black; height: 70vh;">
                 <ul class="nav nav-pills nav-stacked">
-                  <li class="active"><a data-toggle="tab" href="#general-settings">General</a></li>
-                  <li><a data-toggle="tab" href="#mainpanel-settings">Main Panels</a></li>
+                  <li class="active"><a data-toggle="tab" href="#feature-settings">Feature Tracks</a></li>
+                  <li><a data-toggle="tab" href="#mainpanel-settings">View Panels</a></li>
                   <li><a data-toggle="tab" href="#genemodal-settings">Gene Modal</a></li>
-                  <li><a data-toggle="tab" href="#feature-settings">Feature Tracks</a></li>
                 </ul>
               </div>
 
               <div class="col-md-8">
                 <div class="tab-content">
-                  <div id="general-settings" class="tab-pane fade in active">
-                    <h4>General Settings</h4><br><br>
-                    <h5>Selected Color Scheme ({{scope.settings.general.colors.length}} colors)</h5>
-                    <table style="width: 80%; margin: auto">
-                      <tr>
-                        <td>
-                          <input type="color" style="width: 10%" v-model="scope.settings.general.colors[index]" v-for="(color, index) in scope.settings.general.colors">
-                        </td>
-                      </tr>
-                    </table><br>
-                    <h5>Available Color Schemes</h5>
-                    <div class="row" v-for="(scheme, key) in availableSchemes">
-                      <a :id="key" @click="changeColorScheme(key)" style="font-size: 18px">{{key | formatName}} ({{scheme.length}} colors)</a>
-                    </div>
-                  </div>
 
                   <div id="mainpanel-settings" class="tab-pane fade">
-                    <h4>Main Panel Settings</h4>
+                    <h4>View Panel Settings</h4>
                     <ul style="text-align: left; padding-left: 10%; padding-right: 20%">
                       <li>
                         <input type="checkbox" v-model="scope.settings.mainPanel.showExons">Show exons
@@ -674,7 +658,7 @@
                     <div style="text-align: left; width: 80%; margin: auto"><strong>Bar Color</strong></div>
                     <ul style="text-align: left">
                       <li>
-                        <input type="checkbox" v-model="scope.settings.geneModal.sameColors">Use same colors as Main panel
+                        <input type="checkbox" v-model="scope.settings.geneModal.sameColors">Use same colors as View panel
                       </li>
                     </ul>
                     <table style="width: 80%; margin: auto; text-align: left" v-if="!scope.settings.geneModal.sameColors">
@@ -700,13 +684,13 @@
                     </table>
                   </div>
 
-                  <div id="feature-settings" class="tab-pane fade">
-                    <h4>Feature Track Settings</h4><br><br>
+                  <div id="feature-settings" class="tab-pane fade in active">
+                    <h4>Feature Track Settings</h4><br>
                     <div class="container-fluid row">
                       <span>Feature size cut-off (in bp)</span>
                     </div>
                     <div class="container-fluid row">
-                      <table style="width: 80%; margin: auto">
+                      <table style="width: 60%; margin: auto">
                         <tr>
                           <td>Min</td>
                           <td>Max</td>
@@ -720,12 +704,12 @@
                           </td>
                         </tr>
                       </table>
-                    </div><br><br>
+                    </div><br>
                     <div class="container-fluid row">
                       <span>Feature score cut-off</span>
                     </div>
                     <div class="container-fluid row">
-                      <table style="width: 80%; margin: auto">
+                      <table style="width: 60%; margin: auto">
                         <tr>
                           <td>Min</td>
                           <td>Max</td>
@@ -739,6 +723,18 @@
                           </td>
                         </tr>
                       </table>
+                    </div><br>
+                    <h5>Selected Track Colors ({{scope.settings.general.colors.length}} colors)</h5>
+                    <table style="width: 80%; margin: auto">
+                      <tr>
+                        <td>
+                          <input type="color" style="width: 10%" v-model="scope.settings.general.colors[index]" v-for="(color, index) in scope.settings.general.colors">
+                        </td>
+                      </tr>
+                    </table><br>
+                    <h5>Available Color Schemes</h5>
+                    <div class="row" v-for="(scheme, key) in availableSchemes">
+                      <a :id="key" @click="changeColorScheme(key)" style="font-size: 18px">{{key | formatName}} ({{scheme.length}} colors)</a>
                     </div>
 
                   </div>
@@ -1127,6 +1123,11 @@
     $(".panel-collapse").click(function (e) {
       e.stopPropagation();
     });
+
+    // Confirmation for closing
+    window.onbeforeunload = function (e) {
+      return 'any';
+    }
   </script>
 </body>
 

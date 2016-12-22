@@ -70,6 +70,7 @@ const main_file = new Vue({
     },
 
     getGeneInfo: function () {
+      spinner.loading = true;
       this.geneList = [];
       let genomeData = '';
       let unmappedCount = 0;
@@ -135,13 +136,14 @@ const main_file = new Vue({
           this.geneList.push(geneObj);
         }
 
-        if (unmappedCount > 0) {
+        if (unmappedCount === geneList.length) {
+          alert(`${unmappedCount} out of ${geneList.length} genes could not be mapped. Please check your gene list file`);
+          spinner.loading = false;
+          return;
+        } else if (unmappedCount > 0) {
           alert(`${unmappedCount} out of ${geneList.length} genes could not be mapped`);
         }
-        if (unmappedCount === geneList.length) {
-          return;
-        }
-        spinner.loading = true;
+        // spinner.loading = true;
         events.$emit('process-features');
       }
     }
