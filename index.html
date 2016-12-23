@@ -121,7 +121,7 @@
 
               <div class="container-fluid col-md-3" style="text-align:center">
                 <span style="font-size: 20px; font-weight: bold;">OR</span><br><br>
-                <button onclick="exampleScope()" id="example-button" class="my-tipsy-class text-center main-button btn btn-default btn-file" title="Don't have data? Test C-State with pre-loaded datasets">LOAD EXAMPLE DATA</button><br>
+                <button onclick="exampleScope()" id="example-button" class="my-tipsy-class text-center main-button btn btn-default btn-file" title="Don't have data? Try C-State with pre-loaded datasets">LOAD EXAMPLE DATA</button><br>
                 <span style="margin-left: 6px; display: inline-block; margin-top: 20px;">of
                 <input id="example-number" type="number" size="1" min="1" max="6" value="4" style="margin-left: 6px; width:50px;text-align: right;"/>
                 Cell Types</span><br>
@@ -233,6 +233,7 @@
               {{ gene.name }}
             </h3>
             <h4 style="margin-top: 0px">{{ gene.geneinfo.chrom }}:{{ gene.geneinfo.txStart }}-{{gene.geneinfo.txEnd}}({{gene.geneinfo.strand}})</h4>
+            <div style="text-align: right">Scale in KB</div>
           </div>
 
           <div class="modal-body dragscroll" style="overflow: auto; width:inherit;">
@@ -334,6 +335,9 @@
                     </tr>
                   </table>
                 </div>
+                <div class="modal-footer">
+                  <button class="btn btn-danger" onclick="hideAnalysis()">Close</button>
+                </div>
               <!--</div>-->
               </div>
 
@@ -392,6 +396,9 @@
                     </tr>
                   </table>
                 </div>
+                <div class="modal-footer">
+                  <button class="btn btn-danger" onclick="hideAnalysis()">Close</button>
+                </div>
               </div>
 
               <div id="feature-correlation" class="tab-pane fade">
@@ -445,13 +452,16 @@
                     </tr>
                   </table>
                 </div>
+                <div class="modal-footer">
+                  <button class="btn btn-danger" onclick="hideAnalysis()">Close</button>
+                </div>
               </div>
             </div>
           </div>
 
-          <div class="modal-footer">
+          <!--<div class="modal-footer">
             <button class="btn btn-danger" onclick="hideAnalysis()">Close</button>
-          </div>
+          </div>-->
 
         </div>
       </div>
@@ -520,6 +530,7 @@
         <div class="modal-container">
 
           <div class="modal-body" style="width:inherit; padding-top: 10px; overflow-y: scroll; ">
+            <div style="text-align: center; font-size: 16px">Showing {{tableData.length}} of {{totalGenes}} genes</div>
             <v-client-table v-if="showTableDiv" :data="tableData" :columns="columns" :options="options"></v-client-table>
           </div>
 
@@ -527,6 +538,9 @@
             <div style="float: left; font-size: 16px">
               <input type="checkbox" v-model="showFiltered">Show Filtered Genes Only
             </div>
+            
+            <button class="btn btn-primary" @click="copyNames">Copy Names to Clipboard</button>
+            <button class="btn btn-success" @click="exportToExcel">Export Table as Excel</button>
             <button class="btn btn-danger" onclick="hideTable()">Close</button>
           </div>
         </div>

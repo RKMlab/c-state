@@ -23,7 +23,7 @@ const hideTable = function () {
 }
 
 Vue.component('tablename', {
-  template: `<a @click='openModal'>{{data.name}}</a>`,
+  template: `<a @click='openModal' class="table-gene-name">{{data.name}}</a>`,
   props: ['data'],
   methods: {
     openModal() {
@@ -64,7 +64,7 @@ const tableSummary = new Vue({
       },
       skin: 'table-condensed table-striped table-hover table-bordered',
       perPage: 500,
-      perPageValues: [10, 25, 50, 100, 500, 1000],
+      perPageValues: [10, 25, 50, 100, 500, 1000, 5000],
       pagination:{
         dropdown: true
       },
@@ -100,11 +100,36 @@ const tableSummary = new Vue({
       }
       return rows;
     },
+    totalGenes: function () {
+      return plotScope.genes.length;
+    }
   },
   mounted: function () {
     this.$on('row-click', function (row) {
       console.log(row.name);
     })
+  },
+  methods: {
+    exportToExcel: function () {
+      const data = "<div>" + $(".VueTables__table")[0].outerHTML + "</div>"
+      const blob = new Blob([data], {
+        type: 'data:application/vnd.ms-excel'
+      });
+      saveAs(blob, 'cstate_table.xls');
+    },
+
+    copyNames: function () {
+      const array = $(".VueTables__table").find("td .table-gene-name").toArray();
+      const names = _.map(array, 'text');
+      const string = names.join('\n');
+      const dummy = document.createElement("textarea");
+      document.body.appendChild(dummy);
+      dummy.setAttribute("id", "tempid")
+      document.getElementById("tempid").value = string;
+      dummy.select();
+      document.execCommand("copy");
+      document.body.removeChild(dummy);
+    }
   }
 })
 

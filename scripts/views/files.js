@@ -78,6 +78,9 @@ const main_file = new Vue({
       const version = this.versionSelected;
       readFile(this.inputFile, e => {
         geneList = e.target.result.split(/\r?\n/).sort();
+        _.remove(geneList, gene => {
+          return gene === "";
+        })
         console.log(geneList);
         readGenome();
       })

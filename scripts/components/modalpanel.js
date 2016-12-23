@@ -199,41 +199,45 @@ const modalpanel = Vue.component('modalpanel', {
         ])
         .on("zoom", zoomHandler)
 
+      const index = this.index;
       function zoomHandler() {
         chart.attr("transform", "translate(" + d3.event.transform.x + ",0" + ") scale(" + d3.event.transform.k + ",1)");
         xAxisElement.call(xAxis.scale(d3.event.transform.rescaleX(xScale)));
-        events.$emit('zoom_all', d3.event.transform)
+        console.log(d3.event.transform)
+        events.$emit('zoom_all', d3.event.transform, index)
       }
 
-      function zoomHandlerAll(zoomTransform) {
+      function zoomHandlerAll(zoomTransform, calledBy) {
         if (d3.event.sourceEvent && d3.event.sourceEvent.type === 'zoom') {
+          return;
+        }
+        if (calledBy === index) {
           return;
         }
         chart.attr("transform", "translate(" + zoomTransform.x + ",0" + ") scale(" + zoomTransform.k + ",1)");
         xAxisElement.call(xAxis.scale(zoomTransform.rescaleX(xScale)));
       }
 
-      const index = this.index;
       const reset_zoom = () => {
-        // _.defer( () => {
-        chartRoot.transition()
-          // d3.selectAll(".modal-body").select("svg").transition()
-          .duration(200)
-          .delay(index * 250)
-          .call(zoom.transform, d3.zoomIdentity);
-        // })
+        chart.transition()
+          .duration(1000)
+          .attr("transform", "translate(0,0) scale(1,1)");
+        
+        // zoom.transform.scale()
+        
+        xAxisElement.transition()
+          .duration(1000)
+          .call(xAxis.scale(xScale))
+
+        // console.log(d3.event.transform)
       }
 
       events.$on('reset_zoom', reset_zoom);
-      events.$on('zoom_all', function (transform) {
-        zoomHandlerAll(transform)
+      events.$on('zoom_all', function (transform, calledBy) {
+        zoomHandlerAll(transform, calledBy)
       })
 
-      chartRoot.call(zoom)
-        // .on("dblclick.zoom", null)
-        // .on("click.zoom", null)
-        // .on("dragstart.zoom", null)
-        // .on("mousedown.zoom", null);
+      chartRoot.call(zoom);
     }
   }
 })
