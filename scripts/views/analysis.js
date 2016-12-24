@@ -6,8 +6,8 @@ const showAnalysis = function () {
     "visibility": "visible",
     "opacity": "1"
   });
-  $("#analysis-body").removeClass("rotateOut");
-  $("#analysis-body").addClass("rollIn");
+  $("#analysis-body").removeClass("fadeOut");
+  $("#analysis-body").addClass("fadeIn");
 }
 
 const hideAnalysis = function () {
@@ -15,8 +15,8 @@ const hideAnalysis = function () {
     "visibility": "hidden",
     "opacity": "0"
   });
-  $("#analysis-body").removeClass("rollIn");
-  $("#analysis-body").addClass("rotateOut");
+  $("#analysis-body").removeClass("fadeIn");
+  $("#analysis-body").addClass("fadeOut");
   _.delay(() => {
     analysisModal.showAnalysisDiv = false;
     analysisModal.showAverage = false;

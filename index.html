@@ -23,6 +23,11 @@
       <br><span style="position:absolute; margin-top: -15px; margin-left: 160px; font-weight: bold">v0.2.2</span>
     </div>
 
+    <div id="alert" v-cloak class="alert alert-warning fade in alert-dismissable" v-if="screen.width > 2000" style="position: absolute; top: 10; left: 0; right: 0; width: 50vw; margin: auto">
+      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+      Greater than Full HD screen resolution detected! Please adjust your browser zoom settings if layout breaks.
+    </div>
+
     <!--CCMB Logo-->
     <div style="position: absolute; top: 0; right: 0; ">
       <a href="http://ccmb.res.in/" target="_blank"> <img style="float: right; margin-right: 20px; margin-top: 12px; width: 70%" src="images/ccmb_logo_new.png" alt="CSIR Logo">
@@ -41,7 +46,7 @@
           <div class="panel-body" v-cloak id="main-file">
             <div class="row">
               <div class="container-fluid col-md-9" style="border-right: 1px dotted #666666">
-                <div style="text-align:center; font-size: 18px; font-weight:bold">Welcome to C-State! Load a file to begin</div><br>
+                <!--<div style="text-align:center; font-size: 18px; font-weight:bold">Welcome to C-State! Load a file to begin</div><br>-->
                 <table style="width: 60%; margin: auto; text-align: center">
                   <col style="width: 15%">
                   <col style="width: 20%">
@@ -53,7 +58,7 @@
                   </tr>
                   <tr>
                     <td>
-                      <label class="text-center main-button btn btn-default btn-file my-tipsy-class" title="A list of gene names or identifiers in a txt file, one entry per line. See example data on C-State website.">Load File
+                      <label class="text-center main-button btn btn-default btn-file" data-toggle="tooltip" data-placement="top" title="A list of gene names or identifiers in a txt file, one entry per line. See example data on C-State website. Or, you can upload previously downloaded JSON file of C-State.">Load Gene List/C-State Data
                         <input type="file" style="display: none" @change="onFileUpload" name="file">
                       </label>
                     </td>
@@ -121,7 +126,7 @@
 
               <div class="container-fluid col-md-3" style="text-align:center">
                 <span style="font-size: 20px; font-weight: bold;">OR</span><br><br>
-                <button onclick="exampleScope()" id="example-button" class="my-tipsy-class text-center main-button btn btn-default btn-file" title="Don't have data? Try C-State with pre-loaded datasets">LOAD EXAMPLE DATA</button><br>
+                <button onclick="exampleScope()" id="example-button" class="text-center main-button btn btn-default btn-file" data-toggle="tooltip" data-placement="top" title="Don't have data? Try C-State with pre-loaded datasets">Load Example Data</button><br>
                 <span style="margin-left: 6px; display: inline-block; margin-top: 20px;">of
                 <input id="example-number" type="number" size="1" min="1" max="6" value="4" style="margin-left: 6px; width:50px;text-align: right;"/>
                 Cell Types</span><br>
@@ -191,6 +196,7 @@
           <h4 class="panel-title">
             <a href="#view-body">View - Showing {{numFilteredGenes}} of {{genes.length}} genes</a>
             <a style="float: right" v-if="activeFilters > 0">{{activeFilters}} Active Filter(s)</a>
+            <a style="float: right" v-if="activeCutOff">Feature cut-offs active<span v-if="activeFilters > 0" style="margin-left: 2px; margin-right: 2px;">|</span></a>
             <!--<p style="text-align:center"> </p>-->
           </h4>
         </div>
@@ -229,11 +235,9 @@
         <div class="modal-container">
 
           <div class="modal-header" style="margin: 0px 20px 0px 20px">
-            <h3 style="margin-top: 0px">
-              {{ gene.name }}
-            </h3>
-            <h4 style="margin-top: 0px">{{ gene.geneinfo.chrom }}:{{ gene.geneinfo.txStart }}-{{gene.geneinfo.txEnd}}({{gene.geneinfo.strand}})</h4>
-            <div style="text-align: right">Scale in KB</div>
+            <span style="margin-top: 0px; font-size: 24px">{{ gene.name }}</span>
+            <span style="margin-top: 0px; margin-left: 2vw; font-size: 18px">{{ gene.geneinfo.chrom }}:{{ gene.geneinfo.txStart }}-{{gene.geneinfo.txEnd}}({{gene.geneinfo.strand}})</span>
+            <span style="font-size: 14px; float: right; font-weight: bold">Scale in KB</span>
           </div>
 
           <div class="modal-body dragscroll" style="overflow: auto; width:inherit;">
@@ -248,9 +252,9 @@
               <my-legend loc='geneModal' style="margin: 0px 20px 0px 20px; width: 80%"></my-legend>
             </div>
             <div class="col-md-4">
-              <button class="btn btn-success" @click="saveAsSVG()">Download As SVG</button>
+              <button class="btn btn-info" @click="saveAsSVG()">Download As SVG</button>
               <button class="btn btn-primary" onclick="events.$emit('reset_zoom')">Reset Zoom</button>
-              <button class="btn btn-default" onclick="hideGeneModal()">Close</button>
+              <button class="btn btn-danger" onclick="hideGeneModal()">Close</button>
             </div>
           </div>
 
@@ -280,7 +284,7 @@
 
     <!--Analysis Modal-->
     <div id='analysis-modal' v-cloak>
-      <div id='analysis-body' class="modal-wrapper animated rollIn" v-if="showAnalysisDiv">
+      <div id='analysis-body' class="modal-wrapper animated fadeIn" v-if="showAnalysisDiv">
         <div class="modal-container">
 
           <!--<div class="modal-header">
@@ -289,7 +293,7 @@
 
           <div class="modal-body" style="width:inherit; padding-top: 10px; overflow-y: scroll">
             <div class="row" style="text-align: center">
-              <ul class="nav nav-tabs nav-justified">
+              <ul class="nav nav-tabs nav-justified" style="font-size: 16px; font-weight: bold">
                 <li class="active"><a data-toggle="tab" href="#histograms">Feature Histograms</a></li>
                 <li><a data-toggle="tab" @click="showAverage=true" href="#average-profile">Average Feature Profile</a></li>
                 <li><a data-toggle="tab" href="#feature-correlation">Feature Correlation</a></li>
@@ -298,8 +302,9 @@
 
             <div class="tab-content">
               <div id="histograms" class="tab-pane fade in active">
-                <div class="row" style="padding: 15px 0px 10px 10vw; border-bottom: 1px dotted #666666">
-                  <button @click="switchHistCols" class="btn btn-primary">Switch Rows/Columns</button>
+                <div class="row" style="padding: 15px 0px 10px 5vw; border-bottom: 1px dotted #666666">
+                  <button class="btn btn-danger" onclick="hideAnalysis()">Close</button>
+                  <button @click="switchHistCols" style="margin-left: 1vw;" class="btn btn-primary">Switch Rows/Columns</button>
                   <span style="padding-left: 10vw">Show histogram of
                     <select class="filter-input" @change="changeHistType" v-model="histType">
                       <option value="size">Feature Sizes (in bp)</option>
@@ -335,24 +340,30 @@
                     </tr>
                   </table>
                 </div>
-                <div class="modal-footer">
-                  <button class="btn btn-danger" onclick="hideAnalysis()">Close</button>
+                <div class="modal-footer" style="text-align: justify">
+                    <div v-if="histType === 'size'"><strong>X-axis: </strong>Feature Size<br></div>
+                    <div v-if="histType === 'score'"><strong>X-axis: </strong>Feature Score<br></div>
+                    <div><strong>Y-axis: </strong>Frequency<br></div>
+                    Each plot displays the distribution of features based on their sizes or scores. Features from all genes are shown irrespective of any active filters. However, feature cut-offs (applied from Settings panel) are reflected in the plots.
                 </div>
               <!--</div>-->
               </div>
 
               <div id="average-profile" class="tab-pane fade">
-                <div class="row" style="padding: 15px 0px 10px 10vw; border-bottom: 1px dotted #666666">
-                  <button @click="switchAvgCols" class="btn btn-primary">Switch Rows/Columns</button>
-                  <span style="padding-left: 10vw">Show
+                <div class="row" style="padding: 15px 0px 10px 5vw; border-bottom: 1px dotted #666666">
+                  <button class="btn btn-danger" onclick="hideAnalysis()">Close</button>
+                  <button @click="switchAvgCols" style="margin-left: 1vw" class="btn btn-primary">Switch Rows/Columns</button>
+                  <span style="padding-left: 5vw">Show
                     <select class="filter-input" @change="showFiltered" v-model="filtered">
                       <option :value="{ boolean: false}">All</option>
                       <option :value="{ boolean: true}">Filtered</option>
                     </select>Genes
                   </span>
                   <span style="padding-left: 40px">
-                    <input type="radio" v-model="tssonly" :value="false" @change="showFiltered">Show Entire Regions
-                    <input style="margin-left: 20px;" type="radio" v-model="tssonly" :value="true">Show TSS only
+                    <input type="radio" v-model="tssonly" :value="false" @change="showFiltered" title="Display gene body along with flanks chosen in the files pane">
+                    <span title="Display gene body along with flanks chosen in the files pane">Show Entire Regions</span>
+                    <input style="margin-left: 20px;" type="radio" v-model="tssonly" :value="true" title="Display profile around TSS">
+                    <span title="Display profile around TSS">Show TSS only</span>
                     <table style="width: 15%; margin: auto; display: inline-table; text-align: center">
                       <tr>
                         <td>Upstream</td>
@@ -396,14 +407,19 @@
                     </tr>
                   </table>
                 </div>
-                <div class="modal-footer">
-                  <button class="btn btn-danger" onclick="hideAnalysis()">Close</button>
+                <div class="modal-footer" style="text-align: justify">
+                    <div v-if="tssonly"><strong>X-axis </strong>represents selected region in KB around TSS of all genes</div>
+                    <div v-else><strong>X-axis </strong>represents gene body (TSS to TES) along with upstream and downstream flanks</div>
+                    <div><strong>Y-axis: </strong>Frequency<br></div>
+                    Plots the distribution of features averaged across all genes (Y-axis) along the region specified by the user (X-axis). TSS and TES are indicated by vertical gray lines within the plots.
+                    <div v-if="!tssonly"><strong>Hint: </strong>Reduce upstream and downstream flanks from Files accordion if TSS and TES appear too close to each other.</div>
                 </div>
               </div>
 
               <div id="feature-correlation" class="tab-pane fade">
-                <div style="padding: 15px 0px 10px 10vw; border-bottom: 1px dotted #666666">
-                  <button @click="switchCorCols" class="btn btn-primary">Switch Rows/Columns</button>
+                <div class="row" style="padding: 15px 0px 10px 5vw; border-bottom: 1px dotted #666666">
+                  <button class="btn btn-danger" onclick="hideAnalysis()">Close</button>
+                  <button @click="switchCorCols" style="margin-left: 1vw;" class="btn btn-primary">Switch Rows/Columns</button>
                   <span style="padding-left: 10vw" v-if="colWiseCor">Center By
                     <select class="filter-input" v-model="corBy">
                       <option v-for="feature in features" :value="feature.name">{{feature.name}}</option>
@@ -453,7 +469,7 @@
                   </table>
                 </div>
                 <div class="modal-footer">
-                  <button class="btn btn-danger" onclick="hideAnalysis()">Close</button>
+                  
                 </div>
               </div>
             </div>
@@ -493,7 +509,7 @@
 
               <div class="container-fluid col-md-8 dragscroll" style="height: 70vh; overflow-y: auto">
                 <h4>Active Filters</h4>
-                <h6 v-if="activeFilters.length > 0">All active filters are chained, and applied sequentially</h6>
+                <h6 v-if="activeFilters.length > 0">All active filters will be chained and applied sequentially once you click "Apply Filters" below</h6>
                 <ul style="padding: 0">
                   <span :key="filter.id" v-for="(filter, index) in activeFilters">
                     <table style="width: 100%">
@@ -539,7 +555,7 @@
               <input type="checkbox" v-model="showFiltered">Show Filtered Genes Only
             </div>
             
-            <button class="btn btn-primary" @click="copyNames">Copy Names to Clipboard</button>
+            <button class="btn btn-primary" @click="copyNames" title="Copy displayed gene names for pasting into other applications">Copy Names to Clipboard</button>
             <button class="btn btn-success" @click="exportToExcel">Export Table as Excel</button>
             <button class="btn btn-danger" onclick="hideTable()">Close</button>
           </div>
@@ -553,8 +569,8 @@
         <div class="modal-container">
 
           <div class="modal-header">
-            <h3 style="text-align: center">Settings Panel</h3>
-            <h5 style="text-align: center">This panel controls global settings</h5>
+            <div style="text-align: center; font-size: 24px">Settings Panel</div>
+            <div style="text-align: center;">This panel controls global settings</div>
           </div>
 
           <div class="modal-body" style="width:inherit; height: 75vh; overflow-y: auto">
@@ -1142,6 +1158,11 @@
     window.onbeforeunload = function (e) {
       return 'any';
     }
+
+    // Initialize bootstrap tooltips
+    $(document).ready(function () {
+      $('[data-toggle="tooltip"]').tooltip();
+    });
   </script>
 </body>
 

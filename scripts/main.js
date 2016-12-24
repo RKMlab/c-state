@@ -170,10 +170,10 @@ $(document).ready(function() {
     fade: true
   });
 
-  $('.my-tipsy-class').tipsy({
-    gravity: 's',
-    fade: true,
-  });
+  // $('.my-tipsy-class').tipsy({
+  //   gravity: 's',
+  //   fade: true,
+  // });
 });
 
 const getFilteredFeatures = function (features) {
@@ -211,6 +211,8 @@ const resetModalZoom = function (gene) {
 
 const exampleScope = function (scope = plotScope) {
   spinner.loading = true;
+  filterModal.activeFilters.splice(0);
+  filterModal.appliedFilters = '';
   const num = $('#example-number').val();
   if (_.isNaN(num) || num < 1 || num > 6) {
     alert('Invalid number. Input a number between 1 and 6');
@@ -246,6 +248,8 @@ const formatPlotScope = function (scope = plotScope) {
     alert('No input file selected');
     return;
   }
+  filterModal.activeFilters.splice(0);
+  filterModal.appliedFilters = '';
   if (mainFileData.typeSelected === 'plotdata') {
     spinner.loading = true;
     readFile(mainFileData.inputFile, e => {
@@ -319,6 +323,7 @@ const formatPlotScope = function (scope = plotScope) {
         }
         gene.geneinfo.exons.push(exonObj);
       }
+      gene.geneinfo.exons = _.sortBy(gene.geneinfo.exons, ['start']);
 
       const neighbors = [];
       for (let i = 0; i < gene.geneinfo.neighbors.length; i++) {
@@ -439,3 +444,13 @@ const formatPlotScope = function (scope = plotScope) {
     }
   }
 }
+
+const alert = new Vue({
+  el: '#alert',
+  data: {
+    screen: {
+      width: screen.width,
+      height: screen.height
+    }
+  }
+})

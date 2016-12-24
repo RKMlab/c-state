@@ -41,6 +41,7 @@ const modalpanel = Vue.component('modalpanel', {
       const availableHeight = panelHeight - heightPadding;
       const featurePadding = settings.featurePadding;
       const geneBarStart = 35;
+      const name = this.gene.name;
 
       const featureNames = _.map(this.info.features, 'name');
       const cellTypeName = this.info.celltypes[this.index].name;
@@ -172,6 +173,11 @@ const modalpanel = Vue.component('modalpanel', {
           })
           .attr("height", geneBarHeight)
           .style("fill", geneBarColor)
+        
+        exonBars.append("svg:title")
+          .text(function (d, i) {
+            return `Exon ${i + 1} of ${name}\nStart (from TSS): ${d.start}\nExon Size: ${+d.end - +d.start}bp`;
+          })
 
         const geneBar = chart.append("g")
           .attr("transform", "translate(" + xScale(this.gene.geneinfo.GStart) + "," + ((availableHeight - geneBarStart) + geneBarHeight) + ")");
@@ -203,7 +209,6 @@ const modalpanel = Vue.component('modalpanel', {
       function zoomHandler() {
         chart.attr("transform", "translate(" + d3.event.transform.x + ",0" + ") scale(" + d3.event.transform.k + ",1)");
         xAxisElement.call(xAxis.scale(d3.event.transform.rescaleX(xScale)));
-        console.log(d3.event.transform)
         events.$emit('zoom_all', d3.event.transform, index)
       }
 

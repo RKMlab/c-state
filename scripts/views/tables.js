@@ -69,6 +69,8 @@ const tableSummary = new Vue({
         dropdown: true
       },
       texts: {
+        filter: 'Search Table for:',
+        filterPlaceholder: 'Enter query',
         limit: 'Genes Per Page:'
       }
     },
@@ -129,6 +131,7 @@ const tableSummary = new Vue({
       dummy.select();
       document.execCommand("copy");
       document.body.removeChild(dummy);
+      alert(`${names.length} names copied to clipboard`);
     }
   }
 })

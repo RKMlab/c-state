@@ -164,9 +164,17 @@
   font-family: Helvetica, Arial, sans-serif;
 }
 
+#settings-modal .modal-header {
+  height: 10vh;
+}
+
 #settings-modal .modal-body {
-  height: 70vh;
+  height: 60vh;
   margin: 20px 0;
+}
+
+#settings-modal .modal-footer {
+  height: 20vh;
 }
 
 #settings-modal li {

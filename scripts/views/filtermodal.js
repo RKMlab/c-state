@@ -44,6 +44,7 @@ const filterModal = new Vue({
       type: 'overlapFilter'
     }],
     activeFilters: [],
+    appliedFilters: '',
     genes: '',
   },
   computed: {
@@ -66,7 +67,9 @@ const filterModal = new Vue({
 
     applyFilters: function () {
       this.genes = plotScope.genes;
+      this.appliedFilters = '';
       if (this.activeFilters.length === 0) {
+        alert('No filter selected');
         return;
       }
       spinner.loading = true;
@@ -139,6 +142,7 @@ const filterModal = new Vue({
         }
         if (i === this.activeFilters.length - 1) {
           spinner.loading = false;
+          this.appliedFilters = this.activeFilters.length;
           hideFilterDiv();
         }
       }
@@ -544,6 +548,7 @@ const filterModal = new Vue({
 
     clearFilters: function () {
       this.activeFilters.splice(0);
+      this.appliedFilters = ''
       spinner.loading = true;
       let counter = 0;
       for (let i = 0; i < this.genes.length; i++) {

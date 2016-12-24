@@ -62,7 +62,7 @@ const avgprofile = Vue.component('avgprofile', {
     getFullProfile: function () {
       const profile = this.profile;
       const scope = this.scope;
-      const binSize = 100;
+      const binSize = 200;
       const upBins = scope.info.flankUp/binSize;
       const downBins = scope.info.flankDown/binSize;
       const geneSizes = _.map(scope.genes, 'geneinfo.txSize');

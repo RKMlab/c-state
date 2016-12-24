@@ -92,6 +92,12 @@ ul {
   list-style-type: none;
 }
 
+ul.nav-justified li a {
+  color: #0F0752 !important;
+  text-decoration: underline;
+  
+}
+
 .side-button {
   position: fixed;
   left: 0px;

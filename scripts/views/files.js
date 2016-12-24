@@ -9,7 +9,7 @@ const main_file = new Vue({
       name: 'List of Genes',
       value: 'genes'
     }, {
-      name: 'Previous Plot Data',
+      name: 'Previous C-State Data',
       value: 'plotdata'
     }, ],
     typeSelected: '',
@@ -199,7 +199,10 @@ const plot = new Vue({
       return _.filter(plotScope.genes, 'show').length;
     },
     activeFilters: function () {
-      return filterModal.activeFilters.length;
+      return filterModal.appliedFilters;
+    },
+    activeCutOff: function () {
+      return this.settings.featureTracks.minSize !== '' || this.settings.featureTracks.maxSize !== '' || this.settings.featureTracks.minScore > 0 || this.settings.featureTracks.maxScore < 1000
     }
   }
 })
