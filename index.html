@@ -23,7 +23,7 @@
       <br><span style="position:absolute; margin-top: -15px; margin-left: 160px; font-weight: bold">v0.2.2</span>
     </div>
 
-    <div id="alert" v-cloak class="alert alert-warning fade in alert-dismissable" v-if="screen.width > 2000" style="position: absolute; top: 10; left: 0; right: 0; width: 50vw; margin: auto">
+    <div id="screenalert" v-cloak class="alert alert-warning fade in alert-dismissable" v-if="screen.width > 2000" style="position: absolute; top: 10; left: 0; right: 0; width: 50vw; margin: auto">
       <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
       Greater than Full HD screen resolution detected! Please adjust your browser zoom settings if layout breaks.
     </div>
@@ -196,7 +196,7 @@
           <h4 class="panel-title">
             <a href="#view-body">View - Showing {{numFilteredGenes}} of {{genes.length}} genes</a>
             <a style="float: right" v-if="activeFilters > 0">{{activeFilters}} Active Filter(s)</a>
-            <a style="float: right" v-if="activeCutOff">Feature cut-offs active<span v-if="activeFilters > 0" style="margin-left: 2px; margin-right: 2px;">|</span></a>
+            <a style="float: right" v-if="activeCutOff">Feature cut-offs active<span v-if="activeFilters > 0" style="margin-left: 3px; margin-right: 3px;">|</span></a>
             <!--<p style="text-align:center"> </p>-->
           </h4>
         </div>
@@ -240,7 +240,7 @@
             <span style="font-size: 14px; float: right; font-weight: bold">Scale in KB</span>
           </div>
 
-          <div class="modal-body dragscroll" style="overflow: auto; width:inherit;">
+          <div class="modal-body dragscroll" style="overflow: auto;">
             <table class="modaltable" style="margin: 0px; table-layout: fixed">
               <tr is="modalpanel" :index="index-1" :gene="gene" v-for="index in numCellTypes">
               </tr>
@@ -291,9 +291,9 @@
             <h3 style="text-align: center">Downstream Analysis</h3><br>
           </div>-->
 
-          <div class="modal-body" style="width:inherit; padding-top: 10px; overflow-y: scroll">
+          <div class="modal-body" style="width:inherit; padding-top: 2px; overflow-y: scroll">
             <div class="row" style="text-align: center">
-              <ul class="nav nav-tabs nav-justified" style="font-size: 16px; font-weight: bold">
+              <ul class="nav nav-pills nav-justified" style="font-size: 16px; font-weight: bold">
                 <li class="active"><a data-toggle="tab" href="#histograms">Feature Histograms</a></li>
                 <li><a data-toggle="tab" @click="showAverage=true" href="#average-profile">Average Feature Profile</a></li>
                 <li><a data-toggle="tab" href="#feature-correlation">Feature Correlation</a></li>
@@ -319,7 +319,7 @@
                   </span>
                 </div>
                 <div style="padding-top: 10px" v-if="showHist">
-                  <table style="margin: auto; width: 100%" v-if="colWiseHist">
+                  <table class="plot-table" style="margin: auto; width: 100%" v-if="colWiseHist">
                     <tr>
                       <th>CellType/Feature</th>
                       <th v-for="feature in features">{{feature.name}}</th>
@@ -329,7 +329,7 @@
                       <td is="featurehistogram" v-for="(feature, featindex) in features" :type="histType" :colorby="colorHistBy" :featindex="featindex" :cellindex="cellindex" :colwise="true" :feature="feature" :celltype="celltype"></td>
                     </tr>
                   </table>
-                  <table style="margin: auto; width: 100%" v-else>
+                  <table class="plot-table" style="margin: auto; width: 100%" v-else>
                     <tr>
                       <th>CellType/Feature</th>
                       <th v-for="celltype in celltypes">{{celltype.name}}</th>
@@ -341,10 +341,19 @@
                   </table>
                 </div>
                 <div class="modal-footer" style="text-align: justify">
-                    <div v-if="histType === 'size'"><strong>X-axis: </strong>Feature Size<br></div>
-                    <div v-if="histType === 'score'"><strong>X-axis: </strong>Feature Score<br></div>
-                    <div><strong>Y-axis: </strong>Frequency<br></div>
-                    Each plot displays the distribution of features based on their sizes or scores. Features from all genes are shown irrespective of any active filters. However, feature cut-offs (applied from Settings panel) are reflected in the plots.
+                  <div class="row">
+                    <div class="container-fluid col-md-9">
+                      <div v-if="histType === 'size'"><strong>X-axis: </strong>Feature Size<br></div>
+                      <div v-if="histType === 'score'"><strong>X-axis: </strong>Feature Score<br></div>
+                      <div><strong>Y-axis: </strong>Frequency<br></div>
+                      Each plot displays the distribution of features based on their sizes or scores. Features from all genes are shown irrespective of any active filters. However, feature cut-offs (applied from Settings panel) are reflected in the plots.
+                    </div>
+                    <div class="container-fluid col-md-3">
+                      <div style="text-align: right">
+                        <button class="btn btn-info" @click="saveAsSVG('#histograms')">Download as SVG</button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               <!--</div>-->
               </div>
@@ -362,8 +371,8 @@
                   <span style="padding-left: 40px">
                     <input type="radio" v-model="tssonly" :value="false" @change="showFiltered" title="Display gene body along with flanks chosen in the files pane">
                     <span title="Display gene body along with flanks chosen in the files pane">Show Entire Regions</span>
-                    <input style="margin-left: 20px;" type="radio" v-model="tssonly" :value="true" title="Display profile around TSS">
-                    <span title="Display profile around TSS">Show TSS only</span>
+                    <input style="margin-left: 20px;" type="radio" v-model="tssonly" :value="true" title="Select distance around TSS and click Plot button on the right to display average TSS profile">
+                    <span title="Select distance around TSS and click Plot button on the right to display average TSS profile">Show TSS only</span>
                     <table style="width: 15%; margin: auto; display: inline-table; text-align: center">
                       <tr>
                         <td>Upstream</td>
@@ -378,11 +387,11 @@
                         </td>
                       </tr>
                     </table>
-                    <button style="margin-left: 10px" v-if="tssonly" class="btn btn-primary" @click="showFiltered">Plot</button>
+                    <button style="margin-left: 10px" :disabled="!tssonly" class="btn btn-primary" @click="showFiltered">Plot</button>
                   </span>
                 </div>
                 <div style="padding-top: 10px" v-if="showAverage">
-                  <table style="margin: auto; width: 100%" v-if="colWiseAvg">
+                  <table class="plot-table" style="margin: auto; width: 100%" v-if="colWiseAvg">
                     <tr>
                       <th>CellType/Feature</th>
                       <th v-for="feature in features">{{feature.name}}</th>
@@ -394,7 +403,7 @@
                       </td>
                     </tr>
                   </table>
-                  <table style="margin: auto; width: 100%" v-else>
+                  <table class="plot-table" style="margin: auto; width: 100%" v-else>
                     <tr>
                       <th>CellType/Feature</th>
                       <th v-for="(celltype, cellindex) in celltypes">{{celltype.name}}</th>
@@ -408,11 +417,21 @@
                   </table>
                 </div>
                 <div class="modal-footer" style="text-align: justify">
-                    <div v-if="tssonly"><strong>X-axis </strong>represents selected region in KB around TSS of all genes</div>
-                    <div v-else><strong>X-axis </strong>represents gene body (TSS to TES) along with upstream and downstream flanks</div>
-                    <div><strong>Y-axis: </strong>Frequency<br></div>
-                    Plots the distribution of features averaged across all genes (Y-axis) along the region specified by the user (X-axis). TSS and TES are indicated by vertical gray lines within the plots.
-                    <div v-if="!tssonly"><strong>Hint: </strong>Reduce upstream and downstream flanks from Files accordion if TSS and TES appear too close to each other.</div>
+                  <div class="row">
+                    <div class="container-fluid col-md-9">
+                      <div v-if="tssonly"><strong>X-axis </strong>represents selected region in KB around TSS of all genes</div>
+                      <div v-else><strong>X-axis </strong>represents gene body (TSS to TES) along with upstream and downstream flanks</div>
+                      <div><strong>Y-axis: </strong>Frequency<br></div>
+                      <div v-if="tssonly">Plots the distribution of features(Y-axis) around TSS (X-axis), averaged across all genes. TSS is indicated by a vertical gray line within the plot</div>
+                      <div v-else>Plots the distribution of features averaged across all genes (Y-axis) along the region specified by the user (X-axis). TSS and TES are indicated by vertical gray lines within the plots.</div>
+                      <div v-if="!tssonly"><strong>Hint: </strong>Reduce upstream and downstream flanks from Files accordion if TSS and TES appear too close to each other.</div>
+                    </div>
+                    <div class="container-fluid col-md-3">
+                      <div style="text-align: right">
+                        <button class="btn btn-info" @click="saveAsSVG('#average-profile')">Download as SVG</button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -443,7 +462,7 @@
                   <button style="margin-left: 10px" v-if="corBy !== ''" class="btn btn-primary" @click="changeCorType">Plot</button>
                 </div>
                 <div style="padding-top: 10px" v-if="showCor">
-                  <table style="margin: auto; width: 100%" v-if="!colWiseCor">
+                  <table class="plot-table" style="margin: auto; width: 100%" v-if="!colWiseCor">
                     <tr>
                       <th>CellType/Feature</th>
                       <th v-for="feature in features">{{feature.name}}</th>
@@ -455,7 +474,7 @@
                       </td>
                     </tr>
                   </table>
-                  <table style="margin: auto; width: 100%" v-else>
+                  <table class="plot-table" style="margin: auto; width: 100%" v-else>
                     <tr>
                       <th>CellType/Feature</th>
                       <th v-for="(celltype, cellindex) in celltypes">{{celltype.name}}</th>
@@ -468,8 +487,19 @@
                     </tr>
                   </table>
                 </div>
-                <div class="modal-footer">
-                  
+                <div class="modal-footer" style="text-align: justify">
+                  <div class="row">
+                    <div class="container-fluid col-md-9">
+                      <div><strong>X-axis: </strong>Upstream and downstream distance in KB with respect to selected cell type/feature (chosen in the dropdown above). 0 indicates the center of all peaks of the chosen cell type/feature</div>
+                      <div><strong>Y-axis: </strong>Frequency</div>
+                      <div>Plots the relationship of features with respect to each other, centered by the chosen cell type/feature</div>
+                    </div>
+                    <div class="container-fluid col-md-3">
+                      <div style="text-align: right">
+                        <button class="btn btn-info" @click="saveAsSVG('#feature-correlation')">Download as SVG</button>
+                      </div>
+                    </div>
+                  </div>  
                 </div>
               </div>
             </div>
@@ -488,8 +518,11 @@
       <div id='filter-mask' class="modal-wrapper animated slideInLeft" v-if="showFilterDiv">
         <div class="modal-container">
 
-          <div class="modal-header">
-            <h3 style="text-align: center">Filters Panel</h3>
+          <div class="modal-header" style="text-align: center">
+            <h3>Filters Panel</h3>
+            <h6>Show/Hide genes that match the criteria set using any combination of the filters provided below
+              <span class="glyphicon glyphicon-info-sign" title="No Genes or features are removed from the data. All genes can be visualized again by clearing the filters"></span>
+            </h6>
           </div>
 
           <div class="modal-body" style="width:inherit;">
@@ -499,7 +532,7 @@
                 <h6>Click on a filter to add it</h6><br><br>
                 <h5>Filter Genes By</h5>
                 <ol style="padding: 0">
-                  <button :disabled="!genesLoaded" style="width: 100%; margin-bottom: 5px" class="btn btn-default" :class="{filtergap: filter.type === 'countsFilter'}"
+                  <button :disabled="!genesLoaded" data-toggle="tooltip" data-placement="right" style="width: 100%; margin-bottom: 5px" :title="filter.title" class="btn btn-default" :class="{filtergap: filter.type === 'countsFilter'}"
                     v-for="(filter, index) in availableFilters" @click="addFilter(index)">
                     {{ filter.name }}
                     <span class="badge" :style="{ backgroundColor: colors[index] }"> {{ _.filter(activeFilters, ['type', filter.type]).length }}</span>
@@ -866,7 +899,9 @@
   <!--Name Filter template-->
   <template id='name-filter-template'>
     <div class="filter-component row">
-      <h5><strong>Gene Name Filter</strong></h5>
+      <h5><strong>Gene Name Filter</strong>
+        <span class="glyphicon glyphicon-info-sign" title="Gene name refers to the ID provided in the gene list txt file in Files accordion"></span>
+      </h5>
       <div>
         <select class="filter-input" v-model="hideGene">
           <option :value="{ boolean: false}">Show</option>
@@ -886,7 +921,9 @@
   <!--Size Filter Template-->
   <template id='size-filter-template'>
     <div class="filter-component row">
-      <h5><strong>Gene Size Filter</strong></h5><br>
+      <h5><strong>Gene Size Filter</strong>
+        <span class="glyphicon glyphicon-info-sign" title="Gene size is calculated as the total size from TSS to TES of the gene. Region size is calculated as gene size plus upstream and downstream flanks selected in Files accordion."></span>
+      </h5><br>
       <div>Show
         <select class="filter-input" v-model="locusSelected">
           <option v-for="option in loci" :value="option.value"> {{option.name}} </option>
@@ -915,8 +952,8 @@
       <div>
         <table style="width: 90%; margin: auto">
           <tr>
-            <td>Start</td>
-            <td>Stop</td>
+            <td>Start coordinate</td>
+            <td>Stop coordinate</td>
           </tr>
           <tr>
             <td>
@@ -934,7 +971,8 @@
   <!--Counts Filter Template-->
   <template id='counts-filter-template'>
     <div class="filter-component">
-      <h5><strong>Feature Counts Filter</strong></h5>
+      <h5><strong>Feature Counts Filter</strong>
+      </h5>
 
       <div class="container-fluid row">
         <div class="container-fluid col-md-6">Choose Celltype:<br>
@@ -955,6 +993,7 @@
 
       <div class="container-fluid row">
         <!--<div class="container-fluid col-md-8">-->
+        <span class="glyphicon glyphicon-info-sign" title="Display genes that have the specified number of occurrences of the selected feature"></span>
         <span>Features Count</span>
         <select class="filter-input" v-model="operatorSelected">
             <option v-for="option in operators" :value="option.value">
@@ -968,6 +1007,7 @@
       <div class="container-fluid row">
         <!--<div class="container-fluid col-md-3">-->
         <span>Distance from TSS (in KB)</span>
+        <span class="glyphicon glyphicon-info-sign" title="Restrict the search of feature counts within this distance from TSS of each gene"></span>
         <!--</div>-->
       </div>
       <div class="container-fluid row">
@@ -1038,6 +1078,7 @@
       <div class="container-fluid row">
         <!--<div class="container-fluid col-md-3">-->
         <span>Distance between features (in KB)</span>
+        <span class="glyphicon glyphicon-info-sign" title="Specify how far apart the first and second features can be from each other"></span>
         <!--</div>-->
       </div>
       <div class="container-fluid row">
@@ -1060,6 +1101,7 @@
       <div class="container-fluid row">
         <!--<div class="container-fluid col-md-3">-->
         <span>Distance of first feature from TSS (in KB)</span>
+        <span class="glyphicon glyphicon-info-sign" title="Restrict the search of specified pattern within this distance from TSS of each gene. The position of only the first feature is taken into account."></span>
         <!--</div>-->
       </div>
       <div class="container-fluid row">
@@ -1084,7 +1126,9 @@
   <!--Neighbor Counts filter-->
   <template id='neighbor-count-filter-template'>
     <div class="filter-component row">
-      <h5><strong>Neighbor Counts Filter</strong></h5><br>
+      <h5><strong>Neighbor Counts Filter</strong>
+        <span class="glyphicon glyphicon-info-sign" title="Neighbors refer to the genes that surround and/or overlap the target genes. Neighbor counts are the number of neighboring genes present in the target gene body and the flanks specified in Files accordion. Neighbors are counted even if their display is toggled from Settings panel"></span>
+      </h5><br>
       <div>Show genes with
         <select class="filter-input" v-model="operatorSelected">
           <option v-for="option in operators" :value="option.value"> {{option.name}} </option>
@@ -1092,7 +1136,8 @@
         <input style="text-align: right; width: 15%" class="filter-input" v-model.number="countCutOff">Neighbors
       </div><br>
       <div>
-        <input type="checkbox" v-model="ignoreOverlap"> Ignore overlapping genes
+        <input type="checkbox" v-model="ignoreOverlap" title="Do not consider neighbors that completely or partially overlap the target gene body (TSS to TES) in the neighbor count">
+        <span title="Do not consider neighbors that completely or partially overlap the target gene body (TSS to TES) in the neighbor count">Ignore overlapping genes</span>
       </div>
     </div>
   </template>

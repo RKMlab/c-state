@@ -72,10 +72,10 @@ const featurecorrelation = Vue.component('featurecorrelation', {
 
     plotProfile: function (profile, upBins, downBins) {
       const scope = this.scope;
-      // const start = this.tssup * -1000;
+      const start = this.flankup * -1000;
       const margin = {
         top: 0,
-        left: 20,
+        left: 30,
         bottom: 15,
         right: 15
       };
@@ -138,6 +138,21 @@ const featurecorrelation = Vue.component('featurecorrelation', {
         .attr("fill", "none")
         .attr("stroke", lineColor)
         .attr("stroke-width", "1.5px")
+
+      chart.append("g")
+        .attr("class", "x-axis analysis-axis")
+        .attr("transform", `translate(0, ${panelHeight-margin.bottom})`)
+        .call(xAxis
+          .tickFormat(function (d) {
+            return Math.round((start + d*100)/1000)
+          }))
+
+      chart.append("line")
+        .attr("x1", xScale(upBins))
+        .attr("y1", panelHeight-margin.bottom)
+        .attr("x2", xScale(upBins))
+        .attr("y2", 0)
+        .attr("stroke", "#999999")
     }
   }
 })

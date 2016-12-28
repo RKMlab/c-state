@@ -445,8 +445,8 @@ const formatPlotScope = function (scope = plotScope) {
   }
 }
 
-const alert = new Vue({
-  el: '#alert',
+const screenAlert = new Vue({
+  el: '#screenalert',
   data: {
     screen: {
       width: screen.width,

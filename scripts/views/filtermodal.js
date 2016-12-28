@@ -26,22 +26,28 @@ const filterModal = new Vue({
     colors: ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf"],
     availableFilters: [{
       name: 'Name',
-      type: 'nameFilter'
+      type: 'nameFilter',
+      title: 'Show or hide genes based on their name'
     }, {
       name: 'Size',
-      type: 'sizeFilter'
+      type: 'sizeFilter',
+      title: 'Display genes or regions matching the selected size cutoff'
     }, {
       name: 'Chromosome',
-      type: 'chromFilter'
+      type: 'chromFilter',
+      title: 'Show or hide genes belonging to a given chromosome'
     }, {
       name: 'Neighbor Counts',
-      type: 'neighborCountFilter'
+      type: 'neighborCountFilter',
+      title: 'Display genes with specified number of neighboring genes'
     }, {
       name: 'Feature Counts',
-      type: 'countsFilter'
+      type: 'countsFilter',
+      title: 'Find and display genes with specified number of occurences of selected features'
     }, {
       name: 'Feature Overlaps',
-      type: 'overlapFilter'
+      type: 'overlapFilter',
+      title: 'Find and display genes with specified epigenetic patterns'
     }],
     activeFilters: [],
     appliedFilters: '',

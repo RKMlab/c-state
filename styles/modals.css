@@ -49,8 +49,9 @@
 }
 
 #gene-modal .modal-body {
+  width: 85vw;
   height: 75vh;
-  margin: 0px 20px;
+  margin: 0px 10px;
   padding: 0px;
 }
 
@@ -187,4 +188,13 @@
 
 .tipsy-s {
   font-size: 12px;
+}
+
+.nav-pills li.active a{
+  background-color: #0F0752 !important;
+  text-decoration: none;
+}
+
+.nav-pills li.active a{
+  color: white !important;
 }
