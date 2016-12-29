@@ -169,7 +169,7 @@
               <table style="margin-top:20px; width:95%; margin-left: auto; margin-right: auto" class="table table-hover">
                 <tr v-if="inputFiles.length > 0">
                   <th>File Name</th>
-                  <th>Celltype Name</th>
+                  <th>CellType Name</th>
                   <th>Feature Name
                     <span class="glyphicon glyphicon-info-sign" title="Feature names must be consistent across cell types"></span>
                   </th>
@@ -294,9 +294,9 @@
           <div class="modal-body" style="width:inherit; padding-top: 2px; overflow-y: scroll">
             <div class="row" style="text-align: center">
               <ul class="nav nav-pills nav-justified" style="font-size: 16px; font-weight: bold">
-                <li class="active"><a data-toggle="tab" href="#histograms">Feature Histograms</a></li>
-                <li><a data-toggle="tab" @click="showAverage=true" href="#average-profile">Average Feature Profile</a></li>
-                <li><a data-toggle="tab" href="#feature-correlation">Feature Correlation</a></li>
+                <li class="active"><a data-toggle="tab" href="#histograms" title="Click to plot Feature Histograms. Axes are described below the plots">Feature Histograms</a></li>
+                <li><a data-toggle="tab" @click="showAverage=true" title="Click to plot Average Feature Profiles. Axes are described below the plots" href="#average-profile">Average Feature Profile</a></li>
+                <li><a data-toggle="tab" title="Click to plot Feature Correlations. Axes are described below the plots" href="#feature-correlation">Feature Correlation</a></li>
               </ul>
             </div>
 
