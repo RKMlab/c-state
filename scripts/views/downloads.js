@@ -90,7 +90,7 @@ const downloads = new Vue({
         }
       }
       data = header + data + "</svg>";
-      const fileName = "cstate_plots.svg";
+      const fileName = "cstate_viewPanels.svg";
       const outData = new Blob([data], {
         type: 'text/plain; charset=utf-8'
       });
@@ -101,19 +101,23 @@ const downloads = new Vue({
       if (this.scope.genes.length === 0) {
         return;
       }
-      let data = 'C-State Data Summary\n\n';
-      data += `Total genes loaded: ${this.scope.genes.length}\nNumber of filtered genes: ${plot.numFilteredGenes}\n\n`;
-      data += 'Feature Cut-Offs\n';
+      let data = 'C-State Data Summary\r\n\r\n';
+      data += `Total genes loaded: ${this.scope.genes.length}\r\nNumber of filtered genes: ${plot.numFilteredGenes}\r\n\r\n`;
+      data += 'Feature Cut-Offs\r\n';
+      data += `Minimum Score: ${this.scope.settings.featureTracks.minScore}\r\n`
+      data += `Maximum Score: ${this.scope.settings.featureTracks.maxScore}\r\n`
+      data += `Minimum Size (bp): ${this.scope.settings.featureTracks.minSize}\r\n`
+      data += `Maximum Size (bp): ${this.scope.settings.featureTracks.maxSize}\r\n\r\n`
       if (filterModal.appliedFilters > 0) {
-        data += `Filter Summary\nNumber of applied filters: ${filterModal.appliedFilters}\n`;
+        data += `Filter Summary\r\nNumber of applied filters: ${filterModal.appliedFilters}\r\n`;
         for (let i = 0; i < filterModal.activeFilters.length; i++) {
           const filter = filterModal.activeFilters[i];
-          data += `Filter #${i+1}: ${filter.name}\n`;
+          data += `Filter #${i+1}: ${filter.name}\r\n`;
         }
-        data += '\n';
+        data += '\r\n';
       }
-      data += 'Names of filtered genes\n';
-      data += _.map(_.filter(this.scope.genes, 'show'), 'name').join('\n');
+      data += 'Names of filtered genes\r\n';
+      data += _.map(_.filter(this.scope.genes, 'show'), 'name').join('\r\n');
       const fileName = "cstate_summary.txt";
       const outData = new Blob([data], {
         type: 'text/plain; charset=utf-8'

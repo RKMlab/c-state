@@ -252,7 +252,7 @@
               <my-legend loc='geneModal' style="margin: 0px 20px 0px 20px; width: 80%"></my-legend>
             </div>
             <div class="col-md-4">
-              <button class="btn btn-info" @click="saveAsSVG()">Download As SVG</button>
+              <button class="btn btn-info" @click="saveAsSVG()" title="Save an SVG image of the view/zoom as visible" >Download As SVG</button>
               <button class="btn btn-primary" onclick="events.$emit('reset_zoom')">Reset Zoom</button>
               <button class="btn btn-danger" onclick="hideGeneModal()">Close</button>
             </div>
