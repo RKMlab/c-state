@@ -162,6 +162,7 @@ const hideSideDivs = function () {
   hideAnalysis();
   hideTable();
   hideGeneModal();
+  hideDownloads();
 }
 
 $(document).ready(function() {

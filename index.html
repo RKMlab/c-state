@@ -210,7 +210,7 @@
               <span style="height: 50px; display: block; margin-top: 20px; margin-right: 15px; font-weight: bold">Scale in KB</span>
             </div>
             <div class="container-fluid" style="margin-left:10px; margin-right:10px;">
-              <table style="width:100%; table-layout: fixed; margin-bottom: 0px;" class="table table-condensed">
+              <table id="header-table" style="width:100%; table-layout: fixed; margin-bottom: 0px;" class="table table-condensed">
                 <!--<thead><tr style="display: block; position: relative">-->
                 <th style="text-align: center" v-for="type in info.celltypes"> {{ type.name }}</th>
                 <!--</tr></thead>-->
@@ -276,7 +276,7 @@
       <button onclick="showTable()" type="button" title="Table Summary" class="btn btn-block btn-lg btn-default glyphicon glyphicon-th-list"></button>
     </div>
     <div id='download-button' class="side-button">
-      <button type="button" title="Download Options" onclick="exportJSONToFile()" class="btn btn-block btn-lg btn-default glyphicon glyphicon-download-alt"></button>
+      <button type="button" title="Download Options" onclick="showDownloads()" class="btn btn-block btn-lg btn-default glyphicon glyphicon-download-alt"></button>
     </div>
     <div id='settings-button' class="side-button">
       <button onclick="showSettings()" type="button" title="Settings Panel" class="btn btn-block btn-lg btn-default glyphicon glyphicon-cog"></button>
@@ -347,6 +347,7 @@
                       <div v-if="histType === 'score'"><strong>X-axis: </strong>Feature Score<br></div>
                       <div><strong>Y-axis: </strong>Frequency<br></div>
                       Each plot displays the distribution of features based on their sizes or scores. Features from all genes are shown irrespective of any active filters. However, feature cut-offs (applied from Settings panel) are reflected in the plots.
+                      <div v-if="histType === 'score'"><strong>Note: </strong>The histograms cannot be plotted if the loaded feature files do not have peak score information.<br></div>
                     </div>
                     <div class="container-fluid col-md-3">
                       <div style="text-align: right">
@@ -816,6 +817,21 @@
       </div>
     </div>
 
+    <!--Downloads Panel-->
+    <div id='downloads-panel' v-cloak>
+      <div id='downloads-body' style="position: fixed; left: 0px; top: 390px; height:70px; width: 900px; z-index: 3000" class="modal-wrapper animated slideInLeft" v-if="showDiv">
+        <div class="modal-container">
+
+          <div class="modal-body" style="padding: 15px 20px; background-color: white; border-radius: 1px 7px 7px 1px;">
+            <button class="btn btn-lg btn-success download-btn" title="Export a txt file containing summary of the gene names, feature track settings, and active filters (if any)" @click="exportSummary">Export C-State Summary</button>
+            <button class="btn btn-lg btn-primary download-btn" title="Download all the gene panels in the View accordion as a single SVG file" @click="downloadPlots">Download View panels as SVG</button>
+            <button class="btn btn-lg btn-info download-btn" title='Download the entire session info and plot data as a JSON file. This file can be uploaded as "Previous C-State Data" from the Files accordion' @click="exportJSONtoFile">Download C-State JSON File</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
     <!--Spinner for loading screen-->
     <div id='spinner' v-if="loading">
       <div class="loading-overlay"></div>
@@ -1180,6 +1196,7 @@
   <script src="scripts/components/modalpanel.js"></script>
   <!--Vue based views-->
   <script src="scripts/views/analysis.js"></script>
+  <script src="scripts/views/downloads.js"></script>
   <script src="scripts/views/genemodal.js"></script>
   <script src="scripts/views/filtermodal.js"></script>
   <script src="scripts/views/settingsmodal.js"></script>
