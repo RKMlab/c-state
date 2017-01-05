@@ -24,7 +24,7 @@ const mainpanel = Vue.component('mainpanel', {
       const numCellTypes = this.info.celltypes.length;
       const numFeatures = this.info.features.length;
       const panelWidth = (screen.width - 400) / numCellTypes;
-      const geneBarColor = settings.geneBarColor;
+      let geneBarColor = settings.geneBarColor;
       const regionBarColor = settings.regionBarColor;
       const neighborBarColor = settings.neighborBarColor;
       const geneBarHeight = settings.geneBarHeight;
@@ -32,15 +32,21 @@ const mainpanel = Vue.component('mainpanel', {
       const featureBarHeight = settings.featureBarHeight;
       const neighborBarHeight = settings.neighborBarHeight;
       const heightPadding = settings.VPadding;
-      const widthPadding = settings.HPadding;
+      let widthPadding = settings.HPadding;
+      if (settings.colorByExp) {
+        widthPadding += 10;
+      }
       let panelHeight = 20 + regionBarHeight + (heightPadding * 2) + featureBarHeight + (numFeatures * (featureBarHeight * 1.5));
       const addition = geneBarHeight > neighborBarHeight ? geneBarHeight * 2 : neighborBarHeight * 2;
       panelHeight += addition;
       const geneBarStart = addition + regionBarHeight;
       const availableHeight = panelHeight - heightPadding;
+      const expRange = this.info.expRange;
 
+      const name = this.gene.name;
       const featureNames = _.map(this.info.features, 'name');
       const cellTypeName = this.info.celltypes[this.index].name;
+      const expCount = _.find(this.gene.expression, ['name', cellTypeName]).count;
       const mappedFeatures = getFilteredFeatures(_.find(this.gene.mappedFeatures, ['name', cellTypeName]).features);
       const neighbors = this.gene.geneinfo.neighbors;
       const geneStrand = this.gene.geneinfo.strand;
@@ -66,6 +72,70 @@ const mainpanel = Vue.component('mainpanel', {
         .attr("width", panelWidth)
         .attr("height", panelHeight)
         .attr("class", "svgClass")
+      
+      // Expression gradient
+
+      if (settings.colorByExp && expCount !== 'NA') {
+        if (settings.expStyle === 1) {
+          const geneExpScale = d3.scaleLinear()
+            .domain([expRange.five, expRange.nineFive])
+            .clamp(true)
+            .range([(availableHeight - geneBarStart) - 15, heightPadding])
+
+          let expColors = JSON.parse(JSON.stringify(colorbrewer[settings.expColors][9]));
+          if (settings.expColReverse) {
+            expColors = expColors.reverse()
+          }
+          const defs = chartRoot.append("defs");
+          const expGradient = defs.append("linearGradient")
+            .attr("id", "expgradient")
+            .attr("x1", "0%")
+            .attr("y1", "100%")
+            .attr("x2", "0%")
+            .attr("y2", "0%")
+          
+          expGradient.selectAll("stop")
+            .data(expColors)
+            .enter()
+            .append("stop")
+            .attr("offset", function (d, i) {
+              return `${(100/(expColors.length-1)) * i}%`
+            })
+            .attr("stop-color", function (d) {
+              return d;
+            })
+
+          const gradient = chartRoot.append("rect")
+            .attr("x", 2)
+            .attr("y", heightPadding)
+            .attr("width", 8)
+            .attr("height", ((availableHeight - geneBarStart) - 15)-heightPadding)
+            .attr("fill", "url(#expgradient)")
+          
+          gradient.append("svg:title")
+            .text(`Expression in ${cellTypeName}: ${expCount}`);
+          
+          chartRoot.append("rect")
+            .attr("x", 0)
+            .attr("y", geneExpScale(expCount))
+            .attr("width", 12)
+            .attr("height", 5)
+            .attr("fill", geneBarColor)
+            .append("svg:title")
+              .text(`Expression in ${cellTypeName}: ${expCount}`);
+        } else {
+          let expColors = JSON.parse(JSON.stringify(colorbrewer[settings.expColors][9]));
+          if (settings.expColReverse) {
+            expColors = expColors.reverse()
+          }
+          const geneExpScale = d3.scaleLinear()
+            .domain([expRange.five, expRange.median, expRange.nineFive])
+            .clamp(true)
+            .range([expColors[0], expColors[4], expColors[8]])
+          
+          geneBarColor = geneExpScale(expCount)
+        }
+      }
 
       const xAxis = d3.axisBottom(xScale)
         .ticks(5)
@@ -157,6 +227,11 @@ const mainpanel = Vue.component('mainpanel', {
           })
           .attr("height", geneBarHeight)
           .style("fill", geneBarColor)
+        
+        exonBars.append("svg:title")
+          .text(function (d, i) {
+            return `Exon ${i + 1} of ${name}\nStart (from TSS): ${d.start}\nExon Size: ${+d.end - +d.start}bp\nExpression count: ${expCount}`;
+          })
 
         const geneBar = chart.append("g")
           .attr("transform", "translate(" + xScale(this.gene.geneinfo.GStart) + "," + ((availableHeight - geneBarStart) + geneBarHeight) + ")");
@@ -165,6 +240,9 @@ const mainpanel = Vue.component('mainpanel', {
           .attr("width", xScale(this.gene.geneinfo.GEnd) - xScale(this.gene.geneinfo.GStart))
           .attr("height", regionBarHeight)
           .style("fill", geneBarColor);
+        
+        geneBar.append("svg:title")
+          .text(`Expression count: ${expCount}`)
 
       } else {
         const geneBar = chart.append("g")
@@ -174,6 +252,9 @@ const mainpanel = Vue.component('mainpanel', {
           .attr("width", xScale(this.gene.geneinfo.GEnd) - xScale(this.gene.geneinfo.GStart))
           .attr("height", (geneBarHeight + regionBarHeight))
           .style("fill", geneBarColor);
+        
+        geneBar.append("svg:title")
+          .text(`Expression count: ${expCount}`)
       }
     }
   }

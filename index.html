@@ -139,7 +139,7 @@
           <div class="panel-body" id="feature-files" v-cloak v-if="showDiv">
             <div class="row">
               <div class="container-fluid col-md-9">
-              <table style="width: 50%; margin: auto">
+              <table style="width: 80%; margin: auto">
                 <!--<col style="width: 2%">
                 <col style="width: 10%">
                 <col style="width: 1%">
@@ -147,15 +147,20 @@
                 <col style="width: 10%">-->
                 <tr>
                   <td>
-                    <label :disabled="!showFeatureButton" title="Select all your feature data files in BED format (see example data on C-State website), ideally named as CellTypeName_FeatureName. Selected files are shown below. Edit file details manually in case they are missing or erroneous." style="width: 150px" class="text-center live-tipsy main-button btn btn-default btn-file">Load Feature Files
+                    <label :disabled="!showFeatureButton" title="Select all your feature data files in BED format (see example data on C-State website), ideally named as CellTypeName_FeatureName. Selected files are shown below. Edit file details manually in case they are missing or erroneous." style="width: 180px" class="text-center live-tipsy main-button btn btn-default btn-file">Load Feature Files
                       <input :disabled="!showFeatureButton" @change="onFileUpload" type="file" style="display: none" name="files[]" multiple>
                     </label>
                   </td>
                   <td>
-                    <button :disabled="inputFiles.length === 0" @click="getFileData" style="width: 150px" type="button" class="btn btn-success">Process All Files</button>
+                    <label :disabled="inputFiles.length === 0" title="" style="width: 180px" class="text-center live-tipsy main-button btn btn-default btn-file">Load Expression Data
+                      <input :disabled="!showFeatureButton" @change="onExpFileUpload" type="file" style="display: none" name="files[]" multiple>
+                    </label>
                   </td>
                   <td>
-                    <button type="button" class="btn btn-primary" :disabled="!showPlotButton" style="width: 150px" onclick="formatPlotScope()">
+                    <button :disabled="inputFiles.length === 0" @click="getFileData" style="width: 180px" type="button" class="btn btn-success">Process All Files</button>
+                  </td>
+                  <td>
+                    <button type="button" class="btn btn-primary" :disabled="!showPlotButton" style="width: 180px" onclick="formatPlotScope()">
                       View Data
                     </button>
                   </td>
@@ -165,6 +170,18 @@
             </div>
 
             <div class="row"><br>
+              <div v-if="expFiles.length > 0" style="text-align: justify; margin-left: 2.5vw; font-weight: bold; font-size:14px">Expression Data Files Selected: {{ expFiles.length }} </div>
+              <table v-if="expFiles.length > 0" style="margin: 20px 2.5vw; width: 60%" class="table table-hover">
+                <tr>
+                  <th>File Name</th>
+                  <th>CellType Name</th>
+                  <th>
+                    <button :disabled="expFiles.length === 0" @click="expFiles.splice(0)" type="button" class="btn btn-danger">Clear All Files</button>
+                  </th>
+                </tr>
+                <tr is="expfilerow" :file="file" @expadd="addExpData" @expremove="expFiles.splice(index, 1)" :key="file.name" v-for="(file, index) in expFiles">
+                </tr>
+              </table><br>
               <div v-if="inputFiles.length > 0" style="text-align: justify; margin-left: 2.5vw; font-weight: bold; font-size:14px">Feature Files Selected: {{ inputFiles.length }} </div>
               <table style="margin-top:20px; width:95%; margin-left: auto; margin-right: auto" class="table table-hover">
                 <tr v-if="inputFiles.length > 0">
@@ -630,7 +647,42 @@
                       <li>
                         <input type="checkbox" v-model="scope.settings.mainPanel.showNeighbors">Show neighboring genes
                       </li>
-                    </ul><br>
+                      <li>
+                        <input type="checkbox" v-model="scope.settings.mainPanel.colorByExp">Plot gene expression data
+                        <span class="glyphicon glyphicon-info-sign" title="This setting toggles the display of expression data on view panels. Expression filters and expression counts on mouse-over will work irrespective of this setting. The setting is not applicable if expression data is not loaded for any cell type."></span>
+                      </li>
+                    </ul>
+                    <div v-if="scope.settings.mainPanel.colorByExp" style="text-align: left; width: 80%; margin: auto"><strong>Expression Data</strong></div>
+                    <table v-if="scope.settings.mainPanel.colorByExp" style="width: 80%; margin: auto; text-align: left">
+                      <tr>
+                        <td>Color palette: </td>
+                        <td>
+                          <select class="filter-input" v-model="scope.settings.mainPanel.expColors">
+                            <option v-for="(option, name) in colorbrewer" :value="name">
+                              {{name}}
+                            </option>
+                          </select>
+                        </td>
+                        <td>
+                          <input type="checkbox" v-model="scope.settings.mainPanel.expColReverse">Reverse
+                          <span class="glyphicon glyphicon-info-sign" title="Reverse the color palette"></span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding-top: 10px">Plot style: </td>
+                        <td style="padding-top: 10px">
+                          <div>
+                            <input type="radio" v-model.number="scope.settings.mainPanel.expStyle" :value="1">
+                            <span>Color scale bar on the left</span>
+                          </div>
+                          <div>
+                            <input type="radio" v-model.number="scope.settings.mainPanel.expStyle" :value="2">
+                            <span>Color the gene body bar</span>
+                          </div>
+                        </td>
+                      </tr>
+                    </table>
+                    <br>
                     <div style="text-align: left; width: 80%; margin: auto"><strong>Bar Height</strong></div>
                     <table style="width: 80%; margin: auto; text-align: left">
                       <tr>
@@ -866,6 +918,19 @@
     </tr>
   </template>
 
+  <!--template for expression file row-->
+  <template id='expfilerow-template'>
+    <tr>
+      <td style="text-align: justify">{{ file.name }}</td>
+      <td>
+        <input class="form-control" :class="{ empty: !cellType.name }" v-model="cellType.name">
+      </td>
+      <td style="text-align: center">
+        <button class="btn btn-default glyphicon glyphicon-remove" @click="$emit('expremove')"></button>
+      </td>
+    </tr>
+  </template>
+
   <!-- template for the gene row -->
   <template id='generow-template'>
     <tr>
@@ -951,6 +1016,42 @@
       </div>
     </div>
   </template>
+
+  <!--Gene expression Filter Template-->
+  <template id='expression-filter-template'>
+    <div class="filter-component row">
+      <h5><strong>Gene Expression Filter</strong>
+        <span class="glyphicon glyphicon-info-sign" title="Show genes with expression counts in the following range"></span>
+      </h5>
+      <div>
+        <div class="container-fluid" style="width: 50%">Choose Celltype:<br>
+          <select class="form-control" v-model="cellTypeSelected">
+            <option v-for="option in celltypes" :value="option.value">
+              {{ option.name }}
+            </option>
+          </select>
+        </div><br>
+        <table style="width: 50%; margin: auto">
+          <tr>
+            <td>Min</td>
+            <td>Max</td>
+          </tr>
+          <tr>
+            <td>
+              <input style="text-align: right; width: 80%" class="filter-input" v-model.number="minCutOff">
+            </td>
+            <td>
+              <input style="text-align: right; width: 80%" class="filter-input" v-model.number="maxCutOff">
+            </td>
+          </tr>
+        </table>
+        <div class="row" style="text-align: center; margin-top: 10px">
+          <input type="checkbox" v-model="ignoreNA"> Ignore genes that do not have expression count
+          <span class="glyphicon glyphicon-info-sign" title="If this box is ticked, the filter ignores any gene with expression count as 'NA'. Untick this box if you want to hide genes that do not have expression count"></span>
+        </div>
+      </div>
+    </div>
+  </template>        
 
   <!--Chromosome Filter Template-->
   <template id='chrom-filter-template'>
@@ -1181,12 +1282,13 @@
   <script src="scripts/require/vue-tables.min.js"></script>
   <script src="scripts/require/lodash.min.js"></script>
   <script src="scripts/require/dragscroll.js"></script>
-
+  <script src="scripts/require/colorbrewer.min.js"></script>
   <script src="scripts/require/FileSaver.min.js"></script>
   <!-- My JS Files -->
   <script src="scripts/main.js"></script>
   <!--Vue components-->
   <script src="scripts/components/avgprofile.js"></script>
+  <script src="scripts/components/expfilerow.js"></script>
   <script src="scripts/components/featurecorrelation.js"></script>
   <script src="scripts/components/filerow.js"></script>
   <script src="scripts/components/generow.js"></script>
@@ -1202,6 +1304,7 @@
   <script src="scripts/views/settingsmodal.js"></script>
   <script src="scripts/views/tables.js"></script>
   <script src="scripts/parsers/bed.js"></script>
+  <script src="scripts/parsers/expcounts.js"></script>
   <script src="scripts/views/files.js"></script>
   <!--Make the entire accordion header clickable-->
   <script>

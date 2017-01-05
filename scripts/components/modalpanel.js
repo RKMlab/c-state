@@ -42,9 +42,11 @@ const modalpanel = Vue.component('modalpanel', {
       const featurePadding = settings.featurePadding;
       const geneBarStart = 35;
       const name = this.gene.name;
+      const expRange = this.info.expRange;
 
       const featureNames = _.map(this.info.features, 'name');
       const cellTypeName = this.info.celltypes[this.index].name;
+      const expCount = _.find(this.gene.expression, ['name', cellTypeName]).count;
       const mappedFeatures = getFilteredFeatures(_.find(this.gene.mappedFeatures, ['name', cellTypeName]).features);
       // getFilteredFeatures(mappedFeatures);
       const neighbors = this.gene.geneinfo.neighbors;
@@ -78,6 +80,70 @@ const modalpanel = Vue.component('modalpanel', {
         .attr("width", panelWidth)
         .attr("height", panelHeight)
         .attr("class", "svgClass")
+     
+      // Expression gradient
+
+      if (settings.colorByExp && expCount !== 'NA') {
+        if (settings.expStyle === 1) {
+          const geneExpScale = d3.scaleLinear()
+            .domain([expRange.five, expRange.nineFive])
+            .clamp(true)
+            .range([(availableHeight - geneBarStart) - 15, heightPadding])
+
+          let expColors = JSON.parse(JSON.stringify(colorbrewer[settings.expColors][9]));
+          if (settings.expColReverse) {
+            expColors = expColors.reverse()
+          }
+          const defs = chartRoot.append("defs");
+          const expGradient = defs.append("linearGradient")
+            .attr("id", "expgradient")
+            .attr("x1", "0%")
+            .attr("y1", "100%")
+            .attr("x2", "0%")
+            .attr("y2", "0%")
+          
+          expGradient.selectAll("stop")
+            .data(expColors)
+            .enter()
+            .append("stop")
+            .attr("offset", function (d, i) {
+              return `${(100/(expColors.length-1)) * i}%`
+            })
+            .attr("stop-color", function (d) {
+              return d;
+            })
+
+          const gradient = chartRoot.append("rect")
+            .attr("x", 2)
+            .attr("y", heightPadding)
+            .attr("width", 8)
+            .attr("height", ((availableHeight - geneBarStart) - 15)-heightPadding)
+            .attr("fill", "url(#expgradient)")
+          
+          gradient.append("svg:title")
+            .text(`Expression in ${cellTypeName}: ${expCount}`);
+          
+          chartRoot.append("rect")
+            .attr("x", 0)
+            .attr("y", geneExpScale(expCount))
+            .attr("width", 12)
+            .attr("height", 5)
+            .attr("fill", geneBarColor)
+            .append("svg:title")
+              .text(`Expression in ${cellTypeName}: ${expCount}`);
+        } else {
+          let expColors = JSON.parse(JSON.stringify(colorbrewer[settings.expColors][9]));
+          if (settings.expColReverse) {
+            expColors = expColors.reverse()
+          }
+          const geneExpScale = d3.scaleLinear()
+            .domain([expRange.five, expRange.median, expRange.nineFive])
+            .clamp(true)
+            .range([expColors[0], expColors[4], expColors[expColors.length-1]])
+          
+          geneBarColor = geneExpScale(expCount)
+        }
+      }
 
       const xAxis = d3.axisBottom(xScale)
         .ticks(5)
@@ -176,7 +242,7 @@ const modalpanel = Vue.component('modalpanel', {
         
         exonBars.append("svg:title")
           .text(function (d, i) {
-            return `Exon ${i + 1} of ${name}\nStart (from TSS): ${d.start}\nExon Size: ${+d.end - +d.start}bp`;
+            return `Exon ${i + 1} of ${name}\nStart (from TSS): ${d.start}\nExon Size: ${+d.end - +d.start}bp\nExpression count: ${expCount}`;
           })
 
         const geneBar = chart.append("g")
@@ -186,6 +252,9 @@ const modalpanel = Vue.component('modalpanel', {
           .attr("width", xScale(this.gene.geneinfo.GEnd) - xScale(this.gene.geneinfo.GStart))
           .attr("height", regionBarHeight)
           .style("fill", geneBarColor);
+        
+        geneBar.append("svg:title")
+          .text(`Expression count: ${expCount}`)
 
       } else {
         const geneBar = chart.append("g")
@@ -195,6 +264,9 @@ const modalpanel = Vue.component('modalpanel', {
           .attr("width", xScale(this.gene.geneinfo.GEnd) - xScale(this.gene.geneinfo.GStart))
           .attr("height", (geneBarHeight + regionBarHeight))
           .style("fill", geneBarColor);
+        
+        geneBar.append("svg:title")
+          .text(`Expression count: ${expCount}`)
       }
 
       const zoom = d3.zoom()

@@ -163,7 +163,9 @@ const feature_files = new Vue({
     showPlotButton: false,
     showDownloadButton: false,
     inputFiles: [],
-    featureFileData: []
+    expFiles: [],
+    featureFileData: [],
+    expFileData: []
   },
   methods: {
     
@@ -171,6 +173,12 @@ const feature_files = new Vue({
       _.each(evt.target.files, file => {
         this.inputFiles.push(file)
       })
+    },
+
+    onExpFileUpload: function (evt) {
+      _.each(evt.target.files, file => {
+        this.expFiles.push(file)
+      });
     },
 
     getFileData: function () {
@@ -182,9 +190,16 @@ const feature_files = new Vue({
     addData: function (data) {
       this.featureFileData.push(data)
       if (this.featureFileData.length === this.inputFiles.length) {
-        console.log("Received all file data");
+        console.log("Received all feature file data");
         spinner.loading = false;
         this.showPlotButton = true;
+      }
+    },
+
+    addExpData: function (data) {
+      this.expFileData.push(data);
+      if (this.expFileData.length === this.expFiles.length) {
+        console.log("Received all expression data");
       }
     }
     

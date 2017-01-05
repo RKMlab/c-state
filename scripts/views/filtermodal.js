@@ -33,6 +33,10 @@ const filterModal = new Vue({
       type: 'sizeFilter',
       title: 'Display genes or regions matching the selected size cutoff'
     }, {
+      name: 'Expression',
+      type: 'expressionFilter',
+      title: 'Display genes with a specific expression pattern'
+    }, {
       name: 'Chromosome',
       type: 'chromFilter',
       title: 'Show or hide genes belonging to a given chromosome'
@@ -141,6 +145,15 @@ const filterModal = new Vue({
               return;
             }
             this.applyNeighborCountFilter(data.operatorSelected, data.countCutOff, data.ignoreOverlap);
+            break;
+          
+          case "expressionFilter":
+            if (!data.cellTypeSelected) {
+              alert('Select a celltype in expression filter');
+              spinner.loading = false;
+              return;
+            }
+            this.applyExpressionFilter(data.cellTypeSelected, data.minCutOff, data.maxCutOff, data.ignoreNA);
             break;
             
           default:
@@ -552,6 +565,34 @@ const filterModal = new Vue({
       }
     },
 
+    applyExpressionFilter: function (celltype, min, max, ignoreNA) {
+      console.log("Applying gene expression filter");
+      if (min === '') {
+        min = 0;
+      }
+      if (max === '') {
+        max = Infinity;
+      }
+      for (let i = 0; i < this.genes.length; i++) {
+        const gene = this.genes[i];
+        if (!gene.show) {
+          continue;
+        }
+        const count = _.find(gene.expression, ['value', celltype]).count;
+        if (count === 'NA') {
+          if (ignoreNA) {
+            continue;
+          } else {
+            gene.show = false;
+            continue;
+          }
+        }
+        if (!(count >= min && count <= max)) {
+          gene.show = false;
+        }
+      }
+    },
+
     clearFilters: function () {
       this.activeFilters.splice(0);
       this.appliedFilters = ''
@@ -714,5 +755,21 @@ const neighborCountFilter = Vue.component('neighborCountFilter', {
       countCutOff: '',
       ignoreOverlap: true
     }
+  }
+})
+
+const expressionFilter = Vue.component('expressionFilter', {
+  template: '#expression-filter-template',
+  data: function () {
+    return {
+      celltypes: [],
+      cellTypeSelected: '',
+      minCutOff: '',
+      maxCutOff: '',
+      ignoreNA: true
+    }
+  },
+  mounted: function () {
+    this.celltypes = JSON.parse(JSON.stringify(plotScope.info.celltypes));
   }
 })

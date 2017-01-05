@@ -60,6 +60,10 @@ const plotScope = {
     mainPanel: {
       showExons: false,
       showNeighbors: true,
+      colorByExp: true,
+      expColors: "RdYlGn",
+      expColReverse: false,
+      expStyle: 1,
       HPadding: 10,
       VPadding: 20,
       geneBarColor: '#333333',
@@ -75,6 +79,10 @@ const plotScope = {
       showExons: true,
       showNeighbors: true,
       sameColors: true,
+      colorByExp: true,
+      expColors: "RdYlGn",
+      expColReverse: false,
+      expStyle: 2,
       showIsoforms: true,
       panelHeight: 120,
       HPadding: 40,
@@ -97,7 +105,7 @@ const plotScope = {
     }
   },
   info: {
-    numGenes: 0
+    numGenes: 0,
   },
   genes: []
 }
@@ -122,8 +130,18 @@ const operators = [{
 
 // Call this every time View data is clicked
 const resetScope = function (scope = plotScope) {
+  const info = {
+    numGenes: 0,
+    expRange: {
+      min: '',
+      max: '',
+      five: '',
+      nineFive: '',
+      counts: []
+    }
+  }
   Vue.set(scope, 'genes', []);
-  Vue.set(scope, 'info', {})
+  Vue.set(scope, 'info', info)
 }
 
 const openGeneModal = function (name) {
@@ -281,6 +299,7 @@ const formatPlotScope = function (scope = plotScope) {
     spinner.loading = true;
     resetScope();
     const featureFileData = feature_files.$data.featureFileData;
+    const expFileData = feature_files.$data.expFileData;
     let cellTypeCount = 0;
     scope.info.species = mainFileData.genomeSelected;
     scope.info.build = mainFileData.versionSelected;
@@ -351,17 +370,35 @@ const formatPlotScope = function (scope = plotScope) {
       });
       // gene = JSON.parse(JSON.stringify(gene));
       Vue.set(gene, 'mappedFeatures', []);
+      Vue.set(gene, 'expression', []);
     }
 
     _.forEach(scope.info.celltypes, celltype => {
       const featureFiles = _.filter(featureFileData, data => {
         return data.cellType.value === celltype.value
       });
+      const expFile = _.filter(expFileData, data => {
+        return data.cellType.value === celltype.value;
+      })
+      let expData = [];
+      if (expFile.length > 0) {
+        readFile(expFile[0].file, evt => {
+          expData = d3.tsvParseRows(evt.target.result, function (d) {
+            if (!d[0].startsWith('#') && !_.isNaN(d[1])) {
+              d[1] = +d[1];
+              scope.info.expRange.counts.push(d[1]);
+              return {
+                name: d[0],
+                value: d[1]
+              }
+            }
+          })
+        })
+      }
       let allFeatures = [];
       let processedCount = 0;
       for (let i = 0; i < featureFiles.length; i++) {
         const fileObj = featureFiles[i];
-        console.log(fileObj.file.name);
         let features = [];
         readFile(fileObj.file, e => {
           console.log(fileObj.file.name)
@@ -373,16 +410,24 @@ const formatPlotScope = function (scope = plotScope) {
           processedCount++;
           allFeatures = allFeatures.concat([...features]);
           if (processedCount === featureFiles.length) {
-            populateGeneScope(allFeatures, celltype);
+            populateGeneScope(allFeatures, expData, celltype);
           }
         }
       }
     });
 
-    const populateGeneScope = (allFeatures, celltype) => {
+    const populateGeneScope = (allFeatures, expData, celltype) => {
       cellTypeCount++;
+      if (cellTypeCount === scope.info.celltypes.length) {
+        const sorted = scope.info.expRange.counts.sort();
+        scope.info.expRange.min = sorted[0];
+        scope.info.expRange.max = sorted[sorted.length - 1];
+        scope.info.expRange.median = sorted[Math.floor(sorted.length/2)];
+        scope.info.expRange.five = sorted[Math.floor(sorted.length * 0.05)];
+        scope.info.expRange.nineFive = sorted[Math.floor(sorted.length * 0.95)];
+        scope.info.expRange.counts = [];
+      }
       allFeatures = _.groupBy(allFeatures, 'chrom');
-      console.log(allFeatures);
       for (let i = 0; i < mainFileData.geneList.length; i++) {
         const gene = mainFileData.geneList[i];
         const FlankStart = gene.geneinfo.FlankStart;
@@ -390,6 +435,15 @@ const formatPlotScope = function (scope = plotScope) {
         const mapped = {
           name: celltype.name,
           value: celltype.value,
+        }
+        const expression = {
+          name: celltype.name,
+          value: celltype.value,
+          count: 'NA'
+        }
+        const findExp = _.find(expData, ['name', gene.name]);
+        if (expData.length > 0 && findExp) {
+          expression.count = findExp.value;
         }
         const geneFeatures = _.filter(allFeatures[gene.geneinfo.chrom], feature => {
           return ((feature.start <= FlankStart && feature.end >= FlankEnd) ||
@@ -428,7 +482,8 @@ const formatPlotScope = function (scope = plotScope) {
           })
         }
         gene.mappedFeatures.push(mapped);
-        if (cellTypeCount == scope.info.celltypes.length) {
+        gene.expression.push(expression);
+        if (cellTypeCount === scope.info.celltypes.length) {
           scope.genes.push(gene);
           feature_files.$data.showDownloadButton = true;
           if (scope.genes.length === mainFileData.geneList.length) {

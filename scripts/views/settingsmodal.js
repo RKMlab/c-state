@@ -18,6 +18,7 @@ const settingsModal = new Vue({
   data: {
     showSettingsDiv: false,
     genes: '',
+    colorbrewer: colorbrewer,
     scope: plotScope
   },
   computed: {
