@@ -84,16 +84,16 @@ const modalpanel = Vue.component('modalpanel', {
       // Expression gradient
 
       if (settings.colorByExp && expCount !== 'NA') {
+        let expColors = JSON.parse(JSON.stringify(colorbrewer[this.settings.mainPanel.expColors][9]));
+        if (this.settings.mainPanel.expColReverse) {
+          expColors = expColors.reverse()
+        }
         if (settings.expStyle === 1) {
           const geneExpScale = d3.scaleLinear()
             .domain([expRange.five, expRange.nineFive])
             .clamp(true)
             .range([(availableHeight - geneBarStart) - 15, heightPadding])
 
-          let expColors = JSON.parse(JSON.stringify(colorbrewer[settings.expColors][9]));
-          if (settings.expColReverse) {
-            expColors = expColors.reverse()
-          }
           const defs = chartRoot.append("defs");
           const expGradient = defs.append("linearGradient")
             .attr("id", "expgradient")
@@ -132,10 +132,6 @@ const modalpanel = Vue.component('modalpanel', {
             .append("svg:title")
               .text(`Expression in ${cellTypeName}: ${expCount}`);
         } else {
-          let expColors = JSON.parse(JSON.stringify(colorbrewer[settings.expColors][9]));
-          if (settings.expColReverse) {
-            expColors = expColors.reverse()
-          }
           const geneExpScale = d3.scaleLinear()
             .domain([expRange.five, expRange.median, expRange.nineFive])
             .clamp(true)

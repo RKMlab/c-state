@@ -61,7 +61,7 @@ const plotScope = {
       showExons: false,
       showNeighbors: true,
       colorByExp: true,
-      expColors: "RdYlGn",
+      expColors: "Greens",
       expColReverse: false,
       expStyle: 1,
       HPadding: 10,
@@ -80,8 +80,6 @@ const plotScope = {
       showNeighbors: true,
       sameColors: true,
       colorByExp: true,
-      expColors: "RdYlGn",
-      expColReverse: false,
       expStyle: 2,
       showIsoforms: true,
       panelHeight: 120,
@@ -401,7 +399,6 @@ const formatPlotScope = function (scope = plotScope) {
         const fileObj = featureFiles[i];
         let features = [];
         readFile(fileObj.file, e => {
-          console.log(fileObj.file.name)
           features = parseBED(e.target.result, fileObj.file.name, fileObj.feature.name);
           endReadHandler();
         })

@@ -655,7 +655,7 @@
                     <div v-if="scope.settings.mainPanel.colorByExp" style="text-align: left; width: 80%; margin: auto"><strong>Expression Data</strong></div>
                     <table v-if="scope.settings.mainPanel.colorByExp" style="width: 80%; margin: auto; text-align: left">
                       <tr>
-                        <td>Color palette: </td>
+                        <td><span class="glyphicon glyphicon-info-sign" title="The expression color palette of view panels and gene modal is linked: changing one will change the other too."></span> Color palette:</td>
                         <td>
                           <select class="filter-input" v-model="scope.settings.mainPanel.expColors">
                             <option v-for="(option, name) in colorbrewer" :value="name">
@@ -743,7 +743,42 @@
                       <li>
                         <input type="checkbox" v-model="scope.settings.geneModal.showNeighbors">Show neighboring genes
                       </li>
-                    </ul><br>
+                      <li>
+                        <input type="checkbox" v-model="scope.settings.geneModal.colorByExp">Plot gene expression data
+                        <span class="glyphicon glyphicon-info-sign" title="This setting toggles the display of expression data in gene modal view. Expression filters and expression counts on mouse-over will work irrespective of this setting. The setting is not applicable if expression data is not loaded for any cell type."></span>
+                      </li>
+                    </ul>
+                    <div v-if="scope.settings.geneModal.colorByExp" style="text-align: left; width: 80%; margin: auto"><strong>Expression Data</strong></div>
+                    <table v-if="scope.settings.geneModal.colorByExp" style="width: 80%; margin: auto; text-align: left">
+                      <tr>
+                        <td> <span class="glyphicon glyphicon-info-sign" title="The expression color palette of view panels and gene modal is linked: changing one will change the other too."></span> Color palette: </td>
+                        <td>
+                          <select class="filter-input" v-model="scope.settings.mainPanel.expColors">
+                            <option v-for="(option, name) in colorbrewer" :value="name">
+                              {{name}}
+                            </option>
+                          </select>
+                        </td>
+                        <td>
+                          <input type="checkbox" v-model="scope.settings.mainPanel.expColReverse">Reverse
+                          <span class="glyphicon glyphicon-info-sign" title="Reverse the color palette"></span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding-top: 10px">Plot style: </td>
+                        <td style="padding-top: 10px">
+                          <div>
+                            <input type="radio" v-model.number="scope.settings.geneModal.expStyle" :value="1">
+                            <span>Color scale bar on the left</span>
+                          </div>
+                          <div>
+                            <input type="radio" v-model.number="scope.settings.geneModal.expStyle" :value="2">
+                            <span>Color the gene body bar</span>
+                          </div>
+                        </td>
+                      </tr>
+                    </table>
+                    <br>
                     <div style="text-align: left; width: 80%; margin: auto"><strong>Bar Height</strong></div>
                     <table style="width: 80%; margin: auto; text-align: left">
                       <tr>
