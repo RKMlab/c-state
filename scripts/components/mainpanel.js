@@ -125,9 +125,9 @@ const mainpanel = Vue.component('mainpanel', {
               .text(`Expression in ${cellTypeName}: ${expCount}`);
         } else {
           const geneExpScale = d3.scaleLinear()
-            .domain([expRange.five, expRange.median, expRange.nineFive])
+            .domain([expRange.five, expRange.nineFive])
             .clamp(true)
-            .range([expColors[0], expColors[4], expColors[8]])
+            .range([expColors[0], expColors[expColors.length - 1]])
           
           geneBarColor = geneExpScale(expCount)
         }

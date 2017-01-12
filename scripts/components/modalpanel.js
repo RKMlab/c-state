@@ -13,6 +13,14 @@ const modalpanel = Vue.component('modalpanel', {
   computed: {
     cellTypeName: function () {
       return this.info.celltypes[this.index].name;
+    },
+    expression: function () {
+      const f = d3.format("0.2f");
+      const count = _.find(this.gene.expression, ['name', this.cellTypeName]).count;
+      if (count !== 'NA') {
+        return f(count)
+      }
+      return count;
     }
   },
   mounted: function () {
@@ -133,9 +141,9 @@ const modalpanel = Vue.component('modalpanel', {
               .text(`Expression in ${cellTypeName}: ${expCount}`);
         } else {
           const geneExpScale = d3.scaleLinear()
-            .domain([expRange.five, expRange.median, expRange.nineFive])
+            .domain([expRange.five, expRange.nineFive])
             .clamp(true)
-            .range([expColors[0], expColors[4], expColors[expColors.length-1]])
+            .range([expColors[0], expColors[expColors.length-1]])
           
           geneBarColor = geneExpScale(expCount)
         }

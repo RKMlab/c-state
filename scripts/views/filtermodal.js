@@ -35,7 +35,7 @@ const filterModal = new Vue({
     }, {
       name: 'Expression',
       type: 'expressionFilter',
-      title: 'Display genes with a specific expression pattern'
+      title: 'Display genes with a specific expression level'
     }, {
       name: 'Chromosome',
       type: 'chromFilter',

@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>C-State v0.2.2</title>
+  <title>C-State v0.2.3</title>
   <!-- CSS links -->
   <link href="scripts/require/bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="scripts/require/animate.min.css" rel="stylesheet">
@@ -20,7 +20,7 @@
     <!--C-State Logo-->
     <div style="position: absolute; top: 0; left: 0; width: 200px; height: 65px">
       <a href="http://ccmb.res.in/rakeshmishra/c-state/" target="_blank"> <img style="margin-left: 5px; margin-top: 5px;" width="100%" src="images/c-state_logo.png" alt="C-State Logo"></a>
-      <br><span style="position:absolute; margin-top: -15px; margin-left: 160px; font-weight: bold">v0.2.2</span>
+      <br><span style="position:absolute; margin-top: -15px; margin-left: 130px; font-weight: bold">v0.2.3-dev</span>
     </div>
 
     <div id="screenalert" v-cloak class="alert alert-warning fade in alert-dismissable" v-if="screen.width > 2000" style="position: absolute; top: 10; left: 0; right: 0; width: 50vw; margin: auto">
@@ -186,7 +186,9 @@
               <table style="margin-top:20px; width:95%; margin-left: auto; margin-right: auto" class="table table-hover">
                 <tr v-if="inputFiles.length > 0">
                   <th>File Name</th>
-                  <th>CellType Name</th>
+                  <th>CellType Name
+                    <span class="glyphicon glyphicon-info-sign" title="This name is used to group the features of a given cell/tissue type, experimental condition or developmental stage"></span>
+                  </th>
                   <th>Feature Name
                     <span class="glyphicon glyphicon-info-sign" title="Feature names must be consistent across cell types"></span>
                   </th>
@@ -654,23 +656,41 @@
                     </ul>
                     <div v-if="scope.settings.mainPanel.colorByExp" style="text-align: left; width: 80%; margin: auto"><strong>Expression Data</strong></div>
                     <table v-if="scope.settings.mainPanel.colorByExp" style="width: 80%; margin: auto; text-align: left">
+                      <tr style="text-align: center">
+                        <td></td>
+                        <td>Min</td>
+                        <td>Max</td>
+                      </tr>
                       <tr>
-                        <td><span class="glyphicon glyphicon-info-sign" title="The expression color palette of view panels and gene modal is linked: changing one will change the other too."></span> Color palette:</td>
                         <td>
-                          <select class="filter-input" v-model="scope.settings.mainPanel.expColors">
+                          Expression range <span class="glyphicon glyphicon-info-sign" title="By default, C-State uses 5th and 95th percentile values from the whole-genome expression data as minimum and maximum values respectively. This is to avoid the effect of outliers on introducing a bias."></span>
+                        </td>
+                        <td style="text-align: center">
+                          <input class="filter-input" style="text-align:right; width: 70%" v-model.number="scope.info.expRange.five">
+                        </td>
+                        <td style="text-align: center">
+                          <input class="filter-input" style="text-align:right; width: 70%" v-model.number="scope.info.expRange.nineFive">
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding-top: 10px">
+                          Color palette <span class="glyphicon glyphicon-info-sign" title="The expression color palette of view panels and gene modal is linked: changing one will change the other too."></span>
+                        </td>
+                        <td style="padding-top: 10px; text-align: center">
+                          <select class="filter-input" style="width: 70%" v-model="scope.settings.mainPanel.expColors">
                             <option v-for="(option, name) in colorbrewer" :value="name">
                               {{name}}
                             </option>
                           </select>
                         </td>
-                        <td>
+                        <td style="padding-top: 10px; text-align: center">
                           <input type="checkbox" v-model="scope.settings.mainPanel.expColReverse">Reverse
                           <span class="glyphicon glyphicon-info-sign" title="Reverse the color palette"></span>
                         </td>
                       </tr>
                       <tr>
-                        <td style="padding-top: 10px">Plot style: </td>
-                        <td style="padding-top: 10px">
+                        <td style="padding-top: 15px">Plot style: </td>
+                        <td style="padding-top: 15px">
                           <div>
                             <input type="radio" v-model.number="scope.settings.mainPanel.expStyle" :value="1">
                             <span>Color scale bar on the left</span>
@@ -993,8 +1013,10 @@
   <!--template for gene panel in modal view-->
   <template id='modalpanel-template'>
     <tr>
-      <td class="celltype-name" style="font-weight: bold; width: 30px; text-align: right; word-wrap: break-word; padding-right: 20px">
-      {{ cellTypeName }}</td>
+      <td class="celltype-name" style="font-weight: bold; width: 30px; text-align: center; word-wrap: break-word; padding-right: 20px">
+        <div>{{ cellTypeName }}</div>
+        <div v-if="this.info.expRange.min !== undefined" style="font-weight: normal">({{expression}})</div>
+      </td>
       <td>
         <div class="modal-panel-row">
         </div>

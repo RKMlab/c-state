@@ -30,10 +30,10 @@ const myLegend = Vue.component('my-legend', {
     const colors = plotScope.settings.general.colors;
     const features = this.info.features;
     const numFeatures = features.length;
-    const featurePerRow = 5;
-    const panelWidth = 100 + (featurePerRow * 150);
+    const featurePerRow = 4;
+    const panelWidth = 250 + (featurePerRow * 150);
     const VPadding = 5;
-    const panelHeight = (VPadding * 3) + 10 + ((Math.floor(numFeatures/featurePerRow) + 1) * (10 + VPadding));
+    const panelHeight = (VPadding * 3) + 10 + ((Math.floor(numFeatures/(featurePerRow + 1)) + 1) * (10 + VPadding));
 
     const geneBarColor = this.settings.geneBarColor;
     const regionBarColor = this.settings.regionBarColor;
@@ -140,5 +140,58 @@ const myLegend = Vue.component('my-legend', {
       .attr("y", VPadding * 2)
       .attr("fill", neighborBarColor)
       .style("font-size", "12px")
+    
+    // Expression legend
+    if (this.settings.colorByExp && this.info.expRange.min !== undefined) {
+      const start = 80 + (featurePerRow * 150)
+      const expWidth = 100
+      
+      let expColors = JSON.parse(JSON.stringify(colorbrewer[this.settings.expColors][9]));
+      if (this.settings.expColReverse) {
+        expColors = expColors.reverse()
+      }
+
+      const defs = chartRoot.append("defs");
+          const expGradient = defs.append("linearGradient")
+            .attr("id", "expgradient1")
+            .attr("x1", "0%")
+            .attr("y1", "0%")
+            .attr("x2", "100%")
+            .attr("y2", "0%")
+          
+          expGradient.selectAll("stop")
+            .data(expColors)
+            .enter()
+            .append("stop")
+            .attr("offset", function (d, i) {
+              return `${(100/(expColors.length-1)) * i}%`
+            })
+            .attr("stop-color", function (d) {
+              return d;
+            })
+
+      chart.append("polygon")
+        .attr("points", `${start} 35 ${start + expWidth} 20 ${start + expWidth} 35`)
+        .attr("fill", "url(#expgradient1)")
+      
+      chart.append("text")
+        .text("Expression")
+        .attr("x", start + (expWidth/2))
+        .attr("y", 15)
+        .style("font-weight", "bold")
+        .attr("text-anchor", "middle")
+      
+      chart.append("text")
+        .text(this.info.expRange.five)
+        .attr("x", start - 3)
+        .attr("y", 35)
+        .attr("text-anchor", "end")
+      
+      chart.append("text")
+        .text(this.info.expRange.nineFive)
+        .attr("x", start + expWidth + 3)
+        .attr("y", 35)
+      
+    }
   }
 })

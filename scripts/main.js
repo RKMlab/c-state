@@ -61,7 +61,7 @@ const plotScope = {
       showExons: false,
       showNeighbors: true,
       colorByExp: true,
-      expColors: "Greens",
+      expColors: "Greys",
       expColReverse: false,
       expStyle: 1,
       HPadding: 10,
@@ -79,7 +79,7 @@ const plotScope = {
       showExons: true,
       showNeighbors: true,
       sameColors: true,
-      colorByExp: true,
+      colorByExp: false,
       expStyle: 2,
       showIsoforms: true,
       panelHeight: 120,
@@ -104,6 +104,14 @@ const plotScope = {
   },
   info: {
     numGenes: 0,
+    expRange: {
+      min: '',
+      max: '',
+      five: '',
+      nineFive: '',
+      nineNine: '',
+      counts: []
+    }
   },
   genes: []
 }
@@ -135,6 +143,7 @@ const resetScope = function (scope = plotScope) {
       max: '',
       five: '',
       nineFive: '',
+      nineNine: '',
       counts: []
     }
   }
@@ -421,7 +430,11 @@ const formatPlotScope = function (scope = plotScope) {
         scope.info.expRange.max = sorted[sorted.length - 1];
         scope.info.expRange.median = sorted[Math.floor(sorted.length/2)];
         scope.info.expRange.five = sorted[Math.floor(sorted.length * 0.05)];
+        if (scope.info.expRange.five < 0.1) {
+          scope.info.expRange.five = 0.1
+        }
         scope.info.expRange.nineFive = sorted[Math.floor(sorted.length * 0.95)];
+        scope.info.expRange.nineNine = sorted[Math.floor(sorted.length * 0.99)];
         scope.info.expRange.counts = [];
       }
       allFeatures = _.groupBy(allFeatures, 'chrom');
