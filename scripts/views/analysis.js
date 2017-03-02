@@ -30,6 +30,10 @@ const analysisModal = new Vue({
     showHist: true,
     showAverage: false,
     showCor: false,
+    showScatter: false,
+    showDiagonal: true,
+    expMin: 0,
+    expMax: 0,
     colorHistBy: 'none',
     corBy: '',
     corUp: 3,
@@ -84,6 +88,19 @@ const analysisModal = new Vue({
       }, 250)
     },
 
+    initializeExp: function () {
+      this.showScatter = true;
+      this.expMin = JSON.parse(JSON.stringify(plotScope.info.expRange.min));
+      this.expMax = JSON.parse(JSON.stringify(plotScope.info.expRange.nineNine));
+    },
+
+    showFilteredExp: function () {
+      this.showScatter = false;
+      _.delay(() => {
+        this.showScatter = true;
+      }, 250)
+    },
+
     changeCorType: function () {
       this.showCor = false;
       _.delay(() => {
@@ -133,7 +150,7 @@ const analysisModal = new Vue({
         }
       }
       data = header + data + "</svg>";
-      const fileName = mainTitle.replace(/ /, '_') + ".svg";
+      const fileName = mainTitle.replace(/ /g, '_') + ".svg";
       const outData = new Blob([data], {
         type: 'text/plain; charset=utf-8'
       });

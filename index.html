@@ -46,7 +46,6 @@
           <div class="panel-body" v-cloak id="main-file">
             <div class="row">
               <div class="container-fluid col-md-9" style="border-right: 1px dotted #666666">
-                <!--<div style="text-align:center; font-size: 18px; font-weight:bold">Welcome to C-State! Load a file to begin</div><br>-->
                 <table style="width: 60%; margin: auto; text-align: center">
                   <col style="width: 15%">
                   <col style="width: 20%">
@@ -315,7 +314,7 @@
               <ul class="nav nav-pills nav-justified" style="font-size: 16px; font-weight: bold">
                 <li class="active"><a data-toggle="tab" href="#histograms" title="Click to plot Feature Histograms. Axes are described below the plots">Feature Histograms</a></li>
                 <li><a data-toggle="tab" @click="showAverage=true" title="Click to plot Average Feature Profiles. Axes are described below the plots" href="#average-profile">Average Feature Profile</a></li>
-                <li><a data-toggle="tab" title="Click to plot Feature Correlations. Axes are described below the plots" href="#feature-correlation">Feature Correlation</a></li>
+                <li><a data-toggle="tab" @click="initializeExp" title="Click to plot Feature Correlations. Axes are described below the plots" href="#expression-scatter">Gene Expression Scatterplots</a></li>
               </ul>
             </div>
 
@@ -455,7 +454,7 @@
                 </div>
               </div>
 
-              <div id="feature-correlation" class="tab-pane fade">
+              <!--<div id="feature-correlation" class="tab-pane fade">
                 <div class="row" style="padding: 15px 0px 10px 5vw; border-bottom: 1px dotted #666666">
                   <button class="btn btn-danger" onclick="hideAnalysis()">Close</button>
                   <button @click="switchCorCols" style="margin-left: 1vw;" class="btn btn-primary">Switch Rows/Columns</button>
@@ -521,7 +520,64 @@
                     </div>
                   </div>  
                 </div>
+              </div>-->
+              <div id="expression-scatter" class="tab-pane fade">
+                <div class="row" style="padding: 15px 0px 10px 5vw; border-bottom: 1px dotted #666666">
+                  <button class="btn btn-danger" onclick="hideAnalysis()">Close</button>
+                  <span style="padding-left: 5vw">Show
+                    <select class="filter-input" @change="showFilteredExp" v-model="filtered">
+                      <option :value="{ boolean: false}">All</option>
+                      <option :value="{ boolean: true}">Filtered</option>
+                    </select>Genes
+                  </span>
+                  <span style="padding-left: 2vw">
+                    <input type="checkbox" v-model="showDiagonal" @change="showFilteredExp">Show diagonal line
+                  </span>
+                  <span style="padding-left: 5vw">
+                    <table style="margin: auto; padding-top: 5px; width: 25%; display: inline-table; text-align: center">
+                      <tr>
+                        <td>Axis min
+                          <input type="number" min="0" step="0.01" style="text-align:right; width: 40%" class="filter-input" v-model.number="expMin">
+                        </td>
+                        <td>Axis max
+                          <input type="number" min="0" step="0.01" style="text-align:right; width: 40%" class="filter-input" v-model.number="expMax">
+                        </td>
+                        <td>
+                          <button class="btn btn-primary" @click="showFilteredExp">Plot</button>
+                        </td>
+                      </tr>
+                    </table>
+                  </span>
+                </div>
+                <div style="padding-top: 10px" v-if="showScatter">
+                  <table class="plot-table" style="width: 100%">
+                    <tr>
+                      <th>CellType</th>
+                      <th v-for="celltype in celltypes">{{celltype.name}}</th>
+                    </tr>
+                    <tr v-for="(ycell, yindex) in celltypes">
+                      <td>{{ycell.name}}</td>
+                      <td is="expscatter" v-for="(xcell, xindex) in celltypes" :xindex="xindex" :yindex="yindex" :xcell="xcell" :ycell="ycell" :filtered="filtered.boolean" :diagonal="showDiagonal" :axismin="expMin" :axismax="expMax">
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+                <div class="modal-footer" style="text-align: justify">
+                  <div class="row">
+                    <div class="container-fluid col-md-9">
+                      <div><strong>X-axis: </strong>Gene expression value in celltype specified as column name</div>
+                      <div><strong>Y-axis: </strong>Gene expression value in celltype specified as row name<br></div>
+                      <div>Use axis min and axis max input boxes to change the scale of the plots</div>
+                    </div>
+                    <div class="container-fluid col-md-3">
+                      <div style="text-align: right">
+                        <button class="btn btn-info" @click="saveAsSVG('#expression-scatter')">Download as SVG</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
+
             </div>
           </div>
 
@@ -1346,7 +1402,7 @@
   <!--Vue components-->
   <script src="scripts/components/avgprofile.js"></script>
   <script src="scripts/components/expfilerow.js"></script>
-  <script src="scripts/components/featurecorrelation.js"></script>
+  <script src="scripts/components/expscatter.js"></script>
   <script src="scripts/components/filerow.js"></script>
   <script src="scripts/components/generow.js"></script>
   <script src="scripts/components/histogram.js"></script>
