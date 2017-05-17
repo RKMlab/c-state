@@ -317,6 +317,9 @@ const modalpanel = Vue.component('modalpanel', {
       events.$on('zoom_all', function (transform, calledBy) {
         zoomHandlerAll(transform, calledBy)
       })
+      events.$on('manual_zoom', function (scale) {
+        zoom.scaleBy(chart.transition().duration(1000), scale)
+      })
 
       chartRoot.call(zoom);
     }

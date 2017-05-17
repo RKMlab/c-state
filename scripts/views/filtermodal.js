@@ -94,7 +94,8 @@ const filterModal = new Vue({
               spinner.loading = false;
               return;
             }
-            this.applyNameFilter(data.names, data.hideGene.boolean, data.matchPartial, data.matchBeginning);
+            data.numFiltered = this.applyNameFilter(data.names, data.hideGene.boolean, data.matchPartial, data.matchBeginning);
+            data.applied = true;
             break;
 
           case "sizeFilter":
@@ -103,7 +104,8 @@ const filterModal = new Vue({
               spinner.loading = false;
               return;
             }
-            this.applySizeFilter(data.locusSelected, data.operatorSelected, data.sizeCutOff)
+            data.numFiltered = this.applySizeFilter(data.locusSelected, data.operatorSelected, data.sizeCutOff)
+            data.applied = true;
             break;
           
           case "chromFilter":
@@ -112,7 +114,8 @@ const filterModal = new Vue({
               spinner.loading = false;
               return;
             }
-            this.applyChromFilter(data.chromSelected, data.hideChrom.boolean, data.start, data.end)
+            data.numFiltered = this.applyChromFilter(data.chromSelected, data.hideChrom.boolean, data.start, data.end)
+            data.applied = true;
             break;
 
           case "countsFilter":
@@ -126,7 +129,8 @@ const filterModal = new Vue({
               spinner.loading = false;
               return;
             }
-            this.applyCountFilter(data.cellTypeSelected, data.featureSelected, data.operatorSelected, data.featureCount, data.upstreamLimit, data.downstreamLimit);
+            data.numFiltered = this.applyCountFilter(data.cellTypeSelected, data.featureSelected, data.operatorSelected, data.featureCount, data.upstreamLimit, data.downstreamLimit);
+            data.applied = true;
             break;
 
           case "overlapFilter":
@@ -135,7 +139,8 @@ const filterModal = new Vue({
               spinner.loading = false;
               return;
             }
-            this.applyOverlapFilter(data.cellTypeSelected, data.firstFeatureSelected, data.secondFeatureSelected, data.relationSelected, data.minDistance, data.maxDistance, data.upstreamLimit, data.downstreamLimit);
+            data.numFiltered = this.applyOverlapFilter(data.cellTypeSelected, data.firstFeatureSelected, data.secondFeatureSelected, data.relationSelected, data.minDistance, data.maxDistance, data.upstreamLimit, data.downstreamLimit);
+            data.applied = true;
             break;
           
           case "neighborCountFilter":
@@ -144,7 +149,8 @@ const filterModal = new Vue({
               spinner.loading = false;
               return;
             }
-            this.applyNeighborCountFilter(data.operatorSelected, data.countCutOff, data.ignoreOverlap);
+            data.numFiltered = this.applyNeighborCountFilter(data.operatorSelected, data.countCutOff, data.ignoreOverlap);
+            data.applied = true;
             break;
           
           case "expressionFilter":
@@ -153,7 +159,8 @@ const filterModal = new Vue({
               spinner.loading = false;
               return;
             }
-            this.applyExpressionFilter(data.cellTypeSelected, data.minCutOff, data.maxCutOff, data.ignoreNA);
+            data.numFiltered = this.applyExpressionFilter(data.cellTypeSelected, data.minCutOff, data.maxCutOff, data.ignoreNA);
+            data.applied = true;
             break;
             
           default:
@@ -169,6 +176,7 @@ const filterModal = new Vue({
 
     applyNameFilter: function (names, hide, matchPartial, matchBeginning) {
       console.log("Applying name filter");
+      let filtered = 0;
       for (let i = 0; i < this.genes.length; i++) {
         const gene = this.genes[i];
         if (!gene.show) { // Not required for this filter because of matching logic, still put as a precaution and to marginally improve speed
@@ -180,6 +188,7 @@ const filterModal = new Vue({
           if (matchPartial) {
             _.forEach(names, function (name) {
               if (_.includes(toMatch, name)) {
+                filtered++;
                 gene.show = false;
                 return;
               }
@@ -187,12 +196,14 @@ const filterModal = new Vue({
           } else if (matchBeginning) {
             _.forEach(names, name => {
               if (_.startsWith(toMatch, name)) {
+                filtered++;
                 gene.show = false;
                 return;
               }
             });
           } else {
             if (_.includes(names, toMatch)) {
+              filtered++;
               gene.show = false;
             }
           }
@@ -206,6 +217,7 @@ const filterModal = new Vue({
               }
             });
             if (!anyMatch) {
+              filtered++;
               gene.show = false;
             }
           } else if (matchBeginning) {
@@ -217,20 +229,24 @@ const filterModal = new Vue({
               }
             });
             if (!anyMatch) {
+              filtered++;
               gene.show = false;
             }
           } else {
             if (!(_.includes(names, toMatch))) {
+              filtered++;
               gene.show = false;
             }
           }
         }
       }
+      return filtered;
     },
 
     applySizeFilter: function (locus, operator, cutoff) {
       console.log("Apply size filter");
       cutoff = cutoff * 1000;
+      let filtered = 0;
       for (let i = 0; i < this.genes.length; i++) {
         const gene = this.genes[i];
         if (!gene.show) { // If filtered by a previous filter
@@ -257,7 +273,11 @@ const filterModal = new Vue({
             alert('Unknown operator in size filter'); // This should never happen
             return;
         }
+        if (!gene.show) {
+          filtered++;
+        }
       }
+      return filtered;
     },
 
     applyChromFilter: function (chrom, hide, start, end) {
@@ -268,6 +288,7 @@ const filterModal = new Vue({
       if (end === '') {
         end = Infinity;
       }
+      let filtered = 0;
       for (let i = 0; i < this.genes.length; i++) {
         const gene = this.genes[i];
         if (!gene.show) {
@@ -275,18 +296,22 @@ const filterModal = new Vue({
         }
         if (hide) {
           if (gene.geneinfo.chrom === chrom && gene.geneinfo.txEnd >= start && gene.geneinfo.txStart <= end) {
+            filtered++;
             gene.show = false;
           }
         } else {
           if (!(gene.geneinfo.chrom === chrom && gene.geneinfo.txEnd >= start && gene.geneinfo.txStart <= end)) {
+            filtered++;
             gene.show = false;
           }
         }
       }
+      return filtered;
     },
 
     applyCountFilter: function (celltype, feature, operator, count, uplimit, downlimit) {
       console.log("Applying marks filter");
+      let filtered = 0;
       for (let i = 0; i < this.genes.length; i++) {
         const gene = this.genes[i];
         if (!gene.show) { // If this was filtered by a previous filter
@@ -356,11 +381,16 @@ const filterModal = new Vue({
             alert('Unknown operator in feature count filter'); // This should never happen
             break;
         }
+        if (!gene.show) {
+          filtered++;
+        }
       }
+      return filtered;
     },
 
     applyOverlapFilter: function (celltype, firstFeature, secondFeature, relation, minDistance, maxDistance, uplimit, downlimit) {
       console.log("Applying overlap filter");
+      let filtered = 0;
       for (let i = 0; i < this.genes.length; i++) {
         const gene = this.genes[i];
         if (!gene.show) { // If filtered by a previous filter
@@ -438,6 +468,7 @@ const filterModal = new Vue({
         // If match contains no elements, then return false for that gene
         if (firstMatch.length === 0 || secondMatch.length === 0) {
           gene.show = false;
+          filtered++;
           continue;
         }
         // if (!_.some(_.map(firstMatch, o => {
@@ -518,11 +549,16 @@ const filterModal = new Vue({
           default:
             break;
         }
+        if (!gene.show) {
+          filtered++;
+        }
       }
+      return filtered;
     },
 
     applyNeighborCountFilter: function (operator, cutoff, ignoreOverlap) {
       console.log("Applying neighbor counts filter");
+      let filtered = 0;
       for (let i = 0; i < this.genes.length; i++) {
         const gene = this.genes[i];
         if (!gene.show) {
@@ -562,7 +598,11 @@ const filterModal = new Vue({
             alert('Unknown operator in size filter'); // This should never happen
             break;
         }
+        if (!gene.show) {
+          filtered++;
+        }
       }
+      return filtered;
     },
 
     applyExpressionFilter: function (celltype, min, max, ignoreNA) {
@@ -573,6 +613,7 @@ const filterModal = new Vue({
       if (max === '') {
         max = Infinity;
       }
+      let filtered = 0;
       for (let i = 0; i < this.genes.length; i++) {
         const gene = this.genes[i];
         if (!gene.show) {
@@ -584,13 +625,16 @@ const filterModal = new Vue({
             continue;
           } else {
             gene.show = false;
+            filtered++;
             continue;
           }
         }
         if (!(count >= min && count <= max)) {
+          filtered++;
           gene.show = false;
         }
       }
+      return filtered;
     },
 
     clearFilters: function () {
@@ -615,6 +659,8 @@ const nameFilter = Vue.component('nameFilter', {
   template: '#name-filter-template',
   data: function () {
     return {
+      applied: false,
+      numFiltered: 0,
       hideGene: {
         boolean: false
       },
@@ -636,6 +682,8 @@ const sizeFilter = Vue.component('sizeFilter', {
   template: '#size-filter-template',
   data: function () {
     return {
+      applied: false,
+      numFiltered: 0,
       loci: [{
         name: 'Genes',
         value: 'gene'
@@ -655,6 +703,8 @@ const chromFilter = Vue.component('chromFilter', {
   template: '#chrom-filter-template',
   data: function () {
     return {
+      applied: false,
+      numFiltered: 0,
       hideChrom: {
         boolean: false
       },
@@ -673,6 +723,8 @@ const countsFilter = Vue.component('countsFilter', {
   template: '#counts-filter-template',
   data: function () {
     return {
+      applied: false,
+      numFiltered: 0,
       celltypes: [],
       features: [],
       operators: operators,
@@ -704,6 +756,8 @@ const overlapFilter = Vue.component('overlapFilter', {
   template: '#overlap-filter-template',
   data: function () {
     return {
+      applied: false,
+      numFiltered: 0,
       celltypes: [],
       features: [],
       operators: operators,
@@ -750,6 +804,8 @@ const neighborCountFilter = Vue.component('neighborCountFilter', {
   template: '#neighbor-count-filter-template',
   data: function () {
     return {
+      applied: false,
+      numFiltered: 0,
       operators: operators,
       operatorSelected: '',
       countCutOff: '',
@@ -762,6 +818,8 @@ const expressionFilter = Vue.component('expressionFilter', {
   template: '#expression-filter-template',
   data: function () {
     return {
+      applied: false,
+      numFiltered: 0,
       celltypes: [],
       cellTypeSelected: '',
       minCutOff: '',

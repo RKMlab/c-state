@@ -33,6 +33,7 @@ const spinner = new Vue({
 
 // Main variable with plot data
 const plotScope = {
+  searchString: '',
   settings: {
     general: {
       colors: ["#863e10",

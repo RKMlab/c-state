@@ -33,12 +33,37 @@ Vue.component('tablename', {
   }
 })
 
+Vue.component('tabledetails', {
+  template: '#table-details-template',
+  props: ['data'],
+  data () {
+    return {
+      buttonText: 'Show',
+      show: false,
+      expression: [],
+      mappedFeatures: []
+    }
+  },
+  methods: {
+    toggleDetails: function () {
+      this.show = !this.show;
+      if (this.show) {
+        this.buttonText = 'Hide'
+        this.expression = _.find(plotScope.genes, ['name', this.data.name]).expression
+        this.mappedFeatures = _.find(plotScope.genes, ['name', this.data.name]).mappedFeatures
+      } else {
+        this.buttonText = 'Show'
+      }
+    }
+  }
+})
+
 const tableSummary = new Vue({
   el: '#table-summary',
   data: {
     showTableDiv: false,
     showFiltered: false,
-    columns: ['chrom', 'txStart', 'txEnd', 'name', 'txSize', 'strand', 'geneSymbol', 'exonCount', 'cdsSize', 'isoforms', 'neighbors', 'description'],
+    columns: ['chrom', 'txStart', 'txEnd', 'name', 'txSize', 'strand', 'geneSymbol', 'exonCount', 'cdsSize', 'isoforms', 'neighbors', 'details', 'description'],
     options: {
       headings: {
         chrom: 'Chromosome',
@@ -52,10 +77,12 @@ const tableSummary = new Vue({
         cdsSize: 'CDS Size',
         isoforms: 'Transcript Variants',
         neighbors: 'Neighboring genes',
-        description: 'Description'
+        description: 'Description',
+        details: 'Details'
       },
       templates:{
-        name: 'tablename'
+        name: 'tablename',
+        details: 'tabledetails'
       },
       filterable: true,
       orderBy: {
@@ -84,6 +111,7 @@ const tableSummary = new Vue({
           continue;
         }
         const obj = {
+          id: i,
           name: gene.name,
           show: gene.show,
           chrom: gene.geneinfo.chrom,

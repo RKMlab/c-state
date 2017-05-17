@@ -163,3 +163,11 @@ input[type=checkbox] {
   height: 40px;
   font-size: 14px;
 }
+
+.filter-input::-webkit-input-placeholder {
+  font-size: 13px!important;
+}
+
+.filter-input::-moz-placeholder {  /* Firefox 19+ */
+  font-size: 13px!important;
+}

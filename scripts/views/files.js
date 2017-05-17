@@ -81,6 +81,9 @@ const main_file = new Vue({
         _.remove(geneList, gene => {
           return gene === "";
         })
+        geneList = _.map(geneList, function (geneName) {
+          return _.trimEnd(geneName, '.')
+        })
         console.log(geneList);
         readGenome();
       })
@@ -212,6 +215,11 @@ const feature_files = new Vue({
 const plot = new Vue({
   el: '#view',
   data: plotScope,
+  watch: {
+    searchString: function () {
+      this.quickSearch()
+    }
+  },
   computed: {
     numFilteredGenes: function () {
       return _.filter(plotScope.genes, 'show').length;
@@ -222,5 +230,22 @@ const plot = new Vue({
     activeCutOff: function () {
       return this.settings.featureTracks.minSize !== '' || this.settings.featureTracks.maxSize !== '' || this.settings.featureTracks.minScore > 0 || this.settings.featureTracks.maxScore < 1000
     }
+  },
+  methods: {
+    quickSearch: _.debounce(
+      function () {
+        const names = this.searchString.toUpperCase().split(' ')
+        if (names.length === 1) {
+          _.map(plotScope.genes, function (gene) {
+            gene.show = _.startsWith(gene.name.toUpperCase(), names[0])
+          })
+        }
+        else {
+          _.map(plotScope.genes, function (gene) {
+            gene.show = _.includes(names, gene.name.toUpperCase())
+          })
+        }
+      }, 500
+    )
   }
 })

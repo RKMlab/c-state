@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>C-State v0.2.3</title>
+  <title>C-State v0.2.4</title>
   <!-- CSS links -->
   <link href="scripts/require/bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="scripts/require/animate.min.css" rel="stylesheet">
@@ -20,7 +20,7 @@
     <!--C-State Logo-->
     <div style="position: absolute; top: 0; left: 0; width: 200px; height: 65px">
       <a href="http://ccmb.res.in/rakeshmishra/c-state/" target="_blank"> <img style="margin-left: 5px; margin-top: 5px;" width="100%" src="images/c-state_logo.png" alt="C-State Logo"></a>
-      <br><span style="position:absolute; margin-top: -15px; margin-left: 160px; font-weight: bold">v0.2.3</span>
+      <br><span style="position:absolute; margin-top: -15px; margin-left: 130px; font-weight: bold">v0.2.4-dev</span>
     </div>
 
     <div id="screenalert" v-cloak class="alert alert-warning fade in alert-dismissable" v-if="screen.width > 2000" style="position: absolute; top: 10; left: 0; right: 0; width: 50vw; margin: auto">
@@ -213,6 +213,7 @@
         <div class="panel-heading">
           <h4 class="panel-title">
             <a href="#view-body">View - Showing {{numFilteredGenes}} of {{genes.length}} genes</a>
+            <input class="filter-input" style="margin-left: 10vw" type="text" v-model="searchString" placeholder="Quick Search">
             <a style="float: right" v-if="activeFilters > 0">{{activeFilters}} Active Filter(s)</a>
             <a style="float: right" v-if="activeCutOff">Feature cut-offs active<span v-if="activeFilters > 0" style="margin-left: 3px; margin-right: 3px;">|</span></a>
             <!--<p style="text-align:center"> </p>-->
@@ -256,6 +257,16 @@
             <span style="margin-top: 0px; font-size: 24px">{{ gene.name }}</span>
             <span style="margin-top: 0px; margin-left: 2vw; font-size: 18px">{{ gene.geneinfo.chrom }}:{{ gene.geneinfo.txStart }}-{{gene.geneinfo.txEnd}}({{gene.geneinfo.strand}})</span>
             <span style="font-size: 14px; float: right; font-weight: bold">Scale in KB</span>
+            <span style="margin-left: 2vw; font-size: 16px">Zoom In:
+              <button class="btn btn-default" onclick="events.$emit('manual_zoom', 3)">3X</button>
+              <button class="btn btn-default" onclick="events.$emit('manual_zoom', 10)">10X</button>
+              <button class="btn btn-default" onclick="events.$emit('manual_zoom', 100)">100X</button>
+            </span>
+            <span style="margin-left: 2vw; font-size: 16px">Zoom Out:
+              <button class="btn btn-default" onclick="events.$emit('manual_zoom', 0.33)">3X</button>
+              <button class="btn btn-default" onclick="events.$emit('manual_zoom', 0.1)">10X</button>
+              <button class="btn btn-default" onclick="events.$emit('manual_zoom', 0.01)">100X</button>
+            </span>
           </div>
 
           <div class="modal-body dragscroll" style="overflow: auto;">
@@ -551,22 +562,22 @@
                 </div>
                 <div style="padding-top: 10px" v-if="showScatter">
                   <table class="plot-table" style="width: 100%">
-                    <tr>
-                      <th>CellType</th>
-                      <th v-for="celltype in celltypes">{{celltype.name}}</th>
-                    </tr>
                     <tr v-for="(ycell, yindex) in celltypes">
-                      <td>{{ycell.name}}</td>
+                      <td style="font-weight: bold; vertical-align: middle">{{ycell.name}}</td>
                       <td is="expscatter" v-for="(xcell, xindex) in celltypes" :xindex="xindex" :yindex="yindex" :xcell="xcell" :ycell="ycell" :filtered="filtered.boolean" :diagonal="showDiagonal" :axismin="expMin" :axismax="expMax">
                       </td>
                     </tr>
-                  </table>
+                    <tr style="font-weight: bold; text-align: center">
+                      <td></td>
+                      <td v-for="celltype in celltypes">{{celltype.name}}</td>
+                    </tr>
+                  </table><br>
                 </div>
                 <div class="modal-footer" style="text-align: justify">
                   <div class="row">
                     <div class="container-fluid col-md-9">
-                      <div><strong>X-axis: </strong>Gene expression value in celltype specified as column name</div>
-                      <div><strong>Y-axis: </strong>Gene expression value in celltype specified as row name<br></div>
+                      <div><strong>X-axis: </strong>Gene expression value in celltype specified at the bottom of the column</div>
+                      <div><strong>Y-axis: </strong>Gene expression value in celltype specified on the left of the row<br></div>
                       <div>Use axis min and axis max input boxes to change the scale of the plots</div>
                     </div>
                     <div class="container-fluid col-md-3">
@@ -1096,6 +1107,7 @@
       <h5><strong>Gene Name Filter</strong>
         <span class="glyphicon glyphicon-info-sign" title="Gene name refers to the ID provided in the gene list txt file in Files accordion"></span>
       </h5>
+      <h6 v-if="applied">({{ numFiltered }} genes filtered)</h6>
       <div>
         <select class="filter-input" v-model="hideGene">
           <option :value="{ boolean: false}">Show</option>
@@ -1117,7 +1129,9 @@
     <div class="filter-component row">
       <h5><strong>Gene Size Filter</strong>
         <span class="glyphicon glyphicon-info-sign" title="Gene size is calculated as the total size from TSS to TES of the gene. Region size is calculated as gene size plus upstream and downstream flanks selected in Files accordion."></span>
-      </h5><br>
+      </h5>
+      <h6 v-if="applied">({{ numFiltered }} genes filtered)</h6>
+      <br>
       <div>Show
         <select class="filter-input" v-model="locusSelected">
           <option v-for="option in loci" :value="option.value"> {{option.name}} </option>
@@ -1136,6 +1150,7 @@
       <h5><strong>Gene Expression Filter</strong>
         <span class="glyphicon glyphicon-info-sign" title="Show genes with expression counts in the following range"></span>
       </h5>
+      <h6 v-if="applied">({{ numFiltered }} genes filtered)</h6>
       <div>
         <div class="container-fluid" style="width: 50%">Choose Celltype:<br>
           <select class="form-control" v-model="cellTypeSelected">
@@ -1170,6 +1185,7 @@
   <template id='chrom-filter-template'>
     <div class="filter-component row">
       <h5><strong>Chromosome Filter</strong></h5>
+      <h6 v-if="applied">({{ numFiltered }} genes filtered)</h6>
       <div>
         <select class="filter-input" v-model="hideChrom">
           <option :value="{ boolean: false}">Show</option>
@@ -1203,6 +1219,7 @@
     <div class="filter-component">
       <h5><strong>Feature Counts Filter</strong>
       </h5>
+      <h6 v-if="applied">({{ numFiltered }} genes filtered)</h6>
 
       <div class="container-fluid row">
         <div class="container-fluid col-md-6">Choose Celltype:<br>
@@ -1263,7 +1280,7 @@
   <template id='overlap-filter-template'>
     <div class="filter-component row">
       <h5><strong>Overlaps Filter</strong></h5>
-
+      <h6 v-if="applied">({{ numFiltered }} genes filtered)</h6>
       <div class="container-fluid row">Choose Celltype:
         <!--<div class="container-fluid col-md-6">Choose Celltype:<br>-->
         <select class="form-control" style="width: 50%" v-model="cellTypeSelected">
@@ -1358,7 +1375,9 @@
     <div class="filter-component row">
       <h5><strong>Neighbor Counts Filter</strong>
         <span class="glyphicon glyphicon-info-sign" title="Neighbors refer to the genes that surround and/or overlap the target genes. Neighbor counts are the number of neighboring genes present in the target gene body and the flanks specified in Files accordion. Neighbors are counted even if their display is toggled from Settings panel"></span>
-      </h5><br>
+      </h5>
+      <h6 v-if="applied">({{ numFiltered }} genes filtered)</h6>
+      <br>
       <div>Show genes with
         <select class="filter-input" v-model="operatorSelected">
           <option v-for="option in operators" :value="option.value"> {{option.name}} </option>
@@ -1385,6 +1404,40 @@
       <td>{{gene.geneinfo.description}}</td>
     </tr>
   </template>
+
+  <!--Table Details template-->
+  <template id="table-details-template">
+    <div>
+      <div>
+        <button class="btn btn-default" @click="toggleDetails">{{ buttonText }}</button>
+      </div>
+      <div v-if="show" style="text-align: center; margin-top: 10px;">
+        <div style="font-size: 16px; font-weight: bold">Feature Counts</div>
+        <table class="table table-bordered table-compact">
+          <tr>
+            <th>Celltype</th>
+            <th>Number of Features</th>
+          </tr>
+          <tr v-for="object in mappedFeatures">
+            <td>{{object.name}}</td>
+            <td>{{object.features.length}}</td>
+          </tr>
+        </table>
+        <div style="font-size: 16px; font-weight: bold">Expression Details</div>
+        <table class="table table-bordered table-compact">
+          <tr>
+            <th>Celltype</th>
+            <th>Expression</th>
+          </tr>
+          <tr v-for="object in expression">
+            <td>{{object.name}}</td>
+            <td>{{object.count}}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </template>
+
   <!-- JS Dependencies -->
   <script src="scripts/require/jquery-1.12.4.js"></script>
   <script src="scripts/require/tipsy/jquery.tipsy.js"></script>
@@ -1431,6 +1484,10 @@
     $(".panel-collapse").click(function (e) {
       e.stopPropagation();
     });
+
+    $("input.filter-input").click(function (e) {
+      e.stopPropagation();
+    })
 
     // Confirmation for closing
     window.onbeforeunload = function (e) {
