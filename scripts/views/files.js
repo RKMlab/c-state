@@ -105,6 +105,7 @@ const main_file = new Vue({
           }
         });
 
+        const unmappedList = [];
         for (let i = 0; i < geneList.length; i++) {
           const gene = geneList[i];
           const geneObj = {};
@@ -113,6 +114,7 @@ const main_file = new Vue({
           const mappedGenes = _.filter(allMappedGenes, [this.idSelected, gene]) ;
           if (mappedGenes.length === 0) {
             unmappedCount++;
+            unmappedList.push(gene);
             continue;
           }
           if (mappedGenes.length === 1) {
@@ -145,6 +147,7 @@ const main_file = new Vue({
           return;
         } else if (unmappedCount > 0) {
           alert(`${unmappedCount} out of ${geneList.length} genes could not be mapped`);
+          console.log(unmappedList);
         }
         // spinner.loading = true;
         events.$emit('process-features');
