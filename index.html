@@ -1107,7 +1107,7 @@
       <h5><strong>Gene Name Filter</strong>
         <span class="glyphicon glyphicon-info-sign" title="Gene name refers to the ID provided in the gene list txt file in Files accordion"></span>
       </h5>
-      <h6 v-if="applied">({{ numFiltered }} genes filtered)</h6>
+      <h6 v-if="applied">({{ numFiltered[0] }} of {{ numFiltered[1] }} genes filtered out)</h6>
       <div>
         <select class="filter-input" v-model="hideGene">
           <option :value="{ boolean: false}">Show</option>
@@ -1130,7 +1130,7 @@
       <h5><strong>Gene Size Filter</strong>
         <span class="glyphicon glyphicon-info-sign" title="Gene size is calculated as the total size from TSS to TES of the gene. Region size is calculated as gene size plus upstream and downstream flanks selected in Files accordion."></span>
       </h5>
-      <h6 v-if="applied">({{ numFiltered }} genes filtered)</h6>
+      <h6 v-if="applied">({{ numFiltered[0] }} of {{ numFiltered[1] }} genes filtered out)</h6>
       <br>
       <div>Show
         <select class="filter-input" v-model="locusSelected">
@@ -1150,7 +1150,7 @@
       <h5><strong>Gene Expression Filter</strong>
         <span class="glyphicon glyphicon-info-sign" title="Show genes with expression counts in the following range"></span>
       </h5>
-      <h6 v-if="applied">({{ numFiltered }} genes filtered)</h6>
+      <h6 v-if="applied">({{ numFiltered[0] }} of {{ numFiltered[1] }} genes filtered out)</h6>
       <div>
         <div class="container-fluid" style="width: 50%">Choose Celltype:<br>
           <select class="form-control" v-model="cellTypeSelected">
@@ -1185,7 +1185,7 @@
   <template id='chrom-filter-template'>
     <div class="filter-component row">
       <h5><strong>Chromosome Filter</strong></h5>
-      <h6 v-if="applied">({{ numFiltered }} genes filtered)</h6>
+      <h6 v-if="applied">({{ numFiltered[0] }} of {{ numFiltered[1] }} genes filtered out)</h6>
       <div>
         <select class="filter-input" v-model="hideChrom">
           <option :value="{ boolean: false}">Show</option>
@@ -1219,7 +1219,7 @@
     <div class="filter-component">
       <h5><strong>Feature Counts Filter</strong>
       </h5>
-      <h6 v-if="applied">({{ numFiltered }} genes filtered)</h6>
+      <h6 v-if="applied">({{ numFiltered[0] }} of {{ numFiltered[1] }} genes filtered out)</h6>
 
       <div class="container-fluid row">
         <div class="container-fluid col-md-6">Choose Celltype:<br>
@@ -1280,7 +1280,7 @@
   <template id='overlap-filter-template'>
     <div class="filter-component row">
       <h5><strong>Overlaps Filter</strong></h5>
-      <h6 v-if="applied">({{ numFiltered }} genes filtered)</h6>
+      <h6 v-if="applied">({{ numFiltered[0] }} of {{ numFiltered[1] }} genes filtered out)</h6>
       <div class="container-fluid row">Choose Celltype:
         <!--<div class="container-fluid col-md-6">Choose Celltype:<br>-->
         <select class="form-control" style="width: 50%" v-model="cellTypeSelected">
@@ -1376,7 +1376,7 @@
       <h5><strong>Neighbor Counts Filter</strong>
         <span class="glyphicon glyphicon-info-sign" title="Neighbors refer to the genes that surround and/or overlap the target genes. Neighbor counts are the number of neighboring genes present in the target gene body and the flanks specified in Files accordion. Neighbors are counted even if their display is toggled from Settings panel"></span>
       </h5>
-      <h6 v-if="applied">({{ numFiltered }} genes filtered)</h6>
+      <h6 v-if="applied">({{ numFiltered[0] }} of {{ numFiltered[1] }} genes filtered out)</h6>
       <br>
       <div>Show genes with
         <select class="filter-input" v-model="operatorSelected">

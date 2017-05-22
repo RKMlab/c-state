@@ -176,10 +176,12 @@ const filterModal = new Vue({
 
     applyNameFilter: function (names, hide, matchPartial, matchBeginning) {
       console.log("Applying name filter");
+      let previousFiltered = 0;
       let filtered = 0;
       for (let i = 0; i < this.genes.length; i++) {
         const gene = this.genes[i];
         if (!gene.show) { // Not required for this filter because of matching logic, still put as a precaution and to marginally improve speed
+          previousFiltered++;
           continue;
         }
         const toMatch = gene.name.toUpperCase();
@@ -240,16 +242,18 @@ const filterModal = new Vue({
           }
         }
       }
-      return filtered;
+      return [filtered, (this.genes.length - previousFiltered)];
     },
 
     applySizeFilter: function (locus, operator, cutoff) {
       console.log("Apply size filter");
       cutoff = cutoff * 1000;
+      let previousFiltered = 0;
       let filtered = 0;
       for (let i = 0; i < this.genes.length; i++) {
         const gene = this.genes[i];
         if (!gene.show) { // If filtered by a previous filter
+          previousFiltered++;
           continue;
         }
         const toCheck = locus === 'gene' ? gene.geneinfo.txSize : gene.geneinfo.REnd + Math.abs(gene.geneinfo.RStart);
@@ -277,7 +281,7 @@ const filterModal = new Vue({
           filtered++;
         }
       }
-      return filtered;
+      return [filtered, (this.genes.length - previousFiltered)];
     },
 
     applyChromFilter: function (chrom, hide, start, end) {
@@ -288,10 +292,12 @@ const filterModal = new Vue({
       if (end === '') {
         end = Infinity;
       }
+      let previousFiltered = 0;
       let filtered = 0;
       for (let i = 0; i < this.genes.length; i++) {
         const gene = this.genes[i];
         if (!gene.show) {
+          previousFiltered++
           continue;
         }
         if (hide) {
@@ -306,15 +312,17 @@ const filterModal = new Vue({
           }
         }
       }
-      return filtered;
+      return [filtered, (this.genes.length - previousFiltered)];
     },
 
     applyCountFilter: function (celltype, feature, operator, count, uplimit, downlimit) {
       console.log("Applying marks filter");
+      let previousFiltered = 0;
       let filtered = 0;
       for (let i = 0; i < this.genes.length; i++) {
         const gene = this.genes[i];
         if (!gene.show) { // If this was filtered by a previous filter
+          previousFiltered++;
           continue;
         }
         const match = [];
@@ -385,15 +393,17 @@ const filterModal = new Vue({
           filtered++;
         }
       }
-      return filtered;
+      return [filtered, (this.genes.length - previousFiltered)];
     },
 
     applyOverlapFilter: function (celltype, firstFeature, secondFeature, relation, minDistance, maxDistance, uplimit, downlimit) {
       console.log("Applying overlap filter");
+      let previousFiltered = 0;
       let filtered = 0;
       for (let i = 0; i < this.genes.length; i++) {
         const gene = this.genes[i];
         if (!gene.show) { // If filtered by a previous filter
+          previousFiltered++;
           continue;
         }
         let firstMatch = '' ;
@@ -553,15 +563,17 @@ const filterModal = new Vue({
           filtered++;
         }
       }
-      return filtered;
+      return [filtered, (this.genes.length - previousFiltered)];
     },
 
     applyNeighborCountFilter: function (operator, cutoff, ignoreOverlap) {
       console.log("Applying neighbor counts filter");
+      let previousFiltered = 0;
       let filtered = 0;
       for (let i = 0; i < this.genes.length; i++) {
         const gene = this.genes[i];
         if (!gene.show) {
+          previousFiltered++;
           continue;
         }
         let match = 0;
@@ -602,7 +614,7 @@ const filterModal = new Vue({
           filtered++;
         }
       }
-      return filtered;
+      return [filtered, (this.genes.length - previousFiltered)];
     },
 
     applyExpressionFilter: function (celltype, min, max, ignoreNA) {
@@ -613,10 +625,12 @@ const filterModal = new Vue({
       if (max === '') {
         max = Infinity;
       }
+      let previousFiltered = 0;
       let filtered = 0;
       for (let i = 0; i < this.genes.length; i++) {
         const gene = this.genes[i];
         if (!gene.show) {
+          previousFiltered++;
           continue;
         }
         const count = _.find(gene.expression, ['value', celltype]).count;
@@ -634,7 +648,7 @@ const filterModal = new Vue({
           gene.show = false;
         }
       }
-      return filtered;
+      return [filtered, (this.genes.length - previousFiltered)];
     },
 
     clearFilters: function () {
