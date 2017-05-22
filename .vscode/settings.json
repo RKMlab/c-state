@@ -2,7 +2,7 @@
 {
     "editor.tabSize": 2,
     "editor.detectIndentation": false,
-    "editor.wrappingColumn": 120,
+    "editor.wordWrap": "on",
     "html.format.preserveNewLines": true,
     "html.format.maxPreserveNewLines": 6
 }
