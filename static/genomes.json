@@ -1,0 +1,58 @@
+{
+  "species" : [
+    {
+      "name": "Human",
+      "versions": [
+        "hg38",
+        "hg19"
+      ]
+    },
+    {
+      "name": "Mouse",
+      "versions": [
+        "mm10",
+        "mm9"
+      ]
+    },
+    {
+      "name": "Rat",
+      "versions": [
+        "rn6",
+        "rn5"
+      ]
+    },
+    {
+      "name": "Chicken",
+      "versions": [
+        "galGal4"
+      ]
+    },
+    {
+      "name": "Zebrafish",
+      "versions": [
+        "danRer10"
+      ]
+    },
+    {
+      "name": "Drosophila",
+      "versions": [
+        "dm6",
+        "dm3"
+      ]
+    },
+    {
+      "name": "Worm",
+      "versions": [
+        "ce11",
+        "ce10"
+      ]
+    },
+    {
+      "name": "Yeast",
+      "versions": [
+        "sacCer3",
+        "sacCer2"
+      ]
+    }
+  ]
+}
