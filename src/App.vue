@@ -24,6 +24,17 @@
                 </el-form>
               </el-col>
             </el-row>
+            <transition appear name="fade">
+              <el-row :gutter="20">
+                <el-col :span="10" :offset="6" style="text-align: center">
+                  <el-button type="primary" :disabled="showGeneView" style="width: 200px">Go to GenomeView</el-button>
+                  <el-button type="primary" @click="showGeneView = true" style="width: 200px">Go to GeneView</el-button>
+                </el-col>
+              </el-row>
+            </transition>
+            <transition appear name="fade">
+              <gene-file-uploader></gene-file-uploader>
+            </transition>
           </el-collapse-item>
         </el-collapse>
       </el-col>
@@ -33,15 +44,23 @@
 
 <script>
 import Species from '../static/genomes.json'
+import store from './main.js'
+import GeneFileUploader from './components/gene_file_uploader.vue'
 
 const _ = require('lodash')
 export default {
+  components: {
+    GeneFileUploader
+  },
   data () {
     return {
+      store: store,
       species: Species.species,
       selectedSpecies: '',
       buildOptions: [],
-      selectedBuild: ''
+      selectedBuild: '',
+      showGeneView: false,
+      showGenomeView: false
     }
   },
   methods: {
@@ -56,5 +75,9 @@ export default {
 <style>
 body {
   font-family: 'Oxygen', Helvetica, sans-serif;
+}
+
+.el-collapse-item__header {
+  font-size: 1em
 }
 </style>

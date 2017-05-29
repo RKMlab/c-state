@@ -1,12 +1,16 @@
 var path = require('path')
 var webpack = require('webpack')
+var ExtractTextPlugin = require("extract-text-webpack-plugin")
 
 module.exports = {
-  entry: './src/main.js',
+  entry: {
+    build: "./src/main.js",
+    vendor: ['d3', 'vue', 'element-ui', 'lodash']
+  },
   output: {
     path: path.resolve(__dirname, './dist'),
     publicPath: '/dist/',
-    filename: 'build.js'
+    filename: '[name].js?[hash]'
   },
   module: {
     loaders: [
@@ -40,6 +44,15 @@ module.exports = {
     historyApiFallback: true,
     noInfo: true
   },
+  plugins: [
+    new ExtractTextPlugin("styles.css"),
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'vendor',
+    }),
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'manifest'
+    })
+  ],
   devtool: '#eval-source-map'
 }
 
