@@ -15,10 +15,15 @@ module.exports = {
   module: {
     loaders: [
       {
-        test: /\.vue$/,
+        test: /\.(vue$|vue\.html$)/,
         loader: 'vue-loader',
         options: {
-          extractCSS: true
+          loaders: {
+            css: ['css-hot-loader'].concat(ExtractTextPlugin.extract({
+                use: 'css-loader',
+                fallback: 'vue-style-loader'
+              }))
+          }
         }
       },
       {
@@ -28,9 +33,10 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: ExtractTextPlugin.extract({
+        use: ['css-hot-loader'].concat(ExtractTextPlugin.extract({
           use: ['css-loader'],
-        })
+          fallback: 'style-loader'
+        })),
       },
       {
         test: /\.(eot|svg|ttf|woff|woff2)(\?\S*)?$/,

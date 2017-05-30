@@ -1,5 +1,8 @@
 <template>
+  <div>
   <input type="file" multiple name="files[]" @change="onFileUpload">
+  <div style="text-align: center">Hi</div>
+  </div>
 </template>
 
 <script>
@@ -38,3 +41,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+div {
+  font-size: 1.2em;
+}
+</style>
