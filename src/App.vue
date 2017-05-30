@@ -2,7 +2,7 @@
   <div id="app">
     <el-row :gutter="20">
       <el-col :span="22" :offset="1">
-        <el-collapse :value="['1']">
+        <el-collapse :value="['2']">
           <el-collapse-item title="Files" name="1">
             <el-row :gutter="20">
               <el-col :span="4" :offset="6">
@@ -36,6 +36,9 @@
               <gene-file-uploader></gene-file-uploader>
             </transition>
           </el-collapse-item>
+          <el-collapse-item title="View" name="2">
+            <gene-view :store="store"></gene-view>
+          </el-collapse-item>
         </el-collapse>
       </el-col>
     </el-row>
@@ -46,11 +49,12 @@
 import Species from '../static/genomes.json'
 import store from './main.js'
 import GeneFileUploader from './components/gene_file_uploader.vue'
+import GeneView from './views/gene_view.vue'
 
 const _ = require('lodash')
 export default {
   components: {
-    GeneFileUploader
+    GeneFileUploader, GeneView
   },
   data () {
     return {
