@@ -12,6 +12,7 @@
   "dependencies": {
     "d3": ">=4.9.1",
     "element-ui": ">=1.0.0",
+    "line-navigator": "^2.1.6",
     "vue": ">=2.3.3"
   },
   "devDependencies": {
