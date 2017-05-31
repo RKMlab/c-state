@@ -37,7 +37,7 @@ const parseBED = function (file, scoreCol = 5, min = 100, max = 1000, callback) 
 
   // Start reading file in chunks
   const reader = new LineNavigator(file, {
-    chunkSize: 10240
+    chunkSize: 1024000
   })
   const startIndex = 0
   reader.readSomeLines(startIndex, function handler(error, index, lines, isEOF, progress) {

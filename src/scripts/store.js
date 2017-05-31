@@ -8,9 +8,13 @@ const store = {
   info: {
     selectedGenome: '',
     selectedVersion: '',
-    chromSizes: []
+    chromSizes: [],
+    genomeInfo: []
   },
-  genes: []
+  genes: [],
+  data: []
 }
 
-export { store }
+export {
+  store
+}

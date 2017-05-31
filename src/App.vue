@@ -26,8 +26,11 @@
             </el-row>
           </el-collapse-item>
         </el-collapse>
-        <el-collapse value="['1']">
+        <el-collapse :value="['1']">
           <el-collapse-item name="1" title="View">
+            <el-input v-model="name" style="width: 200px"></el-input>
+            <el-button @click="addGene">Add Gene</el-button>
+            <gene-plot v-for="gene in store.genes" :gene="gene" :key="gene.name"></gene-plot>
           </el-collapse-item>
         </el-collapse>
       </el-col>
@@ -41,11 +44,15 @@
   import readFile from './scripts/utils/fileReader.js'
   import { getGenomeString } from './scripts/createGenomeTemplate.js'
   import { validateBED, parseBED } from './scripts/parsers/bed.js'
+  import genePlot from './components/gene_plot.vue'
 
   const d3 = require('d3')
   const _ = require('lodash')
 
   export default {
+    components: {
+      genePlot
+    },
     data () {
       return {
         store: store,
@@ -53,6 +60,7 @@
         files: '',
         validated: [],
         strings: [],
+        name: '',
         versionOptions: [],
         showFileUpload: false
       }
@@ -71,7 +79,7 @@
       },
       onVersionSelect () {
         const { selectedGenome, selectedVersion } = this.store.info
-        d3.tsv(`/static/genomes/${selectedGenome}.${selectedVersion}.chromSizes`, data => {
+        d3.tsv(`/static/genomes/${selectedGenome}_${selectedVersion}.chromSizes`, data => {
           this.store.info.chromSizes = data;
           this.showFileUpload = true;
         })
@@ -93,24 +101,38 @@
         }
       },
       processFiles () {
-        let i = 0
-        const validated = this.validated
-        const context = this
-        let file = this.validated[i]
-        parseBED(file.file, 5, file.min, file.max, function callback(response) {
-          console.log(response)
-          i++;
-          if (i === validated.length) {
-            return;
-          }
-          const obj = {
-            name: file.name,
-            data: response
-          }
-          context.strings.push(obj)
-          file = validated[i]
-          parseBED(file.file, 5, file.min, file.max, callback)
+        const { selectedGenome, selectedVersion } = this.store.info
+        d3.tsv(`/static/genomes/${selectedGenome}_${selectedVersion}.geneinfo.tsv`, data => {
+          this.store.info.genomeInfo = data;
+          console.log(this.store.info.genomeInfo)
+          let i = 0
+          const context = this
+          let file = context.validated[i]
+          parseBED(file.file, 5, file.min, file.max, function callback(response) {
+            const obj = {
+              name: file.name,
+              data: response
+            }
+            console.log(`Finished reading ${file.name}`)
+            context.store.data.push(obj)
+            i++;
+            if (i === context.validated.length) {
+              const gene = {
+                name: 'ACE'
+              }
+              store.genes.push(gene)
+              return;
+            }
+            file = context.validated[i]
+            parseBED(file.file, 5, file.min, file.max, callback)
+          })
         })
+      },
+      addGene () {
+        const gene = {
+          name: this.name
+        }
+        store.genes.push(gene)
       }
     }
   }
