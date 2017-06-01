@@ -43,7 +43,7 @@
   import { store } from './scripts/store.js'
   import readFile from './scripts/utils/fileReader.js'
   import { getGenomeString } from './scripts/createGenomeTemplate.js'
-  import { validateBED, parseBED } from './scripts/parsers/bed.js'
+  import { validateBED, parseBED, readBED } from './scripts/parsers/bed.js'
   import genePlot from './components/gene_plot.vue'
 
   const d3 = require('d3')
@@ -105,27 +105,38 @@
         d3.tsv(`/static/genomes/${selectedGenome}_${selectedVersion}.geneinfo.tsv`, data => {
           this.store.info.genomeInfo = data;
           console.log(this.store.info.genomeInfo)
-          let i = 0
-          const context = this
-          let file = context.validated[i]
-          parseBED(file.file, 5, file.min, file.max, function callback(response) {
-            const obj = {
-              name: file.name,
-              data: response
-            }
-            console.log(`Finished reading ${file.name}`)
-            context.store.data.push(obj)
-            i++;
-            if (i === context.validated.length) {
-              const gene = {
-                name: 'ACE'
+          for (let file of this.validated) {
+            readFile(file.file, e => {
+              const rows = readBED(e.target.result, 5)
+              const template = getGenomeString(store.info.chromSizes, rows, store.constants.chromBinSize)
+              const obj = {
+                name: file.name,
+                data: template
               }
-              store.genes.push(gene)
-              return;
-            }
-            file = context.validated[i]
-            parseBED(file.file, 5, file.min, file.max, callback)
-          })
+              this.strings.push(obj)
+            })
+          }
+          // let i = 0
+          // const context = this
+          // let file = context.validated[i]
+          // parseBED(file.file, 5, file.min, file.max, function callback(response) {
+          //   const obj = {
+          //     name: file.name,
+          //     data: response
+          //   }
+          //   console.log(`Finished reading ${file.name}`)
+          //   context.store.data.push(obj)
+          //   i++;
+          //   if (i === context.validated.length) {
+          //     const gene = {
+          //       name: 'ACE'
+          //     }
+          //     store.genes.push(gene)
+          //     return;
+          //   }
+          //   file = context.validated[i]
+          //   parseBED(file.file, 5, file.min, file.max, callback)
+          // })
         })
       },
       addGene () {

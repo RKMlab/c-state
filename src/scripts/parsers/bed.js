@@ -10,6 +10,19 @@ const d3 = require('d3')
 const _ = require('lodash')
 const LineNavigator = require('line-navigator')
 
+const readBED = function (string, scoreCol = 5) {
+  scoreCol--;
+  const rows = d3.tsvParseRows(string, d => {
+    return {
+      chrom: d[0],
+      start: +d[1],
+      end: +d[2],
+      score: +d[scoreCol]
+    }
+  })
+  return rows;
+}
+
 const parseBED = function (file, scoreCol = 5, min = 100, max = 1000, callback) {
   scoreCol--;
   let template = {}
@@ -132,5 +145,6 @@ const validateBED = function (file, scoreCol = 5, callback) {
 
 export {
   validateBED,
-  parseBED
+  parseBED,
+  readBED
 }
