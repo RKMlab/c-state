@@ -1,6 +1,7 @@
 <template>
   <div class="mainplot">
-    {{ gene.name }}</div>
+    {{ gene }}
+  </div>
 </template>
 
 <script>
@@ -17,8 +18,8 @@
       }
     },
     mounted () {
-      this.info = _.sortBy(_.filter(store.info.genomeInfo, ['geneSymbol', this.gene.name]), 'txSize')[0]
-      const chromData = store.data[0].data[this.info.chrom]
+      this.info = _.sortBy(_.filter(store.info.genomeInfo, ['geneSymbol', this.gene]), 'txSize')[0]
+      const chromData = store.data[0].features[0].data[this.info.chrom]
       const start = Math.floor(this.info.txStart/store.constants.chromBinSize)
       const end = Math.floor(this.info.txEnd/store.constants.chromBinSize)
       console.log(chromData.substr(start, end-start))
