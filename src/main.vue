@@ -32,11 +32,22 @@
       <el-col :span="22" :offset="1">
         <el-collapse :value="['2']">
           <el-collapse-item name="2" title="View">
-            <el-input v-model="searchString" style="width: 200px"></el-input>
-            <el-button @click="addGene">Add Gene</el-button>
-            <transition-group name="slide">
-              <gene-plot :gene="gene" v-for="gene in store.genes" :key="gene"></gene-plot>
-            </transition-group>
+            <div>
+              <el-input v-model="searchString" style="width: 200px"></el-input>
+              <el-button @click="addGene">Add Gene</el-button>
+            </div><br>
+            <div style="max-height: 90vh; overflow-y: auto">
+              <table style="text-align: center; table-layout: fixed; width: 100%; margin: auto">
+                <tr>
+                  <th v-for="celltype in store.info.celltypes"><h3>{{ celltype }}</h3></th>
+                </tr>
+              </table>
+              <div style="max-height: 80vh; overflow-y: auto">
+              <transition-group name="slide">
+                <gene-row :gene="gene" v-for="gene in store.genes" :key="gene"></gene-row>
+              </transition-group>
+              </div>
+            </div>
           </el-collapse-item>
         </el-collapse>
       </el-col>
@@ -49,14 +60,14 @@ import Species from '../static/genomes.json'
 import { store } from './scripts/store.js'
 import readFile from './scripts/utils/fileReader.js'
 import { validateBEDString, parseBEDString } from './scripts/parsers/bed.js'
-import genePlot from './components/gene_plot.vue'
+import geneRow from './components/gene_row.vue'
 
 const d3 = require('d3')
 const _ = require('lodash')
 
 export default {
   components: {
-    genePlot
+    geneRow
   },
   data () {
     return {
@@ -90,6 +101,7 @@ export default {
         names.push(celltype)
       }
       names = _.uniq(names)
+      store.info.celltypes = names.sort()
       for (let name of names) {
         const obj = {
           name: name,
@@ -98,6 +110,7 @@ export default {
         store.data.push(obj)
       }
       let fileCount = 0
+      let features = []
       for (let file of this.featureFiles) {
         readFile(file, e => {
           fileCount++;
@@ -108,12 +121,15 @@ export default {
           }
           const template = parseBEDString(e.target.result, 5, file.name)
           const [celltype, feature] = file.name.split(/_|\./)
+          features.push(feature)
           const obj = {
             name: feature,
             data: template
           }
           _.find(store.data, ['name', celltype]).features.push(obj)
           if (fileCount === this.featureFiles.length) {
+            store.info.features = _.uniq(features).sort()
+            store.settings.geneCard.panelWidth = Math.floor(((screen.width * 0.9) - 100)/store.info.celltypes.length)
             this.getGenomeInfo()
           }
         })

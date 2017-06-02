@@ -4,12 +4,27 @@ const store = {
   constants: {
     chromBinSize: 100
   },
-  settings: {},
+  settings: {
+    flankUp: 20000,
+    flankDown: 20000,
+    geneCard: {
+      margin: {
+        top: 10,
+        bottom: 30,
+        left: 40,
+        right: 20
+      },
+      panelHeight: 200,
+      panelWidth: 500
+    }
+  },
   info: {
     selectedGenome: '',
     selectedVersion: '',
     chromSizes: [],
-    genomeInfo: []
+    genomeInfo: [],
+    celltypes: [],
+    features: []
   },
   genes: [],
   data: []

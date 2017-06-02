@@ -1,3 +1,16 @@
 body {
   font-family: 'Oxygen', Arial, Helvetica, sans-serif
 }
+
+.el-card__header {
+  font-family: 'Ubuntu', Arial, Helvetica, sans-serif;
+  padding: 0px;
+}
+
+.el-card__body {
+  padding: 0px;
+}
+
+.el-card {
+  margin-bottom: 5px;
+}
