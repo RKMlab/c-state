@@ -1,7 +1,12 @@
 "use strict"
 
 const _ = require('lodash')
-export default function (string) {
+
+const parseGeneInfo = function (string) {
+  console.log(string)
+}
+
+const parseFeatureString = function (string) {
   const arr = string.match(/(.)\1*/g)
   const toPlot = []
   let i = 0
@@ -16,3 +21,5 @@ export default function (string) {
   _.remove(toPlot, o => { return o.value === 'a'})
   return toPlot
 }
+
+export { parseGeneInfo, parseFeatureString }

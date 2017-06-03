@@ -6,13 +6,13 @@
           <el-collapse-item name="1" title="Files">
             <el-row :gutter="20">
               <el-col :span="4" :offset="6">
-                <el-select v-model="store.info.selectedGenome" @change="onGenomeSelect">
+                <el-select v-model="store.info.selectedSpecies" @change="onGenomeSelect">
                   <el-option v-for="option in species" :key="option.name" :label="option.name" :value="option.name">
                   </el-option>
                 </el-select>
               </el-col>
               <el-col :span="4">
-                <el-select :disabled="store.info.selectedGenome === ''" v-model="store.info.selectedVersion" @change="onVersionSelect">
+                <el-select :disabled="store.info.selectedSpecies === ''" v-model="store.info.selectedBuild" @change="onVersionSelect">
                   <el-option v-for="option in versionOptions" :key="option" :label="option" :value="option">
                   </el-option>
                 </el-select>
@@ -61,6 +61,7 @@ import { store } from './scripts/store.js'
 import readFile from './scripts/utils/fileReader.js'
 import { validateBEDString, parseBEDString } from './scripts/parsers/bed.js'
 import geneRow from './components/gene_row.vue'
+import parseGenome from './scripts/parseGenomeInfo.js'
 
 const d3 = require('d3')
 const _ = require('lodash')
@@ -82,11 +83,11 @@ export default {
   },
   methods: {
     onGenomeSelect () {
-      this.versionOptions = _.find(this.species, ['name', this.store.info.selectedGenome]).versions
+      this.versionOptions = _.find(this.species, ['name', this.store.info.selectedSpecies]).versions
     },
     onVersionSelect () {
-      const { selectedGenome, selectedVersion } = this.store.info
-      d3.tsv(`/static/genomes/${selectedGenome}_${selectedVersion}.chromSizes`, data => {
+      const { selectedSpecies, selectedBuild } = this.store.info
+      d3.tsv(`/static/genomes/${selectedSpecies}_${selectedBuild}.chromSizes`, data => {
         this.store.info.chromSizes = data;
         this.allowUpload = true;
       })
@@ -136,9 +137,13 @@ export default {
       }
     },
     getGenomeInfo () {
-      const {selectedGenome, selectedVersion} = store.info;
-      d3.tsv(`/static/genomes/${selectedGenome}_${selectedVersion}.geneinfo.tsv`, data => {
-        store.info.genomeInfo = data.splice(0, 100);
+      const {selectedSpecies, selectedBuild} = store.info;
+      parseGenome(callback => {
+        const gene = _.find(callback, ['name', 'ACTB'])
+        console.log(gene)
+      })
+      d3.tsv(`/static/genomes/${selectedSpecies}_${selectedBuild}.geneinfo.tsv`, data => {
+        store.info.genomeInfo = data.splice(0, 200);
         const genes = _.uniq(_.map(store.info.genomeInfo, 'geneSymbol'))
         let i = 0;
         for (let gene of genes) {

@@ -19,12 +19,19 @@ const store = {
     }
   },
   info: {
-    selectedGenome: '',
-    selectedVersion: '',
+    selectedSpecies: '',
+    selectedBuild: '',
+    selectedID: 'geneSymbol',
     chromSizes: [],
     genomeInfo: [],
+    genomeHeaders: [],
     celltypes: [],
-    features: []
+    features: [],
+    sortings: {
+      chrOrder: [],
+      alphabetical: [],
+      txSize: []
+    }
   },
   genes: [],
   data: []
