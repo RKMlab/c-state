@@ -1,9 +1,18 @@
 "use strict"
 
+import { store } from '../store.js'
 const _ = require('lodash')
 
 const parseGeneInfo = function (string) {
-  console.log(string)
+  const headers = store.info.genomeHeaders
+  const cols = string.split(/\t/)
+  const obj = {}
+  for (let i = 0; i < headers.length; i++) {
+    if (cols[i].match(/^\d+$/))
+    cols[i] = +cols[i]
+    obj[headers[i]] = cols[i]
+  }
+  return obj
 }
 
 const parseFeatureString = function (string) {

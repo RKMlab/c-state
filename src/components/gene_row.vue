@@ -16,6 +16,7 @@
 <script>
 import genePlot from './gene_plot.vue'
 import { store } from '../scripts/store.js'
+import { parseGeneInfo } from '../scripts/utils/parseStrings.js'
 
 export default {
   name: 'geneRow',
@@ -30,7 +31,8 @@ export default {
     genePlot
   },
   mounted () {
-    this.geneInfo = _.sortBy(_.filter(store.info.genomeInfo, ['geneSymbol', this.gene]), 'txSize')[0]
+    const geneString = _.find(store.info.genomeInfo, ['name', this.gene]).value
+    this.geneInfo = parseGeneInfo(geneString)
   }
 }
 </script>

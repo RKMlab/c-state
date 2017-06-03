@@ -23,8 +23,8 @@
         const info = this.info
         const celltypeData = _.find(store.data, ['name', this.celltype])
         const chrom = info.chrom
-        const txStart = +info.txStart
-        const txEnd = +info.txEnd
+        const txStart = info.txStart
+        const txEnd = info.txEnd
         const binSize = store.constants.chromBinSize
         const startBin = txStart - flankUp > 0 ? Math.floor((txStart-flankUp)/binSize) : 0
         const endBin = Math.floor((txEnd+flankDown)/binSize) + 1
@@ -50,6 +50,7 @@
         const chart = chartRoot.append("g")
 
         for (let feature of store.info.features) {
+          // console.log(this.gene, this.celltype, feature, this.info.chrom, this.info.txStart, this.info.txEnd, startBin, endBin)
           const featureString = _.find(celltypeData.features, ['name', feature]).data[chrom].substr(startBin, endBin-startBin)
           const toPlot = parseFeatureString(featureString)
           if (toPlot.length === 0) {

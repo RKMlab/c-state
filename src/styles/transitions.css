@@ -10,5 +10,5 @@
 }
 .slide-enter, .slide-leave-to /* .list-leave-active for <2.1.8 */ {
   opacity: 0;
-  transform: translateX(500px);
+  transform: translateX(-500px);
 }

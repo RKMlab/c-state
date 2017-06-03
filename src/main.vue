@@ -34,12 +34,12 @@
           <el-collapse-item name="2" title="View">
             <div>
               <el-input v-model="searchString" style="width: 200px"></el-input>
-              <el-button @click="addGene">Add Gene</el-button>
+              <el-button @click="getGenomeInfo">Add Gene</el-button>
             </div><br>
             <div style="max-height: 90vh; overflow-y: auto">
               <table style="text-align: center; table-layout: fixed; width: 100%; margin: auto">
                 <tr>
-                  <th v-for="celltype in store.info.celltypes"><h3>{{ celltype }}</h3></th>
+                  <th v-for="celltype in store.info.celltypes" style="font-size: 1.2em">{{ celltype }}</th>
                 </tr>
               </table>
               <div style="max-height: 80vh; overflow-y: auto">
@@ -137,21 +137,10 @@ export default {
       }
     },
     getGenomeInfo () {
-      const {selectedSpecies, selectedBuild} = store.info;
+      store.genes = []
       parseGenome(callback => {
-        const gene = _.find(callback, ['name', 'ACTB'])
-        console.log(gene)
-      })
-      d3.tsv(`/static/genomes/${selectedSpecies}_${selectedBuild}.geneinfo.tsv`, data => {
-        store.info.genomeInfo = data.splice(0, 200);
-        const genes = _.uniq(_.map(store.info.genomeInfo, 'geneSymbol'))
-        let i = 0;
-        for (let gene of genes) {
-          i++;
-          _.delay(function(gene) {
-            store.genes.push(gene)
-          }, 50 * i, gene)
-        }
+        store.info.genomeInfo = callback;
+        store.genes = store.info.sortings.alphabetical.splice(0, 200)
       })
     },
     addGene () {
