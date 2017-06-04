@@ -46,6 +46,8 @@
         const yScale = d3.scaleBand()
           .domain(store.info.features)
           .rangeRound([margin.top, panelHeight-margin.bottom])
+          .paddingOuter(0.25)
+          .paddingInner(0.5)
         
         const chart = chartRoot.append("g")
 

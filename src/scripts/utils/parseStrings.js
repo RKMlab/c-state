@@ -8,8 +8,9 @@ const parseGeneInfo = function (string) {
   const cols = string.split(/\t/)
   const obj = {}
   for (let i = 0; i < headers.length; i++) {
-    if (cols[i].match(/^\d+$/))
-    cols[i] = +cols[i]
+    if (cols[i].match(/^\d+$/)) { // Cast to number if the string contains only digits
+      cols[i] = +cols[i]
+    }
     obj[headers[i]] = cols[i]
   }
   return obj

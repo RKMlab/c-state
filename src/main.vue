@@ -62,6 +62,7 @@ import readFile from './scripts/utils/fileReader.js'
 import { validateBEDString, parseBEDString } from './scripts/parsers/bed.js'
 import geneRow from './components/gene_row.vue'
 import parseGenome from './scripts/parseGenomeInfo.js'
+import { events } from './scripts/events.js'
 
 const d3 = require('d3')
 const _ = require('lodash')
@@ -140,11 +141,15 @@ export default {
       store.genes = []
       parseGenome(callback => {
         store.info.genomeInfo = callback;
-        store.genes = store.info.sortings.alphabetical.splice(0, 200)
+        store.genes = store.info.sortings.alphabetical.slice(0, 100)
       })
     },
     addGene () {
-      store.genes.push(this.searchString)
+      if (_.includes(store.info.sortings.alphabetical, this.searchString)) {
+        store.genes.unshift(this.searchString)
+      } else {
+        events.$message.error('No such gene found')
+      }
     }
   }
 }

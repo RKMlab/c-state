@@ -11,7 +11,7 @@ const store = {
       margin: {
         top: 10,
         bottom: 30,
-        left: 40,
+        left: 20,
         right: 20
       },
       panelHeight: 200,

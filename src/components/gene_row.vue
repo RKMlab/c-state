@@ -1,7 +1,15 @@
 <template>
   <el-card>
     <div slot="header" style="text-align: center">
-      <h3>{{ gene }}</h3>
+      <el-row :gutter="10" style="padding-top: 10px">
+        <el-col :span="6">
+          <div>{{ geneInfo.chrom }}:{{ geneInfo.txStart }}-{{ geneInfo.txEnd }} ({{ geneInfo.strand }})</div>
+          <div>Gene Size (bp): {{ geneInfo.txSize }}</div>
+        </el-col>
+        <el-col :span="12">
+          <div style="font-size: 1.2em; font-weight: bold">{{ gene }}</div>
+        </el-col>
+      </el-row>
     </div>
     <table style="text-align: center; table-layout: fixed; width: 100%; margin: auto">
       <tr>
