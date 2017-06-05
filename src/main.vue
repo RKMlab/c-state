@@ -33,8 +33,7 @@
         <el-collapse :value="['2']">
           <el-collapse-item name="2" title="View">
             <div>
-              <el-input v-model="searchString" style="width: 200px"></el-input>
-              <el-button @click="getGenomeInfo">Add Gene</el-button>
+              <el-autocomplete v-model="searchString" :fetch-suggestions="getSuggestions" placeholder="Enter Gene..." icon="search" @select="addGene"></el-autocomplete>
             </div><br>
             <div style="max-height: 90vh; overflow-y: auto">
               <table style="text-align: center; table-layout: fixed; width: 100%; margin: auto">
@@ -144,12 +143,25 @@ export default {
         store.genes = store.info.sortings.alphabetical.slice(0, 100)
       })
     },
-    addGene () {
-      if (_.includes(store.info.sortings.alphabetical, this.searchString)) {
-        store.genes.unshift(this.searchString)
-      } else {
-        events.$message.error('No such gene found')
+    getSuggestions (string, callback) {
+      if (string.length < 2) {
+        return
       }
+      const list = store.info.sortings.alphabetical;
+      const filtered = _.filter(list, function (gene) {
+        return gene.toLowerCase().startsWith(string.toLowerCase())
+      })
+      const results = []
+      _.map(filtered.slice(0, 10), name => { // Show only the first 10 results
+        const obj = {
+          value: name
+        }
+        results.push(obj)
+      })
+      callback(results)
+    },
+    addGene () {
+      store.genes.unshift(this.searchString)
     }
   }
 }

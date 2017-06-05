@@ -20,6 +20,9 @@ export default function (callback) {
         txSize: +cols[indexOfTxSize],
         chrom: cols[indexOfChrom]
       }
+      if (!obj.name) {
+        continue;
+      }
       info.push(obj)
     }
     info = _.map(_.groupBy(info, 'name'), o => {
