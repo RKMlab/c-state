@@ -17,19 +17,22 @@ const parseGeneInfo = function (string) {
 }
 
 const parseFeatureString = function (string) {
+  const binSize = store.constants.chromBinSize
+  const start = store.settings.flankUp
   const arr = string.match(/(.)\1*/g)
-  const toPlot = []
-  let i = 0
+  const parsed = []
+  let i = start * -1
   for (let string of arr) {
     const obj = {}
+    const length = string.length * binSize
     obj.value = string.charAt(0)
     obj.start = i
-    obj.end = i + string.length
-    i += string.length
-    toPlot.push(obj)
+    obj.end = i + length
+    i += length
+    parsed.push(obj)
   }
-  _.remove(toPlot, o => { return o.value === 'a'})
-  return toPlot
+  _.remove(parsed, o => { return o.value === 'a'})
+  return parsed
 }
 
 export { parseGeneInfo, parseFeatureString }

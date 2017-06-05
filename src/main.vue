@@ -140,7 +140,7 @@ export default {
       store.genes = []
       parseGenome(callback => {
         store.info.genomeInfo = callback;
-        store.genes = store.info.sortings.alphabetical.slice(0, 100)
+        store.genes = store.info.sortings.alphabetical.slice(0, 1000)
       })
     },
     getSuggestions (string, callback) {
@@ -162,6 +162,7 @@ export default {
     },
     addGene () {
       store.genes.unshift(this.searchString)
+      this.searchString = ''
     }
   }
 }
