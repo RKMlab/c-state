@@ -52,10 +52,10 @@ th {
 }
 
 .filter-input {
-  border: 1px solid #aaaaaa;
-  border-radius: 2px;
+  border: 1px solid #999999;
+  border-radius: 4px;
   margin: 2px 5px 2px 5px;
-  padding: 2px 5px 2px 5px;
+  padding: 3px 5px;
 }
 
 select.filter-input {

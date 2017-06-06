@@ -169,7 +169,7 @@ const filterModal = new Vue({
         if (i === this.activeFilters.length - 1) {
           spinner.loading = false;
           this.appliedFilters = this.activeFilters.length;
-          hideFilterDiv();
+          // hideFilterDiv();
         }
       }
     },
@@ -180,7 +180,7 @@ const filterModal = new Vue({
       let filtered = 0;
       for (let i = 0; i < this.genes.length; i++) {
         const gene = this.genes[i];
-        if (!gene.show) { // Not required for this filter because of matching logic, still put as a precaution and to marginally improve speed
+        if (!gene.show) {
           previousFiltered++;
           continue;
         }

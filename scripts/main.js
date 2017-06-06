@@ -324,7 +324,7 @@ const formatPlotScope = function (scope = plotScope) {
       scope.info.features.push(file.feature)
     }
     scope.info.celltypes = _.sortBy(_.uniqBy(scope.info.celltypes, 'value'), 'value');
-    scope.info.features = _.uniqBy(scope.info.features, 'value');
+    scope.info.features = _.sortBy(_.uniqBy(scope.info.features, 'value'), 'value');
 
     mainFileData.geneList = _.sortBy(mainFileData.geneList, 'name');
     for (let i = 0; i < mainFileData.geneList.length; i++) {
@@ -458,6 +458,7 @@ const formatPlotScope = function (scope = plotScope) {
         }
         const geneFeatures = _.filter(allFeatures[gene.geneinfo.chrom], feature => {
           return ((feature.start <= FlankStart && feature.end >= FlankEnd) ||
+            (feature.start <= FlankStart && feature.end >= FlankStart) ||
             (feature.start <= FlankEnd && feature.end >= FlankEnd) ||
             (feature.start >= FlankStart && feature.end <= FlankEnd))
         })

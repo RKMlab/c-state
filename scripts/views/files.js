@@ -82,7 +82,7 @@ const main_file = new Vue({
           return gene === "";
         })
         geneList = _.map(geneList, function (geneName) {
-          return _.trimEnd(geneName, '.')
+          return geneName.replace(/\..+$/, '')
         })
         console.log(geneList);
         readGenome();
@@ -102,7 +102,7 @@ const main_file = new Vue({
         _.forEach(genomeData, chrom => {
           for (let i = 0; i < chrom.length; i++) {
             const gene = chrom[i];
-            if (_.includes(geneList, gene[this.idSelected])) {
+            if (_.includes(geneList, gene[this.idSelected].replace(/\..+$/, ''))) {
               allMappedGenes.push(JSON.parse(JSON.stringify(gene))); // JSON parse so that the pushed object is a deep copy and not copied by reference
             }
           }
@@ -114,7 +114,9 @@ const main_file = new Vue({
           const geneObj = {};
           geneObj.name = gene;
           geneObj.show = true;
-          const mappedGenes = _.filter(allMappedGenes, [this.idSelected, gene]) ;
+          const mappedGenes = _.filter(allMappedGenes, mapped => {
+            return mapped[this.idSelected].replace(/\..+$/, '') === gene
+          })
           if (mappedGenes.length === 0) {
             unmappedCount++;
             unmappedList.push(gene);
