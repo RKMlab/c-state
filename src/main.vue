@@ -140,7 +140,7 @@ export default {
       store.genes = []
       parseGenome(callback => {
         store.info.genomeInfo = callback;
-        store.genes = store.info.sortings.alphabetical.slice(0, 1000)
+        store.genes = store.info.sortings.alphabetical.slice(0, 100)
       })
     },
     getSuggestions (string, callback) {
@@ -152,7 +152,7 @@ export default {
         return gene.toLowerCase().startsWith(string.toLowerCase())
       })
       const results = []
-      _.map(filtered.slice(0, 10), name => { // Show only the first 10 results
+      _.map(filtered.slice(0, 10), name => { // Show only the first 10 results for autocomplete
         const obj = {
           value: name
         }

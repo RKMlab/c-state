@@ -10,12 +10,18 @@ const store = {
     geneCard: {
       margin: {
         top: 10,
-        bottom: 30,
+        bottom: 10,
         left: 20,
         right: 20
       },
-      panelHeight: 200,
-      panelWidth: 500
+      panelHeight: 150,
+      panelWidth: 500,
+      geneBarHeight: 10,
+      regionBarHeight: 5,
+      featureBarHeight: 10,
+      geneBarColor: '#111111',
+      regionBarColor: '#4682B4',
+      showExons: false
     }
   },
   info: {

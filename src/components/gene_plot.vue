@@ -53,6 +53,15 @@
         const margin = store.settings.geneCard.margin
         const panelWidth = store.settings.geneCard.panelWidth
         const panelHeight = store.settings.geneCard.panelHeight
+        const geneBarHeight = store.settings.geneCard.geneBarHeight
+        const regionBarHeight = store.settings.geneCard.regionBarHeight
+        const featureBarHeight = store.settings.geneCard.featureBarHeight
+        const geneBarColor = store.settings.geneCard.geneBarColor
+        const regionBarColor = store.settings.geneCard.regionBarColor
+        const availableHeight = panelHeight - margin.bottom
+        const addition = geneBarHeight * 2;
+        const geneBarStart = addition + regionBarHeight;
+        const featureMaxY = (panelHeight - margin.bottom) - (geneBarHeight * 2 + regionBarHeight)
         
         const chartRoot = d3.select(rootElement).append('svg')
           .attr("width", panelWidth)
@@ -64,11 +73,12 @@
         const xScale = d3.scaleLinear()
           .domain([flankUp * -1, txSize + flankDown])
           .range([margin.left, panelWidth - margin.right])
+          .clamp(true)
 
         const yScale = d3.scaleBand()
           .domain(store.info.features)
-          .rangeRound([margin.top, panelHeight-margin.bottom])
-          .paddingOuter(0.25)
+          .rangeRound([margin.top, featureMaxY])
+          .paddingOuter(0.5)
           .paddingInner(0.5)
 
         const opacityScale = d3.scaleQuantize()
@@ -107,6 +117,23 @@
             }
           }
         }
+
+        const regionBar = chart.append("g")
+          .attr("transform", `translate(${margin.left}, ${(availableHeight - geneBarStart) + geneBarHeight})`)
+        
+        regionBar.append("rect")
+          .attr("width", panelWidth - margin.left - margin.right)
+          .attr("height", regionBarHeight)
+          .style("fill", regionBarColor)
+
+        const geneBar = chart.append("g")
+          .attr('transform', `translate(${xScale(0)}, ${availableHeight - geneBarStart})`)
+        
+        geneBar.append("rect")
+          .attr("width", xScale(info.txSize) - xScale(0))
+          .attr("height", (geneBarHeight + regionBarHeight))
+          .style("fill", geneBarColor)
+
 
       }
     }
