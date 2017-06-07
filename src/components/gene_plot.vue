@@ -88,7 +88,6 @@
         const chart = chartRoot.append("g")
 
         for (let feature of store.info.features) {
-          // console.log(this.gene, this.celltype, feature, this.info.chrom, this.info.txStart, this.info.txEnd, startBin, endBin)
           let featureString = _.find(celltypeData.features, ['name', feature]).data[chrom].substr(startBin, endBin-startBin)
           if (strand === '-') {
             featureString = featureString.split('').reverse().join('')
@@ -112,7 +111,7 @@
                 .attr("height", 10)
                 .attr("fill", colorScale(feature))
                 .attr("opacity", function (d) {
-                  return opacityScale.invertExtent(d.value)[0]
+                  return opacityScale.invertExtent(d.value)[1]
                 })
             }
           }
@@ -126,15 +125,56 @@
           .attr("height", regionBarHeight)
           .style("fill", regionBarColor)
 
-        const geneBar = chart.append("g")
-          .attr('transform', `translate(${xScale(0)}, ${availableHeight - geneBarStart})`)
-        
-        geneBar.append("rect")
-          .attr("width", xScale(info.txSize) - xScale(0))
-          .attr("height", (geneBarHeight + regionBarHeight))
-          .style("fill", geneBarColor)
+        if (store.settings.geneCard.showExons) {
+          const exons = []
+          const exonStarts = _.trimEnd(info.exonStarts, ',').split(',')
+          const exonEnds = _.trimEnd(info.exonEnds, ',').split(',')
+          if (exonStarts.length !== exonEnds.length) {
+            console.log(`Exon Starts and Ends don't match for gene ${gene.name}`);
+          }
+          for (let i = 0; i < exonStarts.length; i++) {
+            const obj = {};
+            if (strand === '+') {
+              obj.start = exonStarts[i] - txStart;
+              obj.end = exonEnds[i] - txStart;
+            } else {
+              obj.start = txEnd - exonEnds[i];
+              obj.end = txEnd - exonStarts[i];
+            }
+            exons.push(obj);
+          }
+          const exonBars = chart.selectAll("exon")
+            .data(exons)
+            .enter()
+            .append("g")
+            .attr("transform", function (d) {
+              return `translate(${xScale(d.start)},${(availableHeight - geneBarStart)})`;
+            });
 
+          exonBars.append("rect")
+            .attr("width", function (d) {
+              return xScale(d.end) - xScale(d.start);
+            })
+            .attr("height", geneBarHeight)
+            .style("fill", geneBarColor)
+          
+          const geneBar = chart.append("g")
+            .attr('transform', `translate(${xScale(0)}, ${(availableHeight - geneBarStart) + geneBarHeight})`)
+          
+          geneBar.append("rect")
+            .attr("width", xScale(info.txSize) - xScale(0))
+            .attr("height", regionBarHeight)
+            .style("fill", geneBarColor)
 
+        } else {
+          const geneBar = chart.append("g")
+            .attr('transform', `translate(${xScale(0)}, ${availableHeight - geneBarStart})`)
+          
+          geneBar.append("rect")
+            .attr("width", xScale(info.txSize) - xScale(0))
+            .attr("height", (geneBarHeight + regionBarHeight))
+            .style("fill", geneBarColor)
+        }
       }
     }
   }

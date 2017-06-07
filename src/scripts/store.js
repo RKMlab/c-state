@@ -21,7 +21,7 @@ const store = {
       featureBarHeight: 10,
       geneBarColor: '#111111',
       regionBarColor: '#4682B4',
-      showExons: false
+      showExons: true
     }
   },
   info: {
