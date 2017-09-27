@@ -23,3 +23,11 @@ If you have any queries or suggestions regarding C-State, please contact:
 
 Divya Tej Sowpati:  tej@ccmb.res.in<br>
 Surabhi Srivastava: ssurabhi@ccmb.res.in
+
+### To Cite C-State
+
+C-State: an interactive web app for simultaneous multi-gene visualization and comparative epigenetic pattern search
+<i>Divya Tej Sowpati, Surabhi Srivastava, Jyotsna Dhawan, Rakesh Mishra</i>
+
+BMC Bioinformatics, 2017 18(Suppl 10):392<br>
+<i>[doi](https://doi.org/10.1186/s12859-017-1786-6)</i>: 10.1186/s12859-017-1786-6
