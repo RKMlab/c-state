@@ -4,6 +4,7 @@
       <el-row :gutter="10" style="padding-top: 10px">
         <el-col :span="6">
           <div>{{ geneInfo.chrom }}:{{ geneInfo.txStart }}-{{ geneInfo.txEnd }} ({{ geneInfo.strand }})</div>
+          <div>{{ geneInfo.txSize }}</div>
         </el-col>
         <el-col :span="12">
           <div style="font-size: 1.2em; font-weight: bold">{{ gene }}</div>

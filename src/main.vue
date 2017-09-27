@@ -34,6 +34,7 @@
           <el-collapse-item name="2" title="View">
             <div>
               <el-autocomplete v-model="searchString" :fetch-suggestions="getSuggestions" placeholder="Enter Gene..." icon="search" @select="addGene"></el-autocomplete>
+              <el-button @click="tempFilter">Click</el-button>
             </div><br>
             <div style="max-height: 90vh; overflow-y: auto">
               <table style="text-align: center; table-layout: fixed; width: 100%; margin: auto">
@@ -62,6 +63,7 @@ import { validateBEDString, parseBEDString } from './scripts/parsers/bed.js'
 import geneRow from './components/gene_row.vue'
 import parseGenome from './scripts/parseGenomeInfo.js'
 import { events } from './scripts/events.js'
+import { parseGeneInfo, parseFeatureString } from './scripts/utils/parseStrings.js'
 
 const d3 = require('d3')
 const _ = require('lodash')
@@ -163,6 +165,32 @@ export default {
     addGene () {
       store.genes.unshift(this.searchString)
       this.searchString = ''
+    },
+    tempFilter () {
+      let i = 0;
+      const celltypeData = _.find(store.data, ['name', 'K562'])
+      const featureData = _.find(celltypeData.features, ['name', 'H3K27me3']).data
+      console.log(celltypeData, featureData)
+      for (let gene of store.info.genomeInfo) {
+        const geneString = gene.value
+        const info = parseGeneInfo(geneString)
+        // if (info.txSize > 1000) {
+        //   console.log(i++)
+        // }
+        const startBin = Math.floor(info.txStart/store.constants.chromBinSize)
+        const endBin = Math.floor(info.txEnd/store.constants.chromBinSize) + 1
+        const featureString = featureData[info.chrom].substr(startBin, endBin - startBin)
+        const matchString = 'abcdefghijklmnopqrstuvwxy'
+        const regex = new RegExp(`^[${matchString}]+$`)
+        if (featureString.match(/^[abcdefghijklmnopqrstuvwxy]+$/)) {
+          continue;
+        } else {
+        // const features = parseFeatureString(featureString)
+        // console.log(featureString, features)
+        // if (features.length > 0) {
+          console.log(i++)
+        }
+      }
     }
   }
 }

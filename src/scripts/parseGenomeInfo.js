@@ -18,7 +18,8 @@ export default function (callback) {
         name: cols[indexOfID],
         value: lines[i],
         txSize: +cols[indexOfTxSize],
-        chrom: cols[indexOfChrom]
+        chrom: cols[indexOfChrom],
+        show: true
       }
       if (!obj.name) {
         continue;
