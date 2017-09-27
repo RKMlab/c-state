@@ -26,7 +26,7 @@ Surabhi Srivastava: ssurabhi@ccmb.res.in
 
 ### To Cite C-State
 
-C-State: an interactive web app for simultaneous multi-gene visualization and comparative epigenetic pattern search
+C-State: an interactive web app for simultaneous multi-gene visualization and comparative epigenetic pattern search<br>
 <i>Divya Tej Sowpati, Surabhi Srivastava, Jyotsna Dhawan, Rakesh Mishra</i>
 
 BMC Bioinformatics, 2017 18(Suppl 10):392<br>
