@@ -236,14 +236,21 @@ const plot = new Vue({
   methods: {
     quickSearch: _.debounce(
       function () {
+        let filtered = []
+        if (this.activeFilters !== '') {
+          filterModal.applyFilters()
+          filtered = _.filter(plotScope.genes, 'show')
+        } else {
+          filtered = plotScope.genes
+        }
         const names = this.searchString.toUpperCase().split(' ')
         if (names.length === 1) {
-          _.map(plotScope.genes, function (gene) {
+          _.map(filtered, function (gene) {
             gene.show = _.startsWith(gene.name.toUpperCase(), names[0])
           })
         }
         else {
-          _.map(plotScope.genes, function (gene) {
+          _.map(filtered, function (gene) {
             gene.show = _.includes(names, gene.name.toUpperCase())
           })
         }

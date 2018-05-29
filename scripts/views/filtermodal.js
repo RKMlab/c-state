@@ -473,7 +473,7 @@ const filterModal = new Vue({
             })
           // })
         }
-
+        
         // console.log(firstMatch, secondMatch);
         // If match contains no elements, then return false for that gene
         if (firstMatch.length === 0 || secondMatch.length === 0) {
