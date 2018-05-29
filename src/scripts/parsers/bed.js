@@ -58,6 +58,7 @@ const parseBEDString = function (string, scoreCol = 5, name = 'NA'){
       score: +d[scoreCol]
     }
   })
+  console.log(rows)
   const template = getGenomeString(store.info.chromSizes, rows, store.constants.chromBinSize)
   return template;
 }

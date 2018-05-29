@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Gene Symbol",
+    "value": "geneSymbol"
+  },
+  {
+    "name": "UCSC ID (knownGene)",
+    "value": "uniqueID"
+  },
+  {
+    "name": "ENSEMBL Transcript ID",
+    "value": "ensTransID"
+  },
+  {
+    "name": "UniProt ID",
+    "value": "uniprotID"
+  },
+  {
+    "name": "RefSeq ID",
+    "value": "refseqID"
+  },
+  {
+    "name": "mRNA ID",
+    "value": "mRNA"
+  }
+]
